@@ -275,36 +275,29 @@
     var canvas = document.getElementById("bgfx");
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext("2d");
-    var W = 0, H = 0, DPR = 1, agents = [], coins = [], running = false, raf = 0, t0 = 0, lastCoin = 0;
-    var MONO = (getComputedStyle(document.documentElement).getPropertyValue("--font-mono") || "monospace").trim() || "monospace";
+    var W = 0, H = 0, DPR = 1, agents = [], coins = [], sparks = [], running = false, raf = 0, t0 = 0, lastCoin = 0;
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function cl(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
     // ── pixel-art sprites (no glow, flat colors) ──
     var A_PAL = { P: "#7c4dff", D: "#4a2596", W: "#f2ecff", K: "#1a0f33", L: "#c9b3ff" };
-    var A_SPR = [
+    // head only (11x9); pupils, blink and tentacles are drawn procedurally so they animate
+    var A_HEAD = [
       ".....L.....",
       ".....P.....",
       "...PPPPP...",
       "..PPPPPPP..",
       ".PPPPPPPPP.",
       ".PWWPPPWWP.",
-      ".PWKPPPKWP.",
+      ".PWWPPPWWP.",
       ".PPPPPPPPP.",
-      "..DPPPPPD..",
-      "..D.D.D.D..",
-      "..D.D.D.D.."
+      "..DPPPPPD.."
     ];
     var C_PAL = { Y: "#f5c542", y: "#c2901a", w: "#ffe9a8" };
-    var C_SPR = [
-      "..yyy..",
-      ".yYYYy.",
-      "yYwwYYy",
-      "yYYYYYy",
-      "yYYYYYy",
-      ".yYYYy.",
-      "..yyy.."
-    ];
+    var C_FULL = ["..yyy..", ".yYYYy.", "yYwwYYy", "yYYYYYy", "yYYYYYy", ".yYYYy.", "..yyy.."];
+    var C_MID = [".yyy.", "yYYYy", "yYwYy", "yYYYy", "yYYYy", "yYYYy", ".yyy."];
+    var C_EDGE = [".y.", "yYy", "yYy", "yYy", "yYy", "yYy", ".y."];
+
     function drawSprite(spr, pal, ox, oy, px, alpha) {
       ctx.globalAlpha = alpha;
       for (var r = 0; r < spr.length; r++) {
@@ -317,6 +310,7 @@
       }
       ctx.globalAlpha = 1;
     }
+    function pxFill(ox, oy, px, col, row, w, h, color) { ctx.fillStyle = color; ctx.fillRect(Math.floor(ox + col * px), Math.floor(oy + row * px), w * px + 1, h * px + 1); }
 
     function size() {
       DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -329,9 +323,16 @@
       var n = W < 700 ? 4 : (W < 1150 ? 5 : 7);
       agents = [];
       for (var i = 0; i < n; i++) {
-        agents.push({ x: rnd(0.08, 0.92) * W, y: rnd(0.12, 0.9) * H, vx: rnd(-0.13, 0.13), vy: rnd(-0.1, 0.1),
-          s: rnd(30, 50), t: rnd(0, 10), tsp: rnd(1.3, 2.1), give: 0, got: 0 });
+        var depth = rnd(0, 1);                       // 0 = far (small/slow/faint), 1 = near
+        agents.push({
+          x: rnd(0.1, 0.9) * W, y: rnd(0.14, 0.86) * H,
+          hd: rnd(0, 6.28), sp: 0.22 + depth * 0.5,
+          s: 26 + depth * 30, alpha: 0.46 + depth * 0.34,
+          tx: rnd(0.1, 0.9) * W, ty: rnd(0.14, 0.86) * H, tt: rnd(2.5, 6),
+          t: rnd(0, 10), tsp: rnd(1.2, 2), give: 0, got: 0, blink: 0, blinkT: rnd(1.5, 6)
+        });
       }
+      agents.sort(function (a, b) { return a.s - b.s; });   // bigger (nearer) drawn last/on top
     }
     function emitCoin() {
       if (agents.length < 2 || coins.length > 5) return;
@@ -341,44 +342,80 @@
       coins.push({ A: A, B: B, cx: (A.x + B.x) / 2, cy: (A.y + B.y) / 2 - rnd(50, 110), t: 0, dur: rnd(1.4, 2.2), r: rnd(7, 10), spin: rnd(0, 6.28), alpha: 0 });
       A.give = 1;
     }
-    function coinPos(c) { var p = cl(c.t / c.dur, 0, 1), u = 1 - p; return { x: u * u * c.A.x + 2 * u * p * c.cx + p * p * c.B.x, y: u * u * c.A.y + 2 * u * p * c.cy + p * p * c.B.y }; }
+    function coinPos(c) { var p0 = cl(c.t / c.dur, 0, 1), p = p0 * p0 * (3 - 2 * p0), u = 1 - p; return { x: u * u * c.A.x + 2 * u * p * c.cx + p * p * c.B.x, y: u * u * c.A.y + 2 * u * p * c.cy + p * p * c.B.y }; }
 
     function step(dt) {
       var k = dt * 60;
       for (var i = 0; i < agents.length; i++) {
         var a = agents[i]; a.t += dt;
-        a.vx = cl(a.vx + rnd(-0.012, 0.012) * k, -0.2, 0.2); a.vy = cl(a.vy + rnd(-0.01, 0.01) * k, -0.16, 0.16);
-        a.x += a.vx * k; a.y += a.vy * k;
-        var m = 70;
-        if (a.x < m) { a.x = m; a.vx = Math.abs(a.vx); } if (a.x > W - m) { a.x = W - m; a.vx = -Math.abs(a.vx); }
-        if (a.y < m) { a.y = m; a.vy = Math.abs(a.vy); } if (a.y > H - m) { a.y = H - m; a.vy = -Math.abs(a.vy); }
+        // steer smoothly toward a slowly-changing target (organic meander, no hard bounce)
+        var dx = a.tx - a.x, dy = a.ty - a.y;
+        var desired = Math.atan2(dy, dx);
+        var diff = Math.atan2(Math.sin(desired - a.hd), Math.cos(desired - a.hd));
+        a.hd += diff * Math.min(1, dt * 1.1);
+        a.x += Math.cos(a.hd) * a.sp * k; a.y += Math.sin(a.hd) * a.sp * k;
+        a.tt -= dt;
+        if (dx * dx + dy * dy < 5184 || a.tt <= 0) { a.tx = rnd(0.08, 0.92) * W; a.ty = rnd(0.12, 0.88) * H; a.tt = rnd(3, 7); }
+        a.blinkT -= dt; if (a.blinkT <= 0) { a.blink = 0.13; a.blinkT = rnd(3.5, 8); }
+        if (a.blink > 0) a.blink -= dt;
         a.give = Math.max(0, a.give - dt * 1.6); a.got = Math.max(0, a.got - dt * 2.4);
       }
       for (var j = coins.length - 1; j >= 0; j--) {
-        var c = coins[j]; c.t += dt; c.spin += dt * 7;
+        var c = coins[j]; c.t += dt; c.spin += dt * 7.5;
         var p = c.t / c.dur; c.alpha = p < 0.12 ? p / 0.12 : (p > 0.88 ? Math.max(0, (1 - p) / 0.12) : 1);
-        if (p >= 1) { c.B.got = 1; coins.splice(j, 1); }
+        if (p >= 1) {
+          c.B.got = 1;
+          for (var n = 0; n < 6; n++) sparks.push({ x: c.B.x, y: c.B.y - 2, vx: rnd(-55, 55), vy: rnd(-75, -18), life: 1 });
+          coins.splice(j, 1);
+        }
+      }
+      for (var s = sparks.length - 1; s >= 0; s--) {
+        var sp = sparks[s]; sp.x += sp.vx * dt; sp.y += sp.vy * dt; sp.vy += 170 * dt; sp.life -= dt * 2.3;
+        if (sp.life <= 0) sparks.splice(s, 1);
       }
     }
 
     function drawAgent(a) {
-      var rows = A_SPR.length, cols = A_SPR[0].length;
-      var px = Math.max(2, Math.round(a.s / rows));
-      var bob = Math.round(Math.sin(a.t * a.tsp) * px * 0.7);   // bob in whole-pixel steps
-      var hop = a.got > 0.4 ? px : 0;                            // little hop when it catches a coin
+      var cols = 11, rows = 9;
+      var px = Math.max(2, Math.round(a.s / 12));
+      var bob = Math.round(Math.sin(a.t * a.tsp) * px * 0.7);          // bob in whole-pixel steps
+      var hop = (a.got > 0.4 || a.give > 0.4) ? px : 0;                // hop on give/catch
       var ox = a.x - (cols * px) / 2, oy = a.y - (rows * px) / 2 + bob - hop;
-      drawSprite(A_SPR, A_PAL, ox, oy, px, 0.72);
+      var al = a.alpha;
+      drawSprite(A_HEAD, A_PAL, ox, oy, px, al);
+      ctx.globalAlpha = al;
+      if (a.blink > 0) {
+        pxFill(ox, oy, px, 2, 5, 2, 2, A_PAL.P); pxFill(ox, oy, px, 7, 5, 2, 2, A_PAL.P);   // cover eyes
+        pxFill(ox, oy, px, 2, 6, 2, 1, A_PAL.K); pxFill(ox, oy, px, 7, 6, 2, 1, A_PAL.K);   // closed lids
+      } else {
+        var lx = Math.cos(a.hd) >= 0 ? 1 : 0, ly = Math.sin(a.hd) >= 0 ? 1 : 0;             // pupils follow heading
+        pxFill(ox, oy, px, 2 + lx, 5 + ly, 1, 1, A_PAL.K);
+        pxFill(ox, oy, px, 7 + lx, 5 + ly, 1, 1, A_PAL.K);
+      }
+      for (var i = 0; i < 4; i++) {                                                          // rippling tentacles
+        var lc = 2 + i * 2;
+        for (var seg = 0; seg < 2; seg++) {
+          var sway = Math.round(Math.sin(a.t * 2.6 + i * 0.8 + seg));
+          pxFill(ox, oy, px, lc + sway, 9 + seg, 1, 1, A_PAL.D);
+        }
+      }
+      ctx.globalAlpha = 1;
     }
     function drawCoin(c) {
-      var pp = coinPos(c), rows = C_SPR.length, cols = C_SPR[0].length;
+      var pp = coinPos(c);
+      var fr = Math.floor((c.spin % (Math.PI * 2)) / (Math.PI / 2));   // 0..3 → coin-flip cycle
+      var spr = fr === 0 ? C_FULL : (fr === 2 ? C_EDGE : C_MID);
+      var cols = spr[0].length, rows = spr.length;
       var px = Math.max(2, Math.round(c.r / 3));
       var ox = pp.x - (cols * px) / 2, oy = pp.y - (rows * px) / 2;
-      drawSprite(C_SPR, C_PAL, ox, oy, px, cl(c.alpha, 0, 1));
+      drawSprite(spr, C_PAL, ox, oy, px, cl(c.alpha, 0, 1));
     }
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (var i = 0; i < agents.length; i++) drawAgent(agents[i]);
       for (var j = 0; j < coins.length; j++) drawCoin(coins[j]);
+      for (var s = 0; s < sparks.length; s++) { ctx.globalAlpha = cl(sparks[s].life, 0, 1); ctx.fillStyle = "#ffd96b"; ctx.fillRect(Math.floor(sparks[s].x), Math.floor(sparks[s].y), 3, 3); }
+      ctx.globalAlpha = 1;
     }
     function frame(now) {
       if (!running) return;
@@ -391,7 +428,7 @@
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
 
     size(); makeAgents();
-    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { size(); makeAgents(); coins = []; }, 200); });
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { size(); makeAgents(); coins = []; sparks = []; }, 200); });
     if (reduce) { emitCoin(); if (coins[0]) coins[0].t = coins[0].dur * 0.5; step(0.001); draw(); return; }
     start();
     document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else start(); });
