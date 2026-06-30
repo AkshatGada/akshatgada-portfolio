@@ -8,10 +8,10 @@ him, not about Polygon.
 **Concept — "Operator":** the site behaves like the console of someone building the
 machine-payable web.
 
-**Signature:** an interactive terminal in the hero. It boots, and visitors can run real
-commands — `whoami`, `work`, `focus`, `pay --x402`, `contact`, `stack`, `help` (try `sudo nap`) —
-that print responses and navigate the page. `pay --x402` plays a live
-`GET → 402 → signed payment → 200 OK` handshake.
+**Signature:** a self-running terminal in the hero. It types out commands on its own and
+narrates Akshat — `whoami`, `cat focus.txt`, `ls projects/`, `pay --x402` (a live
+`GET → 402 → signed payment → 200 OK` handshake), `cat pip-82`, `echo $MISSION` — then loops.
+No input, no page navigation; it's an ambient, slow-typing console.
 
 ## Run it locally
 
@@ -27,7 +27,7 @@ Plain HTML/CSS/JS, no build step, no external dependencies (works offline).
 All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 `prefers-reduced-motion` safe; content is readable with JavaScript disabled.
 
-- Interactive terminal hero (commands navigate + run the x402 handshake)
+- Self-running terminal hero (slow-typing loop that narrates Akshat)
 - Text-scramble decode on the name at load
 - Custom blend-mode cursor + magnetic buttons/links
 - Selected work as a hover-reveal list with a synced, tilting preview panel

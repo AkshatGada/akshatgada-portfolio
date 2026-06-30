@@ -74,29 +74,16 @@
         </div>
       </div>
 
-      <!-- SIGNATURE: interactive terminal -->
-      <section class="term reveal" data-delay="2" aria-label="Interactive terminal. Run a command to explore.">
+      <!-- SIGNATURE: self-running console (decorative; same info lives in About/Work) -->
+      <section class="term reveal" data-delay="2" aria-hidden="true">
         <div class="term-bar">
-          <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="term-dots"><i></i><i></i><i></i></span>
           <span class="term-title">akshat@polygon — ~</span>
-          <span class="term-ready" aria-hidden="true"><span class="term-ready-dot"></span>ready</span>
         </div>
-        <div class="term-body" id="term-body" role="log" aria-live="polite">
-          <!-- boot line is rendered/typed by JS; static fallback below for no-JS -->
+        <div class="term-body" id="term-body">
+          <!-- static fallback for no-JS; replaced by the typing loop when JS runs -->
           <div class="term-line"><span class="term-prompt">akshat@polygon ~ %</span> <span class="term-cmd">whoami</span></div>
-          <div class="term-out">Akshat Gada — DevRel engineer at Polygon. I lead agentic payments: giving AI agents a wallet, an identity, and the ability to pay over x402, settling onchain in stablecoins.</div>
-        </div>
-        <div class="term-input-row">
-          <span class="term-prompt">~ %</span>
-          <input class="term-input" id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type a command, then Enter. Tab to autocomplete, up arrow for history." placeholder="type a command — try 'ls', tab to autocomplete" />
-        </div>
-        <div class="term-chips" id="term-chips" aria-label="Commands">
-          <button type="button" data-cmd="whoami">whoami</button>
-          <button type="button" data-cmd="ls">ls</button>
-          <button type="button" data-cmd="work">work</button>
-          <button type="button" data-cmd="pay --x402">pay --x402</button>
-          <button type="button" data-cmd="contact">contact</button>
-          <button type="button" data-cmd="help">help</button>
+          <div class="term-out">Akshat Gada — developer relations engineer at Polygon, leading agentic payments.</div>
         </div>
       </section>
     </div>

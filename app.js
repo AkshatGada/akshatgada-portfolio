@@ -75,6 +75,7 @@
     }
     var frame = 0;
     function update() {
+      if (el.dataset.done) return;            // resolved (e.g. by the safety net) — stop
       var out = "", complete = 0;
       for (var i = 0; i < q.length; i++) {
         var it = q[i];
@@ -85,7 +86,7 @@
         } else out += it.to === " " ? " " : '<span class="dud">' + (it.to === " " ? " " : "") + "</span>";
       }
       el.innerHTML = out;
-      if (complete === q.length) { el.textContent = text; if (done) done(); }
+      if (complete === q.length) { el.dataset.done = "1"; el.textContent = text; if (done) done(); }
       else { frame++; requestAnimationFrame(update); }
     }
     update();
@@ -93,6 +94,10 @@
   function startScramble() {
     var spans = $$(".hero-name .scramble");
     spans.forEach(function (el, i) { setTimeout(function () { scrambleEl(el); }, 220 + i * 130); });
+    // safety net: guarantee the name resolves even if rAF is throttled/backgrounded
+    setTimeout(function () {
+      spans.forEach(function (el) { el.dataset.done = "1"; el.textContent = el.getAttribute("data-text") || el.textContent; });
+    }, 2400);
   }
 
   /* ============================================================
@@ -260,109 +265,76 @@
      TERMINAL
      ============================================================ */
   function bootTerminal() {
-    var body = $("#term-body"), input = $("#term-input"), chips = $("#term-chips");
+    var body = $("#term-body");
     if (!body) return;
 
-    function scrollToId(id) {
-      var t = $(id); if (t) t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-    }
-    function el(html, cls) { var d = document.createElement("div"); d.className = cls || ""; d.innerHTML = html; return d; }
-    function printPrompt(cmd) { body.appendChild(el('<span class="term-prompt">akshat@polygon ~ %</span> <span class="term-cmd">' + esc(cmd) + "</span>", "term-line")); }
-    function printOut(html) { var o = el(html, "term-out"); body.appendChild(o); return o; }
-    function esc(s) { return s.replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+    // A self-running console that narrates Akshat. No input, no navigation.
+    var SEQ = [
+      { cmd: "whoami", out: "Akshat Gada — developer relations engineer at Polygon, leading agentic payments." },
+      { cmd: "cat focus.txt", out: "I build the tools that let AI agents pay: wallets, identity, and onchain settlement over x402." },
+      { cmd: "ls projects/", out: "agent-cli   facilitator   agentic-services   agentconnect   agentic-docs" },
+      { cmd: "cat agent-cli", out: "One install gives an agent a session wallet, an onchain identity, x402 payments, swaps and bridging. No keys exposed." },
+      { cmd: "pay --x402", lines: [
+        "<span class='dir'>agent  &rarr;</span> GET /v1/inference",
+        "<span class='dir'>service&rarr;</span> <span class='warn'>402 Payment Required</span> &middot; 0.01 USDC",
+        "<span class='dir'>agent  &rarr;</span> X-PAYMENT signed &middot; <span class='key'>EIP-3009</span>",
+        "<span class='dir'>facilitator</span> verify &rarr; settle onchain",
+        "<span class='dir'>service&rarr;</span> <span class='ok'>200 OK</span> &middot; paid in 0.8s"
+      ] },
+      { cmd: "cat pip-82", out: "Co-authored PIP-82 — up to $1M in gas rebates to scale agentic, x402 transactions on Polygon." },
+      { cmd: "uptime", out: "intern → full-time at Polygon since 2025. building in the open." },
+      { cmd: "echo $MISSION", out: "Make the machine-payable web real for developers." }
+    ];
+
     function scrollBody() { body.scrollTop = body.scrollHeight; }
+    function promptLine() {
+      var d = document.createElement("div"); d.className = "term-line";
+      d.innerHTML = "<span class='term-prompt'>akshat@polygon ~ %</span> <span class='term-cmd'></span>";
+      body.appendChild(d); return d.querySelector(".term-cmd");
+    }
+    function outLine() { var d = document.createElement("div"); d.className = "term-out"; body.appendChild(d); return d; }
 
-    var COMMANDS = {
-      whoami: function () { printOut("Akshat Gada — DevRel engineer at Polygon. I lead agentic payments: giving AI agents a wallet, an identity, and the ability to pay over x402, settling onchain in stablecoins."); },
-      help: function () { printOut("commands: <span class='key'>whoami</span> · <span class='key'>ls</span> · <span class='key'>work</span> · <span class='key'>focus</span> · <span class='key'>stack</span> · <span class='key'>pay --x402</span> · <span class='key'>cat about</span> · <span class='key'>socials</span> · <span class='key'>contact</span> · <span class='key'>clear</span><br><span class='hsmall'>↑/↓ history · tab autocompletes</span>"); },
-      ls: function () { printOut("<span class='key'>sections/</span> work · focus · about · contact<br><span class='key'>projects/</span> agent-cli · facilitator · agentic-services · agentconnect · agentic-docs"); },
-      work: function () { printOut("5 shipped tools: Polygon Agent CLI, Polygon Facilitator, Agentic Services, AgentConnect, Agentic docs. opening the list…"); scrollToId("#work"); },
-      focus: function () { printOut("agentic payments — agents that pay per request over x402, no human at checkout. scrolling…"); scrollToId("#focus"); },
-      stack: function () { printOut("x402 · ERC-8004 · Rust · TypeScript · Polygon Chain · Agglayer · MCP · USDC · EIP-3009"); },
-      "cat about": function () { printOut("DevRel engineer at Polygon. Joined as an intern, full-time since 2025. I build in the open where agents, payments, and cross-chain meet — and write the proposals and tooling that make all three less painful. opening about…"); scrollToId("#about"); },
-      cat: function () { printOut("usage: <span class='key'>cat about</span>"); },
-      socials: function () { printOut("<a href='https://x.com/gada_akshat' target='_blank' rel='noopener'>x.com/gada_akshat</a> · <a href='https://github.com/AkshatGada' target='_blank' rel='noopener'>github/AkshatGada</a> · <a href='https://www.linkedin.com/in/akshat-gada-719076228/' target='_blank' rel='noopener'>linkedin</a> · <a href='mailto:agada@polygon.technology'>agada@polygon.technology</a>"); },
-      contact: function () { printOut("<a href='https://x.com/gada_akshat' target='_blank' rel='noopener'>x.com/gada_akshat</a> · <a href='https://github.com/AkshatGada' target='_blank' rel='noopener'>github/AkshatGada</a> · <a href='https://www.linkedin.com/in/akshat-gada-719076228/' target='_blank' rel='noopener'>linkedin</a>"); scrollToId("#contact"); },
-      clear: function () { body.innerHTML = ""; },
-      "pay --x402": function () { payFlow(); },
-      pay: function () { payFlow(); },
-      "sudo nap": function () { printOut("<span class='warn'>nap.exe</span> denied — the agents still need me. soon. 😴"); },
-      sudo: function () { printOut("<span class='warn'>nice try.</span> type <span class='key'>sudo nap</span>."); }
-    };
+    // Reduced motion / no animation: print a static snapshot, no loop.
+    if (reduce) {
+      body.innerHTML = "";
+      SEQ.slice(0, 4).forEach(function (e) {
+        var c = promptLine(); c.textContent = e.cmd;
+        var o = outLine(); o.innerHTML = e.lines ? e.lines.join("<br>") : e.out;
+      });
+      return;
+    }
 
-    function payFlow() {
-      var lines = [
-        "<span class='term-prompt'>agent  →</span> GET /v1/inference",
-        "<span class='term-prompt'>service→</span> <span class='warn'>402 Payment Required</span> · 0.01 USDC",
-        "<span class='term-prompt'>agent  →</span> X-PAYMENT signed · <span class='key'>EIP-3009</span>",
-        "<span class='term-prompt'>facilitator</span> verify → settle onchain",
-        "<span class='term-prompt'>service→</span> <span class='ok'>200 OK</span> · paid in 0.8s"
-      ];
-      var o = printOut(""); var i = 0;
-      (function next() {
-        if (i >= lines.length) return;
-        o.innerHTML += (i ? "<br>" : "") + lines[i]; i++; scrollBody();
-        setTimeout(next, reduce ? 0 : 360);
+    body.innerHTML = "";
+
+    function typeInto(el, text, speed, cb) {
+      el.classList.add("caret"); var i = 0;
+      (function step() {
+        el.textContent = text.slice(0, i); i++;
+        if (i <= text.length) { scrollBody(); setTimeout(step, speed); }
+        else { el.classList.remove("caret"); cb && cb(); }
       })();
     }
-
-    function run(raw) {
-      var cmd = (raw || "").trim();
-      if (!cmd) return;
-      printPrompt(cmd);
-      var fn = COMMANDS[cmd] || COMMANDS[cmd.toLowerCase()];
-      if (fn) fn();
-      else printOut("command not found: " + esc(cmd) + " — try <span class='key'>help</span>");
-      scrollBody();
+    function revealLines(lines, i, cb) {
+      if (i >= lines.length) { cb && cb(); return; }
+      var o = outLine(); o.innerHTML = lines[i]; scrollBody();
+      setTimeout(function () { revealLines(lines, i + 1, cb); }, 560);
     }
-
-    // typewriter the initial whoami output (enhancement)
-    if (!reduce) {
-      var firstOut = body.querySelector(".term-out");
-      if (firstOut) {
-        var full = firstOut.textContent; firstOut.textContent = ""; var k = 0;
-        (function type() {
-          firstOut.textContent = full.slice(0, k); k += 2;
-          if (k <= full.length) setTimeout(type, 12); else firstOut.textContent = full;
-        })();
-      }
+    function runEntry(e, done) {
+      var c = promptLine();
+      typeInto(c, e.cmd, 58, function () {            // slow command typing
+        setTimeout(function () {
+          if (e.lines) revealLines(e.lines, 0, function () { setTimeout(done, 1300); });
+          else { var o = outLine(); typeInto(o, e.out, 24, function () { setTimeout(done, 1400); }); }
+        }, 520);
+      });
     }
-
-    if (chips) chips.addEventListener("click", function (e) {
-      var b = e.target.closest("button[data-cmd]"); if (!b) return; run(b.getAttribute("data-cmd"));
-      if (input) input.focus();
-    });
-
-    // click anywhere in the terminal to focus the prompt (unless selecting text / clicking a link)
-    var termEl = body.closest(".term");
-    if (termEl && input) termEl.addEventListener("click", function (e) {
-      if (e.target.closest("a, button")) return;
-      if (window.getSelection && String(window.getSelection()).length) return;
-      input.focus();
-    });
-
-    var COMPLETIONS = ["whoami", "ls", "work", "focus", "stack", "pay --x402", "cat about", "socials", "contact", "help", "clear"];
-    var history = [], hi = -1;
-    if (input) input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        var v = input.value.trim();
-        if (v) { if (history[history.length - 1] !== v) history.push(v); }
-        hi = history.length;
-        run(input.value); input.value = "";
-      } else if (e.key === "ArrowUp") {
-        if (!history.length) return;
-        e.preventDefault(); hi = Math.max(0, hi - 1); input.value = history[hi] || "";
-        setTimeout(function () { input.setSelectionRange(input.value.length, input.value.length); }, 0);
-      } else if (e.key === "ArrowDown") {
-        if (!history.length) return;
-        e.preventDefault(); hi = Math.min(history.length, hi + 1); input.value = history[hi] || "";
-      } else if (e.key === "Tab") {
-        e.preventDefault();
-        var pre = input.value.trim().toLowerCase();
-        if (!pre) return;
-        var match = COMPLETIONS.filter(function (c) { return c.indexOf(pre) === 0; })[0];
-        if (match) input.value = match;
+    function loop(idx) {
+      if (idx >= SEQ.length) {
+        setTimeout(function () { body.innerHTML = ""; loop(0); }, 2600);  // clear, then restart
+        return;
       }
-    });
+      runEntry(SEQ[idx], function () { loop(idx + 1); });
+    }
+    loop(0);
   }
 })();
