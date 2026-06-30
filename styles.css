@@ -252,8 +252,7 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
   box-shadow: inset 0 0 0 1px var(--line); border-radius: var(--cham); image-rendering: pixelated;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 42px), calc(100% - 42px) 100%, 0 100%);
   transition: transform .25s var(--ease-out); transform-style: preserve-3d; }
-.journey-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 2px 0;
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.03em; color: var(--fg-muted); min-height: 16px; }
+.journey-cap { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 18px 2px 0; min-height: 16px; }
 .journey-dots { display: inline-flex; gap: 5px; flex-shrink: 0; }
 .journey-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); display: inline-block; transition: background .3s var(--ease-std); }
 .journey-dots i.on { background: var(--purple-text); }

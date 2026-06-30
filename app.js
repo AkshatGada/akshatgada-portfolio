@@ -714,15 +714,6 @@
     }
 
     /* ---- per-phase appearance --------------------------------- */
-    var LOOK = [
-      { shirt: C.coat,  pants: C.navy },                      // 0 lab coat
-      { shirt: C.sport, pants: "#3a3647" },                   // 1 sportswear
-      { shirt: C.grey,  pants: "#26232f" },                   // 2 hoodie
-      { robe: C.S2, hat: "grad" },                            // 3 gown + cap
-      { shirt: C.navy,  pants: "#1f2436" },                   // 4 blazer
-      { shirt: C.p,     pants: "#26232f" }                    // 5 Polygon hoodie
-    ];
-
     /* ---- backgrounds (drawn behind the character) ------------- */
     function tint(a, c) { R(a, 0, 0, N, N, c); }
 
@@ -733,11 +724,13 @@
       R(a, 21, 4, 5, 6, C.S2); R(a, 22, 5, 3, 4, C.t2);  // window
     }
     function bg1(a) {                                     // badminton court
-      tint(a, "#0e1622");
-      R(a, 24, 8, 1, GY - 8, C.S2);                       // net post
-      R(a, 17, 8, 8, 1, C.w);                             // net tape
-      for (var x = 17; x <= 24; x += 2) for (var y = 10; y <= GY - 1; y += 2) P(a, x, y, C.S2);
-      R(a, 2, GY, 22, 1, C.t2);                           // court line
+      tint(a, "#101a2c");                                 // brighter court air
+      R(a, 1, 6, N - 2, 1, "#1c2c47");                    // back wall line
+      R(a, 23, 6, 1, GY - 6, "#5b6f95");                  // net post (right side)
+      R(a, 14, 6, 10, 1, C.w);                            // net tape
+      for (var x = 14; x < N - 1; x++) for (var y = 8; y <= GY - 1; y += 2) if (x % 2) P(a, x, y, "#2c3e60");
+      R(a, 1, GY, N - 2, 1, C.t);                         // bright baseline
+      R(a, 13, GY - 6, 1, 6, "#23364f");                  // centre service line
     }
     function bg2(a) {                                     // study / night window
       tint(a, "#100e1a");
@@ -750,17 +743,6 @@
       tint(a, "#16101f");
       R(a, 3, 3, 22, 2, C.d); R(a, 3, 3, 22, 1, C.p);     // banner
       for (var x = 5; x <= 23; x += 4) P(a, x, 5, C.y);   // banner studs
-    }
-    function bg4(a, gt) {                                 // first company
-      tint(a, "#0d0f17");
-      R(a, 1, 9, 4, GY - 9, "#211f30");                   // small building
-      R(a, 6, 3, 15, GY - 3, C.S2);                       // tower
-      R(a, 9, GY - 3, 4, 3, C.k);                         // door
-      for (var wy = 5; wy <= GY - 5; wy += 3) for (var wx = 8; wx <= 18; wx += 3) {
-        var lit = ((wx * 3 + wy * 7 + Math.floor(gt * 1.3)) % 5) < 2;
-        R(a, wx, wy, 2, 2, lit ? (((wx + wy) % 2) ? C.y : C.t) : "#15141f");
-      }
-      for (var sy = 11; sy <= GY - 2; sy += 3) P(a, 2, sy, C.y);
     }
     function bg5(a, gt) {                                 // agentic payments · Polygon
       tint(a, "#150c24");
@@ -786,17 +768,29 @@
         P(a, fx + b, by - 12 - Math.floor(ph * 4), C.t);
       }
     }
+    function racket(a, x, y) {                            // oval head + handle, white frame
+      R(a, x, y, 3, 1, C.w);
+      P(a, x, y + 1, C.w); P(a, x + 2, y + 1, C.w);
+      P(a, x, y + 2, C.w); P(a, x + 2, y + 2, C.w);
+      R(a, x, y + 3, 3, 1, C.w);
+      P(a, x + 1, y + 1, C.s); P(a, x + 1, y + 2, C.s);  // strings
+    }
     function act1(a, hx, by, at) {                        // swing a racket, shuttle arcs
       armDown(a, hx, by, -1, C.sport);
-      var up = Math.sin(at * 3.0) > 0, ry;
-      if (up) { P(a,hx+6,by-9,C.sport); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-11,C.skin); ry = by - 14; }
-      else    { P(a,hx+6,by-9,C.sport); P(a,hx+7,by-9,C.skin);  P(a,hx+8,by-8,C.skin);  ry = by - 10; }
-      var rx = hx + 9;                                    // racket ring + handle
-      R(a, rx, ry, 3, 1, C.s); P(a, rx, ry + 1, C.s); P(a, rx + 2, ry + 1, C.s);
-      R(a, rx, ry + 2, 3, 1, C.s); P(a, rx + 1, ry + 3, C.brown2);
-      var u = (at * 0.5) % 1;                             // shuttlecock
-      var sx = Math.round(lerp(hx + 11, N - 2, u)), sy = Math.round(by - 13 - Math.sin(u * Math.PI) * 6);
-      P(a, sx, sy, C.y); P(a, sx, sy - 1, C.w); P(a, sx - 1, sy - 1, C.w); P(a, sx + 1, sy - 1, C.w);
+      var up = Math.sin(at * 3.0) > 0, hxr, hyr, rx, ry;
+      if (up) {                                          // overhead swing
+        P(a,hx+6,by-9,C.sport); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-11,C.skin);
+        rx = hx + 7; ry = by - 16; P(a, hx + 8, by - 12, C.brown2);  // handle to hand
+      } else {                                           // ready, racket out
+        P(a,hx+6,by-9,C.sport); P(a,hx+8,by-9,C.skin);
+        rx = hx + 9; ry = by - 12; P(a, hx + 10, by - 8, C.brown2);
+      }
+      racket(a, rx, ry);
+      var u = (at * 0.42) % 1;                            // shuttlecock arcing over the net
+      var sx = Math.round(lerp(hx + 9, N - 3, u)), sy = Math.round(by - 16 - Math.sin(u * Math.PI) * 4);
+      P(a, sx, sy, C.y); P(a, sx, sy + 1, C.Y);          // cork
+      P(a, sx - 1, sy - 1, C.w); P(a, sx, sy - 1, C.w); P(a, sx + 1, sy - 1, C.w);
+      P(a, sx - 1, sy - 2, C.w); P(a, sx + 1, sy - 2, C.w);  // feathers
     }
     function act2(a, hx, by, at) {                        // type at a standing desk
       P(a,hx+0,by-9,C.grey); P(a,hx+0,by-8,C.grey); P(a,hx+0,by-7,C.grey);    // arms reaching down
@@ -813,7 +807,7 @@
       P(a, hx + 1, by - 6 - tap, C.skin); P(a, hx + 5, by - 6 - (1 - tap), C.skin);
     }
     function act3(a, hx, by, at) {                        // diploma + confetti
-      var rb = LOOK[3].robe;
+      var rb = C.S2;
       armDown(a, hx, by, -1, rb);
       P(a,hx+6,by-9,rb); P(a,hx+6,by-8,rb); P(a,hx+6,by-7,C.skin);
       R(a, hx + 7, by - 8, 2, 1, C.w); R(a, hx + 7, by - 7, 2, 1, C.s); R(a, hx + 7, by - 6, 2, 1, C.w);  // diploma
@@ -823,13 +817,6 @@
         var cy = Math.floor((at * 7 + i * 2.3) % (GY + 1));
         P(a, cx, cy, cc[i % cc.length]);
       }
-    }
-    function act4(a, hx, by) {                            // walk in, carry a briefcase
-      armDown(a, hx, by, -1, C.navy);
-      P(a,hx+6,by-9,C.navy); P(a,hx+6,by-8,C.navy); P(a,hx+6,by-7,C.skin); P(a,hx+6,by-6,C.skin);
-      P(a,hx+2,by-9,C.w); P(a,hx+4,by-9,C.w); P(a,hx+3,by-8,C.w);            // collar + shirt
-      P(a,hx+3,by-9,C.r);                                                    // tie knot
-      R(a, hx + 5, by - 5, 3, 2, C.brown2); P(a, hx + 6, by - 6, C.brown);   // briefcase
     }
     function act5(a, hx, by, at, gt) {                    // hand a coin to an agent
       armDown(a, hx, by, -1, C.p);
@@ -847,12 +834,11 @@
     }
 
     var SCENES = [
-      { name: "Chemistry lab",                 bg: bg0, act: act0 },
-      { name: "On the court",                  bg: bg1, act: act1 },
-      { name: "Learning to code",              bg: bg2, act: act2 },
-      { name: "Graduation day",                bg: bg3, act: act3 },
-      { name: "First company",                 bg: bg4, act: act4, march: true },
-      { name: "Agentic payments · Polygon",    bg: bg5, act: act5 }
+      { name: "On the court",               bg: bg1, act: act1, look: { shirt: C.sport, pants: "#3a3647" } },
+      { name: "Chemistry lab",              bg: bg0, act: act0, look: { shirt: C.coat,  pants: C.navy } },
+      { name: "Learning to code",           bg: bg2, act: act2, look: { shirt: C.grey,  pants: "#26232f" } },
+      { name: "Graduation day",             bg: bg3, act: act3, look: { robe: C.S2, hat: "grad" } },
+      { name: "Agentic payments · Polygon", bg: bg5, act: act5, look: { shirt: C.p,     pants: "#26232f" } }
     ];
 
     /* ---- engine ----------------------------------------------- */
@@ -897,7 +883,7 @@
       R(a, 0, GY + 1, N, 1, C.floorTop);
       R(a, Math.round(hx) + 1, GY + 1, 5, 1, C.shadow);   // foot shadow
 
-      var p = clone(LOOK[idx]);
+      var p = clone(SCENES[idx].look);
       if (phase === "act") {
         p.arms = "none";
         p.step = SCENES[idx].march ? stride : null;
