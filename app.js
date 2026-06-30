@@ -635,16 +635,11 @@
 
     var PERC2 = 60 * 60, SEP = 24, SEP2 = SEP * SEP, LINK2 = 50 * 50,
         CURR2 = 150 * 150, MAX = 1.9, MIN = 0.7;
-    var CORE = "#cbb3ff", CORE_T = "#8fe3ff", CORE_G = "#ffe6a3";
+    var PURP = ["#4f349e", "#6f4ad6", "#8b6cf0", "#b79bff"];   // node colour by connectivity (no glow)
+    var TEAL = ["#2b7fa6", "#39a7d6", "#5cc6f0", "#8fe3ff"];
+    function tier(k) { return k >= 6 ? 3 : k >= 4 ? 2 : k >= 2 ? 1 : 0; }
 
     function rand(a, b) { return a + Math.random() * (b - a); }
-    function makeGlow(rgba, size) {
-      var c = document.createElement("canvas"); c.width = c.height = size;
-      var g = c.getContext("2d"), r = size / 2, grd = g.createRadialGradient(r, r, 0, r, r, r);
-      grd.addColorStop(0, rgba); grd.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = grd; g.fillRect(0, 0, size, size); return c;
-    }
-    var gP = makeGlow("rgba(124,77,255,0.50)", 30), gT = makeGlow("rgba(52,198,255,0.45)", 28), gG = makeGlow("rgba(245,197,66,0.85)", 36);
 
     function resize() {
       var r = canvas.getBoundingClientRect(); if (!r.width) return;
@@ -718,24 +713,23 @@
       }
     }
 
-    function render(fade) {
-      ctx.fillStyle = fade ? "rgba(11,10,17,0.26)" : "#0b0a11"; ctx.fillRect(0, 0, W, H);
+    function render() {
+      ctx.fillStyle = "#0b0a11"; ctx.fillRect(0, 0, W, H);   // crisp: clear each frame, no glow/trails
       var i, b, bj;
-      ctx.globalCompositeOperation = "lighter"; ctx.lineWidth = 1;
+      ctx.lineWidth = 1;                                     // links — flat wireframe mesh
       for (i = 0; i < linkBuf.length; i += 3) {
         b = boids[linkBuf[i]]; bj = boids[linkBuf[i + 1]];
-        var li = Math.max(b.lit, bj.lit), a = linkBuf[i + 2] * (0.06 + 0.30 * emerge) + li * 0.5;
-        ctx.strokeStyle = li > 0.05 ? "rgba(245,197,66," + Math.min(0.7, a) + ")" : "rgba(124,77,255," + a + ")";
+        var li = Math.max(b.lit, bj.lit), a = linkBuf[i + 2] * (0.10 + 0.34 * emerge) + li * 0.55;
+        ctx.strokeStyle = li > 0.05 ? "rgba(245,197,66," + Math.min(0.78, a) + ")" : "rgba(124,77,255," + Math.min(0.6, a) + ")";
         ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(bj.x, bj.y); ctx.stroke();
       }
-      for (i = 0; i < boids.length; i++) {
-        b = boids[i]; var s = b.size * (1 + b.lit * 0.9);
-        ctx.drawImage(b.lit > 0.06 ? gG : (b.kind ? gT : gP), b.x - s / 2, b.y - s / 2, s, s);
-      }
-      ctx.globalCompositeOperation = "source-over";
-      for (i = 0; i < boids.length; i++) {
-        b = boids[i]; ctx.fillStyle = b.lit > 0.25 ? CORE_G : (b.kind ? CORE_T : CORE);
-        var cs = b.hub ? 3 : 2; ctx.fillRect(b.x - cs / 2, b.y - cs / 2, cs, cs);
+      for (i = 0; i < boids.length; i++) {                  // nodes — crisp diamonds, brightness by connectivity
+        b = boids[i];
+        var r = b.hub ? 4.4 : 2.5, c;
+        if (b.lit > 0.06) { c = "#ffd877"; r += b.lit * 2.4; }
+        else { var t = tier(b.n); c = b.kind ? TEAL[t] : PURP[t]; }
+        ctx.fillStyle = c;
+        ctx.beginPath(); ctx.moveTo(b.x, b.y - r); ctx.lineTo(b.x + r, b.y); ctx.lineTo(b.x, b.y + r); ctx.lineTo(b.x - r, b.y); ctx.closePath(); ctx.fill();
       }
     }
 
@@ -743,7 +737,7 @@
       if (!running) return;
       if (!t0) t0 = now;
       var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
-      step(dt); render(true); raf = requestAnimationFrame(frame);
+      step(dt); render(); raf = requestAnimationFrame(frame);
     }
     function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
@@ -754,7 +748,7 @@
     resize();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
 
-    if (reduce) { emerge = 1; for (var k = 0; k < 480; k++) step(1 / 60); render(false); return; }
+    if (reduce) { emerge = 1; for (var k = 0; k < 480; k++) step(1 / 60); render(); return; }
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.04 }).observe(canvas);
     } else { start(); }
