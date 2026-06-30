@@ -57,9 +57,19 @@ styles.css            dark theme, components, chamfer shape language, responsive
 colors_and_type.css   Polygon design tokens + PolySans @font-face
 app.js                all interactions (one shared rAF loop), reduced-motion + no-JS safe
 fonts/                PolySans woff2 (display / body / mono)
-assets/               Polygon logos + marks (PNG)
+assets/               Polygon logos + marks (PNG), og.png social card
 icons/{purple,grey}/  Polygon outline icons
+llms.txt              machine-readable profile for AI agents / answer engines
+robots.txt            crawl rules (search + AI bots) + sitemap pointer
+sitemap.xml           single-page sitemap
 ```
+
+## SEO / discovery
+
+`index.html` ships a keyword-tuned `<title>`, meta description, canonical, Open Graph +
+Twitter cards (absolute image URLs), and JSON-LD (`Person` + `WebSite` + `ProfilePage`,
+linked by `@id`). `llms.txt`, `robots.txt`, and `sitemap.xml` cover AI answer-engines and
+crawlers. After deploy, submit the domain in Google Search Console and request indexing.
 
 ## Content notes (confirm / customize)
 

@@ -1,0 +1,46 @@
+# Akshat Gada
+
+> Developer relations engineer at Polygon building agentic payments — the tools that let
+> AI agents hold money, pay over x402, and settle onchain. Site: https://akshatgada.com
+
+Akshat Gada is a developer relations engineer at Polygon Labs, where he leads agentic
+payments: wallets, identity, SDKs, and onchain settlement designed for AI agents. He joined
+as an intern and moved to full-time in 2025. His work centers on x402 (the HTTP 402
+"Payment Required" standard for machine payments), stablecoin settlement, and cross-chain
+infrastructure. He builds in the open and authors proposals and tooling for the
+machine-payable web.
+
+## Profiles
+- X / Twitter: https://x.com/gada_akshat
+- GitHub: https://github.com/AkshatGada
+- LinkedIn: https://www.linkedin.com/in/akshat-gada-719076228/
+- Email: agada@polygon.technology
+
+## Focus areas
+- Agentic payments and the machine-payable web
+- x402 — internet-native, per-request payments over HTTP for AI agents
+- Stablecoin payments and onchain settlement
+- Developer relations, docs, and SDKs on Polygon
+- Cross-chain infrastructure; zero-knowledge proofs
+
+## Selected work
+- [Agent CLI](https://polygon.technology/agent-cli) — command-line tooling for agent payments on Polygon.
+- [Polygon x402 facilitator](https://github.com/0xPolygon/x402-rs) — Rust implementation of an x402 payment facilitator.
+- [Agentic Services](https://agentic-services.polygon.technology/discover) — a directory of services agents can discover and pay for.
+- [AgentConnect](https://agentconnect.polygon.technology/) — connecting agents to onchain services.
+- [Agentic payments docs](https://docs.polygon.technology/payment-services/agentic-payments/agent-integration/intro) — agent integration guide.
+- [PIP-82: Agentic Commerce Gas Program](https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721) — co-authored Polygon proposal offering up to $1M in base-fee rebates to x402 facilitators.
+
+## Experience
+- Polygon Labs — Developer Relations Engineer, agentic payments (intern → full-time, 2025).
+- Ethereum Protocol Fellowship — EIP-4881 work in Lodestar (ChainSafe).
+- Witness Chain — RSA accumulator research; EigenLayer AVS.
+- JP Morgan — zero-knowledge research; ML circuits in Circom, Noir, and Rust.
+- BOBDAO — co-founder.
+
+## Talks
+- [Polygon Tracks 101](https://www.youtube.com/watch?v=3Ba9KkJOsoc) — building on Polygon for developers getting started.
+
+## Contact
+Open to conversations on agentic payments, x402, and building on Polygon.
+Email: agada@polygon.technology · X: https://x.com/gada_akshat
