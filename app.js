@@ -12,18 +12,6 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-  /* ---------------- clock ---------------- */
-  function tick() {
-    var t = new Date();
-    var hh = String(t.getHours()).padStart(2, "0");
-    var mm = String(t.getMinutes()).padStart(2, "0");
-    var s = hh + ":" + mm + " local";
-    var a = $("#clock"), b = $("#clock2");
-    if (a) a.textContent = s;
-    if (b) b.textContent = s;
-  }
-  tick(); setInterval(tick, 20000);
-
   /* ---------------- mobile nav ---------------- */
   (function () {
     var toggle = $(".nav-toggle"), menu = $("#nav-menu");

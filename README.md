@@ -63,7 +63,9 @@ Everything is from verified public sources or your brief — no fabricated facts
   section of `index.html` if you want one.
 - Links wired up: X (`@gada_akshat`), GitHub (`AkshatGada`), LinkedIn, the YouTube talk, and the
   five projects (Agent CLI, x402-rs, agent docs, Agentic Services, AgentConnect).
-- Featured experiments: PIP-82, E(gg)NS, EggSwap, Polygon Tracks 101.
+- Selected work includes PIP-82 (links to the Polygon forum). Experience section covers
+  Polygon, Ethereum Protocol Fellowship, Witness Chain, JP Morgan, and BOBDAO. Talks: Polygon
+  Tracks 101.
 - Tune any wording (role title, the internship line, the playful "nap" copy) in `index.html`.
 
 ## Deploy
