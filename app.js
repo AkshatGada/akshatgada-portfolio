@@ -458,25 +458,28 @@
   })();
 
   /* ============================================================
-     AGENT ECONOMY — generative canvas art (#focus)
-     Agent nodes pay services per request; every spark settles
-     through the facilitator over x402. Ambient + interactive.
+     AGENT ECONOMY — settlement pipeline (#focus)
+     Agentic micro-payments stream in over x402, pack into a block
+     being built, which seals (settles onchain) and joins the chain.
+     Ambient + interactive; reduced-motion shows a static frame.
      ============================================================ */
   (function () {
     var canvas = document.getElementById("econ-canvas");
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext("2d");
 
-    var SERVICES = ["inference", "search", "data feed", "compute", "storage", "oracle", "image gen"];
-    var W = 0, H = 0, DPR = 1, cx = 0, cy = 0, R = 0;
-    var facil = null, services = [], agents = [], packets = [], motes = [], rings = [], floats = [];
-    var settled = 0, running = false, raf = 0, t0 = 0, lastSpawn = 0, rot = 0;
-    var pointer = { x: -999, y: -999, near: null };
+    var W = 0, H = 0, DPR = 1, cy = 0;
+    var grid = { cols: 5, rows: 5, x: 0, y: 0, cell: 0, gap: 0, size: 0 };
+    var slots = [], cells = [], chain = [];
+    var state = "filling", stateT = 0, fillIdx = 0, blockNo = 1283, blockAmt = 0, total = 0;
+    var spawnAcc = 0, clock = 0, chainHead = 0, chainGap = 0, running = false, raf = 0, t0 = 0;
     var _mono = null;
 
     function rand(a, b) { return a + Math.random() * (b - a); }
     function clampn(v, a, b) { return v < a ? a : (v > b ? b : v); }
+    function ease(t) { return 1 - Math.pow(1 - t, 3); }
     function monoFont() { if (!_mono) { _mono = (getComputedStyle(canvas).getPropertyValue("--font-mono") || "").trim() || "ui-monospace, monospace"; } return _mono; }
+    function cham(x, y, w, h, c) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + h - c); ctx.lineTo(x + w - c, y + h); ctx.lineTo(x, y + h); ctx.closePath(); }
 
     function resize() {
       var r = canvas.getBoundingClientRect(); if (!r.width) return;
@@ -487,189 +490,127 @@
       layout();
     }
     function layout() {
-      cx = W / 2; cy = H / 2; R = Math.min(W, H);
-      facil = { x: cx, y: cy, pulse: 0 };
-      var n = SERVICES.length;
-      services = SERVICES.map(function (label, i) {
-        var f = n > 1 ? i / (n - 1) : 0.5;
-        var sv = { x: W * 0.82 + Math.sin(f * Math.PI) * W * 0.05, y: H * (0.14 + f * 0.72), r: 5.5, label: label, pulse: 0, hi: 0 };
-        sv.cpx = cx; sv.cpy = (sv.y + cy) / 2; return sv;     // control point bundles toward the hub
-      });
-      var m = clampn(Math.round(H / 50), 8, 13);
-      agents = [];
-      for (var i = 0; i < m; i++) {
-        var f2 = m > 1 ? i / (m - 1) : 0.5;
-        var ag = { x: W * 0.18 - Math.sin(f2 * Math.PI) * W * 0.05, y: H * (0.14 + f2 * 0.72) + rand(-6, 6), r: rand(2.2, 3.4), hi: 0, glow: 0 };
-        ag.cpx = cx; ag.cpy = (ag.y + cy) / 2; agents.push(ag);
+      cy = H / 2;
+      var bw = clampn(Math.min(H * 0.5, W * 0.2), 118, 172);
+      grid.gap = Math.max(3, bw * 0.05);
+      grid.cell = (bw - grid.gap * (grid.cols + 1)) / grid.cols;
+      grid.size = bw;
+      grid.x = Math.round(W * 0.38 - bw / 2);
+      grid.y = Math.round(cy - bw / 2);
+      slots = [];
+      for (var r2 = 0; r2 < grid.rows; r2++) for (var c2 = 0; c2 < grid.cols; c2++) {
+        slots.push({ x: grid.x + grid.gap + c2 * (grid.cell + grid.gap), y: grid.y + grid.gap + r2 * (grid.cell + grid.gap), filled: false, amt: 0, fx: 0 });
       }
-      var mc = clampn(Math.round(W / 58), 12, 28);            // ambient throughput motes
-      motes = [];
-      for (var k = 0; k < mc; k++) motes.push(newMote(true));
+      chainHead = grid.x + bw + clampn(W * 0.06, 46, 86);
+      chainGap = clampn((W - chainHead - 24) / 6, 44, 96);
+      cells = []; chain = []; blockAmt = 0; state = "filling"; stateT = 0; spawnAcc = 0;
+      // pre-seed: a partly-built block + a few sealed blocks on the chain (never blank)
+      var pre = Math.floor(rand(0.3, 0.6) * slots.length);
+      for (var s = 0; s < pre; s++) { slots[s].filled = true; slots[s].amt = rand(0.001, 0.03); blockAmt += slots[s].amt; }
+      fillIdx = pre;
+      for (var k = 0; k < 4; k++) chain.push({ x: chainHead + k * chainGap, tx: chainHead + k * chainGap, n: 25, amt: rand(0.2, 0.7), seal: 0 });
     }
 
-    var easeIn = function (t) { return t * t; }, easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
-    function bez(ax, ay, cxp, cyp, bx, by, t) { var u = 1 - t; return { x: u * u * ax + 2 * u * t * cxp + t * t * bx, y: u * u * ay + 2 * u * t * cyp + t * t * by }; }
-    function legPos(ag, sv, leg, t) {
-      if (leg === 1) { var a = easeIn(Math.min(t, 1)); return bez(ag.x, ag.y, ag.cpx, ag.cpy, facil.x, facil.y, a); }
-      var b = easeOut(Math.min(t, 1)); return bez(facil.x, facil.y, sv.cpx, sv.cpy, sv.x, sv.y, b);
+    function blockSize(i) { return grid.size * (0.4 - i * 0.045); }
+
+    function spawnCell() {
+      if (state !== "filling" || fillIdx >= slots.length) return;
+      var slot = slots[fillIdx]; fillIdx++;
+      var sx = rand(0.04, 0.22) * W, sy = rand(0.16, 0.84) * H;
+      cells.push({ sx: sx, sy: sy, x: sx, y: sy, t: 0, dur: rand(0.55, 1.0), slot: slot, amt: rand(0.001, 0.03) });
     }
-    function newMote(seed) {
-      var ag = agents[(Math.random() * agents.length) | 0], sv = services[(Math.random() * services.length) | 0];
-      return { ag: ag, sv: sv, leg: 1, t: seed ? Math.random() : 0, sp1: rand(0.45, 0.8), sp2: rand(0.7, 1.1), a: rand(0.14, 0.4), x: ag.x, y: ag.y };
-    }
-    function spawn(ag) {
-      if (packets.length > 20) return;
-      ag = ag || agents[(Math.random() * agents.length) | 0];
-      var sv = services[(Math.random() * services.length) | 0];
-      ag.glow = 1;
-      var amt = rand(0.002, 0.05), norm = (amt - 0.002) / 0.048;     // value-weighted spark
-      packets.push({ ag: ag, sv: sv, leg: 1, t: 0, dur1: rand(0.9, 1.4) * (1 + norm * 0.4), dur2: rand(0.5, 0.85) * (1 + norm * 0.3),
-        amt: amt.toFixed(3), headR: 1.8 + norm * 1.9, glowR: 6 + norm * 7, x: null, y: null, trail: [] });
-    }
+    function sealBlock() { chain.unshift({ x: grid.x + grid.size / 2, tx: chainHead, n: slots.length, amt: blockAmt, seal: 1 }); total += blockAmt; blockNo++; }
+    function resetBuilder() { for (var i = 0; i < slots.length; i++) { slots[i].filled = false; slots[i].amt = 0; slots[i].fx = 0; } fillIdx = 0; blockAmt = 0; }
+    function allFilled() { for (var i = 0; i < slots.length; i++) if (!slots[i].filled) return false; return true; }
 
     function step(dt) {
-      rot += dt * 0.5;
-      for (var i = packets.length - 1; i >= 0; i--) {
-        var p = packets[i]; p.t += dt;
-        if (p.leg === 1 && p.t >= p.dur1) { p.leg = 2; p.t = 0; facil.pulse = 1; rings.push({ r: 14, life: 1 }); }
-        if (p.leg === 2 && p.t >= p.dur2) {
-          p.sv.pulse = 1; settled++;
-          floats.push({ sv: p.sv, txt: "+" + p.amt + " USDC", life: 1, dy: 0 });
-          packets.splice(i, 1); continue;
-        }
-        var np = legPos(p.ag, p.sv, p.leg, p.leg === 1 ? p.t / p.dur1 : p.t / p.dur2);
-        if (p.x == null) { p.x = np.x; p.y = np.y; }
-        p.trail.push({ x: np.x, y: np.y }); if (p.trail.length > 8) p.trail.shift();
-        p.x = np.x; p.y = np.y;
+      clock += dt;
+      if (state === "filling" && fillIdx < slots.length) {
+        spawnAcc += dt;
+        var breath = (Math.sin(clock * 0.7) + 1) / 2, interval = 0.12 + breath * 0.34;
+        if (spawnAcc >= interval) { spawnAcc = 0; spawnCell(); }
       }
-      for (var mt = 0; mt < motes.length; mt++) {                    // ambient motes recycle endlessly
-        var mo = motes[mt];
-        if (mo.leg === 1) { mo.t += dt * mo.sp1; if (mo.t >= 1) { mo.leg = 2; mo.t = 0; } }
-        else { mo.t += dt * mo.sp2; if (mo.t >= 1) { motes[mt] = newMote(false); continue; } }
-        var mp = legPos(mo.ag, mo.sv, mo.leg, mo.t); mo.x = mp.x; mo.y = mp.y;
+      for (var i = cells.length - 1; i >= 0; i--) {
+        var c = cells[i]; c.t += dt; var p = ease(Math.min(c.t / c.dur, 1));
+        c.x = c.sx + (c.slot.x + grid.cell / 2 - c.sx) * p;
+        c.y = c.sy + (c.slot.y + grid.cell / 2 - c.sy) * p;
+        if (c.t >= c.dur) { c.slot.filled = true; c.slot.amt = c.amt; c.slot.fx = 1; blockAmt += c.amt; cells.splice(i, 1); }
       }
-      for (var rr = rings.length - 1; rr >= 0; rr--) { rings[rr].r += dt * 78; rings[rr].life -= dt * 0.9; if (rings[rr].life <= 0) rings.splice(rr, 1); }
-      for (var j = floats.length - 1; j >= 0; j--) { floats[j].life -= dt * 0.7; floats[j].dy += dt * 11; if (floats[j].life <= 0) floats.splice(j, 1); }
-      facil.pulse = Math.max(0, facil.pulse - dt * 2.2);
-      for (var s = 0; s < services.length; s++) { services[s].pulse = Math.max(0, services[s].pulse - dt * 2.2); services[s].hi += ((services[s] === pointer.near ? 1 : 0) - services[s].hi) * Math.min(1, dt * 9); }
-      for (var a = 0; a < agents.length; a++) { agents[a].glow = Math.max(0, agents[a].glow - dt * 1.6); agents[a].hi += ((agents[a] === pointer.near ? 1 : 0) - agents[a].hi) * Math.min(1, dt * 9); }
+      for (var f = 0; f < slots.length; f++) if (slots[f].fx > 0) slots[f].fx = Math.max(0, slots[f].fx - dt * 3);
+      if (state === "filling" && allFilled()) { state = "sealing"; stateT = 0; }
+      else if (state === "sealing") { stateT += dt; if (stateT >= 0.75) { sealBlock(); resetBuilder(); state = "pause"; stateT = 0; } }
+      else if (state === "pause") { stateT += dt; if (stateT >= 0.5) state = "filling"; }
+      for (var b = 0; b < chain.length; b++) { chain[b].tx = chainHead + b * chainGap; chain[b].x += (chain[b].tx - chain[b].x) * Math.min(1, dt * 4); if (chain[b].seal > 0) chain[b].seal = Math.max(0, chain[b].seal - dt * 1.6); }
+      while (chain.length > 7) chain.pop();
     }
-
-    function makeGlow(r0, g0, b0) {
-      var c = document.createElement("canvas"); c.width = c.height = 64; var g = c.getContext("2d");
-      var rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-      rg.addColorStop(0, "rgba(" + r0 + "," + g0 + "," + b0 + ",0.95)");
-      rg.addColorStop(0.45, "rgba(" + r0 + "," + g0 + "," + b0 + ",0.32)");
-      rg.addColorStop(1, "rgba(" + r0 + "," + g0 + "," + b0 + ",0)");
-      g.fillStyle = rg; g.fillRect(0, 0, 64, 64); return c;
-    }
-    var glowP = makeGlow(183, 148, 255), glowF = makeGlow(123, 31, 255);
-    function blit(sprite, x, y, r) { ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2); }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-
-      // faint concentric depth rings around the hub
-      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,0.035)";
-      for (var cg = 1; cg <= 3; cg++) { ctx.beginPath(); ctx.arc(cx, cy, R * 0.13 * cg, 0, 7); ctx.stroke(); }
-
-      // bundled (curved) edges — converge into the hub
-      ctx.strokeStyle = "rgba(255,255,255,0.05)";
-      for (var a = 0; a < agents.length; a++) { ctx.beginPath(); ctx.moveTo(agents[a].x, agents[a].y); ctx.quadraticCurveTo(agents[a].cpx, agents[a].cpy, facil.x, facil.y); ctx.stroke(); }
-      for (var s = 0; s < services.length; s++) { ctx.beginPath(); ctx.moveTo(facil.x, facil.y); ctx.quadraticCurveTo(services[s].cpx, services[s].cpy, services[s].x, services[s].y); ctx.stroke(); }
-
-      // ── additive glow pass ──
-      ctx.globalCompositeOperation = "lighter";
-      blit(glowF, facil.x, facil.y, 30 + facil.pulse * 14);
-      for (var mt = 0; mt < motes.length; mt++) { var mo = motes[mt]; ctx.globalAlpha = mo.a; blit(glowP, mo.x, mo.y, 3.2); }  // ambient throughput
-      ctx.globalAlpha = 1;
-      for (var ag2 = 0; ag2 < agents.length; ag2++) { if (agents[ag2].glow > 0.02) blit(glowP, agents[ag2].x, agents[ag2].y, 7 + agents[ag2].glow * 9); }
-      ctx.lineCap = "round";
-      for (var i = 0; i < packets.length; i++) {
-        var p = packets[i], tr = p.trail;
-        ctx.lineWidth = p.headR;
-        for (var k = 1; k < tr.length; k++) { ctx.strokeStyle = "rgba(190,158,255," + (k / tr.length) * 0.55 + ")"; ctx.beginPath(); ctx.moveTo(tr[k - 1].x, tr[k - 1].y); ctx.lineTo(tr[k].x, tr[k].y); ctx.stroke(); }
-        blit(glowP, p.x, p.y, p.glowR);
+      ctx.font = "11px " + monoFont();
+      // chain rail
+      ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(grid.x + grid.size, cy); ctx.lineTo(W - 12, cy); ctx.stroke();
+      // incoming label
+      ctx.textAlign = "left"; ctx.fillStyle = "rgba(255,255,255,0.32)";
+      ctx.fillText("x402 payments", 14, cy - grid.size / 2 - 9);
+      ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.fillText("incoming", 14, cy - grid.size / 2 + 7);
+      // incoming cells
+      var cs = Math.max(5, grid.cell * 0.72);
+      for (var i = 0; i < cells.length; i++) { var c = cells[i]; cham(c.x - cs / 2, c.y - cs / 2, cs, cs, cs * 0.32); ctx.fillStyle = "rgba(150,110,245,0.55)"; ctx.fill(); }
+      // builder frame
+      var pad = grid.gap;
+      cham(grid.x - pad, grid.y - pad, grid.size + pad * 2, grid.size + pad * 2, 14);
+      ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.lineWidth = 1; ctx.stroke();
+      // slots
+      var sealing = state === "sealing", sealP = sealing ? stateT / 0.75 : 0, sweepX = grid.x + sealP * grid.size;
+      for (var s = 0; s < slots.length; s++) {
+        var sl = slots[s];
+        cham(sl.x, sl.y, grid.cell, grid.cell, grid.cell * 0.3);
+        if (sl.filled) { ctx.fillStyle = (sealing && sl.x < sweepX) ? "rgba(61,220,132,0.9)" : ("rgba(123,31,255," + (0.68 + sl.fx * 0.32) + ")"); ctx.fill(); }
+        else { ctx.strokeStyle = "rgba(255,255,255,0.08)"; ctx.lineWidth = 1; ctx.stroke(); }
       }
-      ctx.lineWidth = 1.5;     // settlement pulse rings from the hub (heartbeat)
-      for (var rg = 0; rg < rings.length; rg++) { ctx.globalAlpha = rings[rg].life * 0.45; ctx.strokeStyle = "#8b5bff"; ctx.beginPath(); ctx.arc(cx, cy, rings[rg].r, 0, 7); ctx.stroke(); }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = "source-over";
-
-      // rotating "processing" halo on the facilitator
-      ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
-      ctx.strokeStyle = "rgba(139,91,255,0.4)"; ctx.lineWidth = 1; ctx.setLineDash([4, 7]);
-      ctx.beginPath(); ctx.arc(0, 0, 23, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-
-      // service nodes (ring + settlement pulse + label above)
-      ctx.font = "11px " + monoFont(); ctx.textAlign = "center";
-      for (var s2 = 0; s2 < services.length; s2++) {
-        var sv = services[s2];
-        if (sv.pulse > 0) { ctx.beginPath(); ctx.arc(sv.x, sv.y, sv.r + (1 - sv.pulse) * 17, 0, 7); ctx.strokeStyle = "rgba(61,220,132," + sv.pulse * 0.6 + ")"; ctx.lineWidth = 1.4; ctx.stroke(); }
-        ctx.beginPath(); ctx.arc(sv.x, sv.y, sv.r, 0, 7); ctx.strokeStyle = sv.hi > 0.3 ? "rgba(255,255,255,0.92)" : "rgba(230,228,240,0.5)"; ctx.lineWidth = 1.4; ctx.stroke();
-        ctx.beginPath(); ctx.arc(sv.x, sv.y, 1.5, 0, 7); ctx.fillStyle = "rgba(230,228,240,0.5)"; ctx.fill();
-        ctx.fillStyle = sv.hi > 0.3 ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.36)"; ctx.fillText(sv.label, sv.x, sv.y - sv.r - 9);
+      if (sealing) { ctx.strokeStyle = "rgba(61,220,132,0.9)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sweepX, grid.y - 4); ctx.lineTo(sweepX, grid.y + grid.size + 4); ctx.stroke(); }
+      // builder labels
+      var filled = 0; for (var s2 = 0; s2 < slots.length; s2++) if (slots[s2].filled) filled++;
+      ctx.textAlign = "center";
+      ctx.fillStyle = sealing ? "rgba(61,220,132,0.95)" : "rgba(205,180,255,0.95)"; ctx.font = "11px " + monoFont();
+      ctx.fillText(sealing ? "settling onchain" : ("building · block #" + blockNo), grid.x + grid.size / 2, grid.y + grid.size + 22);
+      ctx.fillStyle = "rgba(255,255,255,0.34)"; ctx.font = "10px " + monoFont();
+      ctx.fillText(sealing ? ("✓ " + blockAmt.toFixed(3) + " USDC · " + slots.length + " tx") : (filled + " / " + slots.length + " payments"), grid.x + grid.size / 2, grid.y + grid.size + 38);
+      // chain
+      for (var b = chain.length - 1; b >= 0; b--) {
+        var blk = chain[b], bs = blockSize(b); if (bs < 4) continue;
+        if (b > 0) { var pbs = blockSize(b - 1); ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(chain[b - 1].x + pbs / 2, cy); ctx.lineTo(blk.x - bs / 2, cy); ctx.stroke(); }
+        ctx.globalAlpha = clampn(1 - b * 0.14, 0.18, 1);
+        cham(blk.x - bs / 2, cy - bs / 2, bs, bs, bs * 0.28); ctx.fillStyle = "rgba(123,31,255,0.32)"; ctx.fill();
+        ctx.strokeStyle = blk.seal > 0 ? ("rgba(61,220,132," + blk.seal + ")") : "rgba(139,91,255,0.6)"; ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.globalAlpha = 1;
       }
-
-      // facilitator — chamfered Polygon silhouette + label
-      var s3 = 12, ch = 5;
-      ctx.beginPath();
-      ctx.moveTo(facil.x - s3, facil.y - s3); ctx.lineTo(facil.x + s3, facil.y - s3);
-      ctx.lineTo(facil.x + s3, facil.y + s3 - ch); ctx.lineTo(facil.x + s3 - ch, facil.y + s3); ctx.lineTo(facil.x - s3, facil.y + s3);
-      ctx.closePath(); ctx.fillStyle = "rgba(123,31,255,0.28)"; ctx.fill(); ctx.strokeStyle = "#7b1fff"; ctx.lineWidth = 1.6; ctx.stroke();
-      ctx.fillStyle = "rgba(205,180,255,0.95)"; ctx.font = "10px " + monoFont(); ctx.textAlign = "center";
-      ctx.fillText("facilitator · x402", facil.x, facil.y + s3 + 16);
-
-      // agents — faint ring + core
-      for (var a3 = 0; a3 < agents.length; a3++) {
-        var ag3 = agents[a3];
-        ctx.beginPath(); ctx.arc(ag3.x, ag3.y, ag3.r + 3, 0, 7); ctx.strokeStyle = "rgba(183,148,255," + (0.16 + ag3.hi * 0.5) + ")"; ctx.lineWidth = 1; ctx.stroke();
-        ctx.beginPath(); ctx.arc(ag3.x, ag3.y, ag3.r + ag3.hi * 1.2, 0, 7); ctx.fillStyle = ag3.hi > 0.3 ? "#cbb2ff" : "rgba(183,148,255,0.66)"; ctx.fill();
-      }
-      // payment cores (white)
-      for (var i2 = 0; i2 < packets.length; i2++) { var pp = packets[i2]; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.headR, 0, 7); ctx.fillStyle = "#efe6ff"; ctx.fill(); }
-
-      // settlement amounts — below each service, clear of its label
-      ctx.textAlign = "center"; ctx.font = "11px " + monoFont();
-      for (var fl = 0; fl < floats.length; fl++) { var f = floats[fl]; ctx.globalAlpha = clampn(f.life, 0, 1); ctx.fillStyle = "#3ddc84"; ctx.fillText(f.txt, f.sv.x, f.sv.y + f.sv.r + 16 + f.dy); }
-      ctx.globalAlpha = 1;
-
-      // "AGENTS" group label (vertical, far left) to balance the labelled services
-      ctx.save(); ctx.translate(17, cy); ctx.rotate(-Math.PI / 2);
-      ctx.fillStyle = "rgba(255,255,255,0.22)"; ctx.font = "10px " + monoFont(); ctx.textAlign = "center";
-      ctx.fillText("A G E N T S", 0, 0); ctx.restore();
+      ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.textAlign = "left";
+      ctx.fillText("onchain", chainHead - blockSize(0) / 2, cy - blockSize(0) / 2 - 12);
+      // running total
+      ctx.textAlign = "right"; ctx.fillStyle = "rgba(255,255,255,0.28)"; ctx.font = "11px " + monoFont();
+      ctx.fillText("Σ " + total.toFixed(2) + " USDC settled", W - 14, H - 12);
     }
 
     function frame(now) {
       if (!running) return;
       if (!t0) t0 = now;
       var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
-      var breath = (Math.sin(now * 0.0006) + 1) / 2;           // economies pulse: busy, then quiet
-      if (now - lastSpawn > 300 + breath * 620) { spawn(); lastSpawn = now; }
       step(dt); draw(); raf = requestAnimationFrame(frame);
     }
     function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
 
-    // interactions
-    function nearestAgent(x, y) { var b = null, bd = 1e9; for (var i = 0; i < agents.length; i++) { var dx = agents[i].x - x, dy = agents[i].y - y, d = dx * dx + dy * dy; if (d < bd) { bd = d; b = agents[i]; } } return b; }
-    canvas.addEventListener("pointermove", function (e) {
-      var r = canvas.getBoundingClientRect(); var x = e.clientX - r.left, y = e.clientY - r.top;
-      pointer.x = x; pointer.y = y; var n = null, bd = 30 * 30, all = agents.concat(services);
-      for (var i = 0; i < all.length; i++) { var dx = all[i].x - x, dy = all[i].y - y, d = dx * dx + dy * dy; if (d < bd) { bd = d; n = all[i]; } }
-      pointer.near = n; canvas.style.cursor = n ? "pointer" : "crosshair";
-    });
-    canvas.addEventListener("pointerleave", function () { pointer.x = pointer.y = -999; pointer.near = null; });
-    canvas.addEventListener("click", function (e) { var r = canvas.getBoundingClientRect(); var ag = nearestAgent(e.clientX - r.left, e.clientY - r.top); spawn(ag); spawn(ag); });
+    canvas.addEventListener("click", function () { for (var k = 0; k < 6; k++) spawnCell(); });   // inject a burst of payments
+    canvas.style.cursor = "pointer";
 
     resize();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
-
-    // seed a composed first frame so the canvas is never blank before it animates
-    for (var q = 0; q < 6; q++) { var sa = agents[(q * 3) % agents.length]; spawn(sa); var pk = packets[packets.length - 1]; pk.leg = (q % 2) + 1; pk.t = (q % 2 ? pk.dur2 : pk.dur1) * rand(0.25, 0.75); }
+    for (var q = 0; q < 5; q++) spawnCell();
     step(0.001); draw();
 
-    if (reduce) return;   // static composition only
+    if (reduce) return;
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.04 }).observe(canvas);
     } else { start(); }

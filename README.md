@@ -37,12 +37,10 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
   legs, eyes facing travel direction), toss pixel gold coins to each other, then leave — so the
   background is never static or crowded. Flat pixel sprites (no glow), paused when the tab is
   hidden, static under reduced motion.
-- Generative "agent economy" canvas (`#focus`): a clearing house where agent nodes send
-  value-weighted payment sparks through the facilitator out to services. Bundled curved flow,
-  continuous faint throughput motes, settlement heartbeat rings radiating from the hub, a
-  rotating processing halo, concentric depth rings, and per-service settlement amounts.
-  Interactive (hover highlights, click fires a payment), pauses offscreen, static fallback for
-  reduced motion.
+- Generative "settlement pipeline" canvas (`#focus`): agentic x402 micro-payments stream in as
+  chamfered cells, pack into a block being built, which seals (a green sweep) and joins a
+  receding onchain block-chain, with a running settled total. Interactive (click injects a
+  burst of payments), pauses offscreen, static fallback for reduced motion.
 - Scroll progress, staggered scroll reveals, subtle hero parallax, film-grain overlay
 
 ## Structure
