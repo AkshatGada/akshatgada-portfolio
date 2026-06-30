@@ -49,8 +49,9 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
   three local flocking rules — separate, align, cohere — with no central plan; global order
   self-organizes into a flowing, networked field, and gold value-cascades ripple outward
   through the proximity mesh they form. Crisp flat diamonds (no glow), brightness by
-  connectivity. The cursor gathers them. Credits the model it implements — Craig Reynolds'
-  "Boids" (SIGGRAPH 1987). Pauses offscreen, static settled frame for reduced motion.
+  connectivity. The cursor gathers them. Cites a landmark recent paper on emergent behaviour
+  in agent swarms — Park et al., "Generative Agents" (2023). Pauses offscreen, static settled
+  frame for reduced motion.
 - Generative "settlement pipeline" canvas (`#econ-canvas`, below Selected Work): agentic x402
   micro-payments stream in as chamfered cells, pack into a block being built, which seals (a
   green sweep) and joins a receding onchain block-chain, with a running settled total.
