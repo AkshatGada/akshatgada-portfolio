@@ -31,10 +31,12 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 - Text-scramble decode on the name at load
 - Magnetic buttons/links + a cursor-following hero spotlight (native cursor kept)
 - Selected work as a hover-reveal list with a synced, tilting preview panel
-- Animated **pixel-art journey panel** beside the About copy: square pixels dissolve
-  through a six-scene story — chemistry lab → badminton → coding → graduation → first
-  company → agentic payments at Polygon — with a synced caption and progress dots. Pauses
-  offscreen; reduced motion shows the final "now" scene as a static frame.
+- A **pixel-art short film** beside the About copy: a recurring pixel character walks
+  through six life phases — chemistry lab → badminton → coding → graduation → first
+  company → agentic payments at Polygon — performing each (held props, ambient particles,
+  a walk cycle), then walking on as the world cross-dissolves to the next. Synced caption
+  and progress dots. Fully procedural; pauses offscreen; reduced motion shows the final
+  "now" phase as a static frame.
 - Infinite stack marquee of the tools Akshat works with
 - Site-wide ambient background: a handful (4) of same-size **pixel-art** "agent" bots that
   **peek in from the edges**, patrol with stop-and-go, right-angle, robotic movement (scuttling

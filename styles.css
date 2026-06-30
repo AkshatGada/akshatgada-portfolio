@@ -246,20 +246,18 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
 
 /* ============================================================ ABOUT */
 .about { padding: var(--section-y) var(--gutter); border-top: 1px solid var(--line); }
-.about-grid { max-width: var(--maxw); margin: 0 auto; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
-.journey { width: min(100%, 300px); margin: 0; }
+.about-grid { max-width: var(--maxw); margin: 0 auto; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: clamp(48px, 8vw, 150px); align-items: center; }
+.journey { width: min(100%, 520px); margin: 0; }
 .journey-canvas { display: block; width: 100%; aspect-ratio: 1; background: #14111d;
   box-shadow: inset 0 0 0 1px var(--line); border-radius: var(--cham); image-rendering: pixelated;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 42px), calc(100% - 42px) 100%, 0 100%);
   transition: transform .25s var(--ease-out); transform-style: preserve-3d; }
 .journey-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 2px 0;
   font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.03em; color: var(--fg-muted); min-height: 16px; }
 .journey-dots { display: inline-flex; gap: 5px; flex-shrink: 0; }
 .journey-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); display: inline-block; transition: background .3s var(--ease-std); }
 .journey-dots i.on { background: var(--purple-text); }
-.about-now { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; font-family: var(--font-mono); font-size: 13px; color: var(--fg); }
-.about-now .dim { color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; margin-right: 10px; }
-.about-body { max-width: 60ch; }
+.about-body { max-width: 46ch; justify-self: end; }
 .about-body .section-title { margin-bottom: 26px; }
 .about-body p { font-size: clamp(17px, 1.5vw, 21px); line-height: 1.55; color: var(--fg); margin: 0 0 20px; }
 .about-aside { color: var(--fg-muted) !important; }

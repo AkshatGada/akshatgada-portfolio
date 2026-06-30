@@ -618,9 +618,13 @@
   })();
 
   /* ============================================================
-     JOURNEY — animated pixel-art panel (#about)
-     Square pixels dissolve through a 6-scene story: chemistry lab,
-     badminton, coding, graduation, first company, agentic payments.
+     JOURNEY — a pixel-art short film (#about)
+     A recurring pixel character walks through six life phases —
+     chemistry lab, badminton, learning to code, graduation, first
+     company, agentic payments at Polygon — performing each, then
+     walking on to the next. Fully procedural: walk cycle, held
+     props, ambient particles. The world cross-dissolves between
+     phases as he walks out of one and into the next.
      ============================================================ */
   (function () {
     var canvas = document.getElementById("journey-canvas");
@@ -628,114 +632,244 @@
     var ctx = canvas.getContext("2d");
     var nameEl = document.getElementById("journey-name");
     var dotsEl = document.getElementById("journey-dots");
-    var N = 18;
+
+    var N = 28;          // grid is N×N
+    var GY = 23;         // ground row — character's feet rest here
 
     var C = {
-      o: "#160b29", k: "#0e1726", w: "#f3eeff", p: "#7c4dff", P: "#b794ff", d: "#43208a",
-      g: "#3ddc84", G: "#1d6f49", t: "#34c6ff", y: "#f5c542", Y: "#bd8a1c",
-      r: "#ff5a6a", s: "#9a98ad", S: "#363349", b: "#bd7b3e"
+      skin: "#e6a06e", skinSh: "#c47a4c", eye: "#241726",
+      hair: "#4a3320", shoe: "#171019", shadow: "#0c0a12",
+      floor: "#181320", floorTop: "#231d31",
+      w: "#f3eeff", k: "#0e1726",
+      p: "#7c4dff", P: "#b794ff", d: "#43208a",
+      g: "#3ddc84", G: "#1d6f49", t: "#34c6ff", t2: "#1f7fa8",
+      y: "#f5c542", Y: "#bd8a1c", r: "#ff5a6a",
+      s: "#9a98ad", S: "#3a3650", S2: "#2a2740",
+      navy: "#2b3350", grey: "#4a4660", brown: "#5a3a1c", brown2: "#7a5226",
+      coat: "#eef0f6", sport: "#e9e6f5"
     };
 
     function blank() { var a = []; for (var y = 0; y < N; y++) a.push(new Array(N).fill(null)); return a; }
-    function P(a, x, y, c) { if (x >= 0 && x < N && y >= 0 && y < N) a[y][x] = c; }
+    function P(a, x, y, c) { x = Math.round(x); y = Math.round(y); if (x >= 0 && x < N && y >= 0 && y < N) a[y][x] = c; }
     function R(a, x, y, w, h, c) { for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) P(a, x + i, y + j, c); }
-    function rnd(n) { return Math.floor(Math.random() * n); }
+    function lerp(a, b, u) { return a + (b - a) * u; }
+    function ease(u) { return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+    function clone(o) { var r = {}; for (var k in o) r[k] = o[k]; return r; }
 
-    // ── scene builders (18×18) ──
-    function chemistry() {
-      var a = blank();
-      R(a, 8, 2, 4, 1, C.w);                                  // lip
-      R(a, 8, 3, 1, 4, C.o); R(a, 11, 3, 1, 4, C.o);          // neck walls
-      for (var y = 7; y <= 14; y++) {
-        var half = y - 6, lx = Math.max(1, 9 - half), rx = Math.min(16, 10 + half);
-        P(a, lx, y, C.o); P(a, rx, y, C.o);
-        for (var x = lx + 1; x < rx; x++) if (y >= 11) a[y][x] = C.g;
+    /* ---- the character ----------------------------------------
+       7 wide × 16 tall, anchored by top-left col `hx`, feet at `by`.
+       p: { skin, hair, shirt, pants, shoe, robe, hat, arms, step, face } */
+    function human(a, hx, by, p) {
+      hx = Math.round(hx);
+      var K = p.skin || C.skin, H = p.hair || C.hair, T = p.shirt || C.coat,
+          Pn = p.pants || C.navy, B = p.shoe || C.shoe, E = C.eye,
+          robe = p.robe, SLV = robe || T, step = p.step;
+      function q(dx, dy, c) { P(a, hx + dx, by - dy, c); }
+
+      if (robe) {                                   // gown: hem + body, no legs
+        R(a, hx, by - 1, 7, 2, robe);
+        for (var dy = 2; dy <= 9; dy++) R(a, hx + 1, by - dy, 5, 1, robe);
+      } else {
+        for (var dx = 1; dx <= 5; dx++) q(dx, 4, Pn);     // hips
+        if (step === 0) {                                 // left planted, right lifted
+          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,Pn);q(2,1,Pn);q(1,0,B);q(2,0,B);
+          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,B);q(5,1,B);
+        } else if (step === 1) {                          // right planted, left lifted
+          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,Pn);q(5,1,Pn);q(4,0,B);q(5,0,B);
+          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,B);q(2,1,B);
+        } else {                                          // both feet down (idle)
+          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,Pn);q(2,1,Pn);q(1,0,B);q(2,0,B);
+          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,Pn);q(5,1,Pn);q(4,0,B);q(5,0,B);
+        }
+        for (var dy2 = 5; dy2 <= 9; dy2++) R(a, hx + 1, by - dy2, 5, 1, T);   // torso
       }
-      for (var x = 1; x <= 16; x++) P(a, x, 15, C.o);          // base
-      P(a, 8, 9, C.t); P(a, 11, 8, C.t); P(a, 9, 7, C.t); P(a, 6, 10, C.t); P(a, 12, 12, C.G);
-      return a;
+      q(3, 10, K);                                        // neck
+      for (var dx3 = 1; dx3 <= 5; dx3++) { q(dx3, 15, H); q(dx3, 14, H); }    // hair
+      q(1,13,H); q(2,13,K); q(3,13,K); q(4,13,K); q(5,13,H);                  // brow line
+      q(1,12,K); q(2,12,K); q(3,12,K); q(4,12,K); q(5,12,K);                  // eye row
+      var ex = p.face === "right" ? [3, 5] : [2, 4];
+      P(a, hx + ex[0], by - 12, E); P(a, hx + ex[1], by - 12, E);
+      q(2,11,K); q(3,11,K); q(4,11,K);                                        // chin
+
+      if (p.hat === "grad") {                             // mortarboard
+        R(a, hx - 1, by - 16, 9, 1, C.S2);
+        R(a, hx + 1, by - 15, 5, 1, C.S2);
+        P(a, hx + 3, by - 15, C.y);                       // button
+        P(a, hx + 6, by - 15, C.y); P(a, hx + 6, by - 14, C.y);
+        P(a, hx + 6, by - 13, C.y); P(a, hx + 5, by - 12, C.Y);              // tassel
+      }
+      var am = p.arms || "down";                          // "none" → scene draws arms
+      if (am === "down" || am === "walk") {
+        var lh = 6, rh = 6;
+        if (am === "walk") { if (step === 0) { lh = 5; rh = 7; } else if (step === 1) { lh = 7; rh = 5; } }
+        q(0,9,SLV); q(0,8,SLV); q(0,7,K); q(0,lh,K);
+        q(6,9,SLV); q(6,8,SLV); q(6,7,K); q(6,rh,K);
+      }
     }
-    function badminton() {
-      var a = blank(), W = C.w;
-      // feather cone — discrete feathers with gaps so it doesn't read as a blob
-      P(a, 5, 2, W); P(a, 7, 2, W); P(a, 9, 2, W); P(a, 11, 2, W); P(a, 13, 2, W);
-      P(a, 5, 3, W); P(a, 7, 3, W); P(a, 9, 3, W); P(a, 11, 3, W); P(a, 13, 3, W);
-      P(a, 6, 4, W); P(a, 8, 4, W); P(a, 9, 4, W); P(a, 10, 4, W); P(a, 12, 4, W);
-      P(a, 6, 5, W); P(a, 8, 5, W); P(a, 9, 5, W); P(a, 10, 5, W); P(a, 12, 5, W);
-      P(a, 7, 6, W); P(a, 9, 6, W); P(a, 11, 6, W);
-      R(a, 7, 7, 5, 1, W);                                     // band
-      // cork — rounded gold ball
-      R(a, 8, 8, 3, 1, C.y);
-      R(a, 7, 9, 5, 2, C.y);
-      R(a, 8, 11, 3, 1, C.Y);
-      P(a, 3, 3, C.P); P(a, 2, 4, C.P); P(a, 4, 5, C.P);       // motion streak
-      return a;
+
+    function armDown(a, hx, by, side, slv) {              // a single hanging arm
+      var dx = side < 0 ? 0 : 6;
+      P(a, hx + dx, by - 9, slv); P(a, hx + dx, by - 8, slv);
+      P(a, hx + dx, by - 7, C.skin); P(a, hx + dx, by - 6, C.skin);
     }
-    function coding() {
-      var a = blank();
-      R(a, 3, 3, 12, 9, C.S);                                  // bezel
-      R(a, 4, 4, 10, 7, C.k);                                  // screen
-      R(a, 5, 5, 4, 1, C.P); R(a, 10, 5, 2, 1, C.g);           // code lines
-      R(a, 6, 6, 5, 1, C.t);
-      R(a, 5, 7, 2, 1, C.y); R(a, 8, 7, 4, 1, C.w);
-      R(a, 6, 8, 6, 1, C.P);
-      R(a, 5, 9, 3, 1, C.g); R(a, 9, 9, 2, 1, C.t);
-      R(a, 2, 12, 14, 2, C.s); R(a, 1, 14, 16, 1, C.S);        // base + lip
-      R(a, 8, 12, 3, 1, C.S);                                  // trackpad
-      return a;
+
+    /* ---- per-phase appearance --------------------------------- */
+    var LOOK = [
+      { shirt: C.coat,  pants: C.navy },                      // 0 lab coat
+      { shirt: C.sport, pants: "#3a3647" },                   // 1 sportswear
+      { shirt: C.grey,  pants: "#26232f" },                   // 2 hoodie
+      { robe: C.S2, hat: "grad" },                            // 3 gown + cap
+      { shirt: C.navy,  pants: "#1f2436" },                   // 4 blazer
+      { shirt: C.p,     pants: "#26232f" }                    // 5 Polygon hoodie
+    ];
+
+    /* ---- backgrounds (drawn behind the character) ------------- */
+    function tint(a, c) { R(a, 0, 0, N, N, c); }
+
+    function bg0(a) {                                     // chemistry lab
+      tint(a, "#0f1a18");
+      R(a, 4, 5, 13, 1, C.S2);                            // shelf
+      P(a,5,4,C.g); P(a,5,3,C.s); P(a,9,4,C.r); P(a,9,3,C.s); P(a,13,4,C.t); P(a,13,3,C.s);
+      R(a, 21, 4, 5, 6, C.S2); R(a, 22, 5, 3, 4, C.t2);  // window
     }
-    function graduation() {
-      var a = blank();
-      // skull cap (head part) first, so the board sits on top
-      R(a, 6, 7, 6, 2, C.S); R(a, 7, 9, 4, 1, C.S);            // cap dome
-      R(a, 6, 8, 6, 1, "#2a2740");                             // band shadow
-      // mortarboard board — flat diamond seen in perspective
-      R(a, 8, 2, 2, 1, C.d); R(a, 6, 3, 6, 1, C.d); R(a, 3, 4, 12, 1, C.d);
-      R(a, 6, 5, 6, 1, C.d); R(a, 8, 6, 2, 1, C.d);
-      P(a, 8, 2, C.P); P(a, 6, 3, C.P); P(a, 7, 3, C.P);       // top-left edge highlight
-      P(a, 3, 4, C.P); P(a, 4, 4, C.P);
-      R(a, 8, 3, 2, 2, C.y);                                   // gold button
-      // tassel — cord off the right tip, draping to a tuft
-      P(a, 14, 5, C.y); P(a, 14, 6, C.y); P(a, 14, 7, C.y);
-      R(a, 13, 8, 2, 2, C.y); R(a, 13, 10, 2, 1, C.Y);
-      return a;
+    function bg1(a) {                                     // badminton court
+      tint(a, "#0e1622");
+      R(a, 24, 8, 1, GY - 8, C.S2);                       // net post
+      R(a, 17, 8, 8, 1, C.w);                             // net tape
+      for (var x = 17; x <= 24; x += 2) for (var y = 10; y <= GY - 1; y += 2) P(a, x, y, C.S2);
+      R(a, 2, GY, 22, 1, C.t2);                           // court line
     }
-    function company() {
-      var a = blank();
-      R(a, 6, 3, 8, 13, C.S);                                  // tower
-      R(a, 1, 8, 4, 8, "#2a2740");                             // smaller building
-      var lit = [C.y, C.t, C.k, C.y, C.k, C.y, C.t, C.k];
-      var li = 0;
-      for (var wy = 5; wy <= 13; wy += 2) for (var wx = 7; wx <= 12; wx += 2) { a[wy][wx] = lit[li % lit.length]; li++; }
-      for (var wy2 = 9; wy2 <= 14; wy2 += 2) { P(a, 2, wy2, C.y); P(a, 3, wy2, C.k); }
-      R(a, 9, 14, 2, 2, C.k);                                  // door
-      P(a, 9, 2, C.p); P(a, 9, 1, C.P);                        // antenna
-      R(a, 0, 16, 18, 1, C.S);                                 // ground
-      return a;
+    function bg2(a) {                                     // study / night window
+      tint(a, "#100e1a");
+      R(a, 2, 3, 7, 6, C.S2);                             // window frame
+      R(a, 3, 4, 5, 4, "#16203c");
+      P(a,4,5,C.w); P(a,6,6,C.w); P(a,5,4,C.s);           // stars
+      R(a, 22, 4, 4, 7, C.S2); R(a, 23, 5, 2, 5, C.d);    // bookshelf
     }
-    function agentic() {
-      var a = blank();
-      R(a, 4, 4, 7, 6, C.p);                                   // bot head
-      P(a, 4, 4, null); P(a, 10, 4, null);
-      R(a, 5, 6, 2, 2, C.w); R(a, 8, 6, 2, 2, C.w);            // eyes
-      P(a, 6, 7, C.k); P(a, 9, 7, C.k);
-      P(a, 7, 3, C.p); P(a, 7, 2, C.P);                        // antenna
-      P(a, 5, 10, C.d); P(a, 7, 10, C.d); P(a, 9, 10, C.d); P(a, 5, 11, C.d); P(a, 9, 11, C.d);  // tentacles
-      R(a, 12, 8, 3, 3, C.y); P(a, 13, 7, C.y); P(a, 13, 11, C.y); P(a, 13, 9, C.Y);  // coin
-      return a;
+    function bg3(a) {                                     // graduation
+      tint(a, "#16101f");
+      R(a, 3, 3, 22, 2, C.d); R(a, 3, 3, 22, 1, C.p);     // banner
+      for (var x = 5; x <= 23; x += 4) P(a, x, 5, C.y);   // banner studs
+    }
+    function bg4(a, gt) {                                 // first company
+      tint(a, "#0d0f17");
+      R(a, 1, 9, 4, GY - 9, "#211f30");                   // small building
+      R(a, 6, 3, 15, GY - 3, C.S2);                       // tower
+      R(a, 9, GY - 3, 4, 3, C.k);                         // door
+      for (var wy = 5; wy <= GY - 5; wy += 3) for (var wx = 8; wx <= 18; wx += 3) {
+        var lit = ((wx * 3 + wy * 7 + Math.floor(gt * 1.3)) % 5) < 2;
+        R(a, wx, wy, 2, 2, lit ? (((wx + wy) % 2) ? C.y : C.t) : "#15141f");
+      }
+      for (var sy = 11; sy <= GY - 2; sy += 3) P(a, 2, sy, C.y);
+    }
+    function bg5(a, gt) {                                 // agentic payments · Polygon
+      tint(a, "#150c24");
+      R(a, 0, GY, N, 1, C.d);                             // purple horizon
+      for (var i = 0; i < 5; i++) {                       // drifting data motes
+        var mx = (i * 6 + 2 + Math.floor(gt * 1.5 + i)) % N;
+        P(a, mx, 5 + (i % 3) * 2, i % 2 ? C.P : C.t2);
+      }
+    }
+
+    /* ---- per-phase activity (arms + props + particles) -------- */
+    function act0(a, hx, by, at) {                        // hold a bubbling flask
+      armDown(a, hx, by, -1, C.coat);
+      P(a,hx+6,by-9,C.coat); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-10,C.skin);  // raised hand
+      var fx = hx + 7;                                    // Erlenmeyer flask, tapered
+      R(a, fx, by - 15, 2, 1, C.w);                       // lip
+      R(a, fx, by - 14, 2, 1, C.s);                       // neck
+      R(a, fx - 1, by - 13, 4, 1, C.s);                   // glass shoulder
+      R(a, fx - 1, by - 12, 4, 1, C.g);                   // liquid
+      R(a, fx - 1, by - 11, 4, 1, C.g);                   // liquid base
+      for (var b = 0; b < 3; b++) {                       // bubbles rising
+        var ph = (at * 1.5 + b * 0.45) % 1;
+        P(a, fx + b, by - 12 - Math.floor(ph * 4), C.t);
+      }
+    }
+    function act1(a, hx, by, at) {                        // swing a racket, shuttle arcs
+      armDown(a, hx, by, -1, C.sport);
+      var up = Math.sin(at * 3.0) > 0, ry;
+      if (up) { P(a,hx+6,by-9,C.sport); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-11,C.skin); ry = by - 14; }
+      else    { P(a,hx+6,by-9,C.sport); P(a,hx+7,by-9,C.skin);  P(a,hx+8,by-8,C.skin);  ry = by - 10; }
+      var rx = hx + 9;                                    // racket ring + handle
+      R(a, rx, ry, 3, 1, C.s); P(a, rx, ry + 1, C.s); P(a, rx + 2, ry + 1, C.s);
+      R(a, rx, ry + 2, 3, 1, C.s); P(a, rx + 1, ry + 3, C.brown2);
+      var u = (at * 0.5) % 1;                             // shuttlecock
+      var sx = Math.round(lerp(hx + 11, N - 2, u)), sy = Math.round(by - 13 - Math.sin(u * Math.PI) * 6);
+      P(a, sx, sy, C.y); P(a, sx, sy - 1, C.w); P(a, sx - 1, sy - 1, C.w); P(a, sx + 1, sy - 1, C.w);
+    }
+    function act2(a, hx, by, at) {                        // type at a standing desk
+      P(a,hx+0,by-9,C.grey); P(a,hx+0,by-8,C.grey); P(a,hx+0,by-7,C.grey);    // arms reaching down
+      P(a,hx+6,by-9,C.grey); P(a,hx+6,by-8,C.grey); P(a,hx+6,by-7,C.grey);
+      R(a, hx - 5, by - 5, 17, 1, C.S);                   // desk surface (waist height)
+      R(a, hx - 5, by - 4, 17, 5, C.S2);                  // desk front (hides legs)
+      var lx = hx + 1;                                    // laptop sits on the desk
+      R(a, lx, by - 10, 7, 5, C.S);                       // screen bezel (below the face)
+      R(a, lx + 1, by - 9, 5, 3, C.k);                    // screen
+      var off = Math.floor(at * 4) % 3, cols = [C.P, C.t, C.g, C.y, C.w];
+      for (var rr = 0; rr < 3; rr++) R(a, lx + 1, by - 9 + rr, 2 + ((rr + off) % 3), 1, cols[(rr + off) % cols.length]);
+      R(a, lx, by - 5, 7, 1, C.k);                        // keyboard deck on the desk
+      var tap = Math.floor(at * 9) % 2;                   // tapping hands
+      P(a, hx + 1, by - 6 - tap, C.skin); P(a, hx + 5, by - 6 - (1 - tap), C.skin);
+    }
+    function act3(a, hx, by, at) {                        // diploma + confetti
+      var rb = LOOK[3].robe;
+      armDown(a, hx, by, -1, rb);
+      P(a,hx+6,by-9,rb); P(a,hx+6,by-8,rb); P(a,hx+6,by-7,C.skin);
+      R(a, hx + 7, by - 8, 2, 1, C.w); R(a, hx + 7, by - 7, 2, 1, C.s); R(a, hx + 7, by - 6, 2, 1, C.w);  // diploma
+      var cc = [C.p, C.y, C.g, C.t, C.r, C.P];
+      for (var i = 0; i < 11; i++) {                      // confetti rain
+        var cx = (i * 5 + 2) % N;
+        var cy = Math.floor((at * 7 + i * 2.3) % (GY + 1));
+        P(a, cx, cy, cc[i % cc.length]);
+      }
+    }
+    function act4(a, hx, by) {                            // walk in, carry a briefcase
+      armDown(a, hx, by, -1, C.navy);
+      P(a,hx+6,by-9,C.navy); P(a,hx+6,by-8,C.navy); P(a,hx+6,by-7,C.skin); P(a,hx+6,by-6,C.skin);
+      P(a,hx+2,by-9,C.w); P(a,hx+4,by-9,C.w); P(a,hx+3,by-8,C.w);            // collar + shirt
+      P(a,hx+3,by-9,C.r);                                                    // tie knot
+      R(a, hx + 5, by - 5, 3, 2, C.brown2); P(a, hx + 6, by - 6, C.brown);   // briefcase
+    }
+    function act5(a, hx, by, at, gt) {                    // hand a coin to an agent
+      armDown(a, hx, by, -1, C.p);
+      P(a,hx+6,by-9,C.p); P(a,hx+7,by-9,C.skin); P(a,hx+7,by-10,C.skin);     // raised hand
+      var bob = Math.round(Math.sin(gt * 3) * 1.4);
+      var bx = hx + 10, byy = by - 13 + bob;             // the agent bot
+      R(a, bx, byy, 5, 4, C.p);
+      R(a, bx + 1, byy + 1, 1, 2, C.w); R(a, bx + 3, byy + 1, 1, 2, C.w);
+      P(a, bx + 1, byy + 2, C.k); P(a, bx + 3, byy + 2, C.k);
+      P(a, bx + 2, byy - 1, C.P);
+      P(a, bx + 1, byy + 4, C.d); P(a, bx + 3, byy + 4, C.d);
+      var u = (at * 0.7) % 1;                             // coin in flight (x402)
+      var coinx = lerp(hx + 8, bx + 1, u), coiny = lerp(by - 10, byy + 2, u) - Math.sin(u * Math.PI) * 3;
+      P(a, coinx, coiny, C.y); P(a, coinx, coiny - 1, C.Y);
     }
 
     var SCENES = [
-      { name: "Chemistry lab", g: chemistry() },
-      { name: "On the court", g: badminton() },
-      { name: "Learning to code", g: coding() },
-      { name: "Graduation", g: graduation() },
-      { name: "First company", g: company() },
-      { name: "Agentic payments · Polygon", g: agentic() }
+      { name: "Chemistry lab",                 bg: bg0, act: act0 },
+      { name: "On the court",                  bg: bg1, act: act1 },
+      { name: "Learning to code",              bg: bg2, act: act2 },
+      { name: "Graduation day",                bg: bg3, act: act3 },
+      { name: "First company",                 bg: bg4, act: act4, march: true },
+      { name: "Agentic payments · Polygon",    bg: bg5, act: act5 }
     ];
 
-    var cur = SCENES[0].g, idx = 0, transitioning = false, tProg = 0, thr = null, oldG = null, holdT = 0;
-    var W = 0, H = 0, DPR = 1, cell = 0, ox = 0, oy = 0, running = false, raf = 0, t0 = 0;
+    /* ---- engine ----------------------------------------------- */
+    var IN = 1.0, ACT = 3.4, OUT = 1.15;
+    var xc = Math.round((N - 7) / 2), xIn = -9, xOut = N + 2;
+    var idx = 0, phase = "in", pt = 0, hx = xIn, stride = 0, strideT = 0, thr = null;
+    var W = 0, H = 0, DPR = 1, cell = 0, ox = 0, oy = 0, running = false, raf = 0, t0 = 0, clock = 0;
+
+    function genThr() {
+      thr = [];
+      for (var y = 0; y < N; y++) { thr.push([]); for (var x = 0; x < N; x++) thr[y].push(((x + y) / (2 * N)) * 0.55 + Math.random() * 0.5); }
+    }
+    function setDots() {
+      if (!dotsEl) return; dotsEl.innerHTML = "";
+      for (var i = 0; i < SCENES.length; i++) { var d = document.createElement("i"); if (i === idx) d.className = "on"; dotsEl.appendChild(d); }
+    }
+    function setScene(i) { idx = i; if (nameEl) nameEl.textContent = SCENES[i].name; setDots(); }
 
     function resize() {
       var r = canvas.getBoundingClientRect(); if (!r.width) return;
@@ -744,52 +878,76 @@
       canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       ctx.imageSmoothingEnabled = false;
-      cell = Math.floor(Math.min(W, H) * 0.86 / N);
+      cell = Math.floor(Math.min(W, H) * 0.96 / N);
       ox = Math.round((W - cell * N) / 2); oy = Math.round((H - cell * N) / 2);
-      draw();
+      paint(clock);
     }
-    function makeThresholds() {
-      thr = []; for (var y = 0; y < N; y++) { thr.push([]); for (var x = 0; x < N; x++) thr[y].push(((x + y) / (2 * N)) * 0.6 + Math.random() * 0.5); }
-    }
-    function setDots() {
-      if (!dotsEl) return; dotsEl.innerHTML = "";
-      for (var i = 0; i < SCENES.length; i++) { var d = document.createElement("i"); if (i === idx) d.className = "on"; dotsEl.appendChild(d); }
-    }
-    function setScene(i) { idx = i; cur = SCENES[i].g; if (nameEl) nameEl.textContent = SCENES[i].name; setDots(); }
 
-    function draw() {
+    function paint(gt) {
+      var a = blank();
+      if (phase === "out") {                              // cross-dissolve world A → B
+        var ni = (idx + 1) % SCENES.length, ga = blank(), gb = blank();
+        SCENES[idx].bg(ga, gt); SCENES[ni].bg(gb, gt);
+        var u = Math.min(1, pt / OUT);
+        for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) a[y][x] = (u >= (thr ? thr[y][x] : 1)) ? gb[y][x] : ga[y][x];
+      } else {
+        SCENES[idx].bg(a, gt);
+      }
+      R(a, 0, GY + 1, N, N - GY - 1, C.floor);            // floor
+      R(a, 0, GY + 1, N, 1, C.floorTop);
+      R(a, Math.round(hx) + 1, GY + 1, 5, 1, C.shadow);   // foot shadow
+
+      var p = clone(LOOK[idx]);
+      if (phase === "act") {
+        p.arms = "none";
+        p.step = SCENES[idx].march ? stride : null;
+        p.face = "front";
+        human(a, hx, GY, p);
+        SCENES[idx].act(a, Math.round(hx), GY, pt, gt);
+      } else {
+        p.arms = "down"; p.face = "right"; p.step = stride;
+        human(a, hx, GY, p);
+      }
+
       ctx.clearRect(0, 0, W, H);
-      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
-        var c;
-        if (transitioning) c = (tProg >= thr[y][x]) ? SCENES[idx].g[y][x] : oldG[y][x];
-        else c = cur[y][x];
-        if (!c) continue;
-        ctx.fillStyle = c;
-        ctx.fillRect(ox + x * cell, oy + y * cell, cell + 0.6, cell + 0.6);
+      for (var yy = 0; yy < N; yy++) for (var xx = 0; xx < N; xx++) {
+        var c = a[yy][xx]; if (!c) continue;
+        ctx.fillStyle = c; ctx.fillRect(ox + xx * cell, oy + yy * cell, cell + 0.6, cell + 0.6);
       }
     }
-    function step(dt) {
-      if (transitioning) {
-        tProg += dt / 0.9;
-        if (tProg >= 1) { transitioning = false; cur = SCENES[idx].g; holdT = 0; }
+
+    function update(dt) {
+      strideT += dt; if (strideT > 0.14) { strideT = 0; stride ^= 1; }
+      if (phase === "in") {
+        pt += dt; hx = lerp(xIn, xc, ease(Math.min(1, pt / IN)));
+        if (pt >= IN) { phase = "act"; pt = 0; }
+      } else if (phase === "act") {
+        pt += dt; hx = xc;
+        if (pt >= ACT) { phase = "out"; pt = 0; genThr(); }
       } else {
-        holdT += dt;
-        if (holdT > 2.6) { var ni = (idx + 1) % SCENES.length; oldG = cur; makeThresholds(); tProg = 0; transitioning = true; setScene(ni); }
+        pt += dt; hx = lerp(xc, xOut, ease(Math.min(1, pt / OUT)));
+        if (pt >= OUT) { setScene((idx + 1) % SCENES.length); phase = "in"; pt = 0; hx = xIn; }
       }
     }
     function frame(now) {
       if (!running) return;
       if (!t0) t0 = now;
-      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
-      step(dt); draw(); raf = requestAnimationFrame(frame);
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now; clock += dt;
+      update(dt); paint(clock); raf = requestAnimationFrame(frame);
     }
     function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
 
+    function paintStatic() {                              // reduced-motion: the "now" phase, frozen
+      idx = SCENES.length - 1; setScene(idx);
+      phase = "act"; pt = 0.7; hx = xc; stride = 0;
+      paint(0.6);
+    }
+
     setScene(0); resize();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
 
-    if (reduce) { setScene(SCENES.length - 1); draw(); return; }   // static "now" scene
+    if (reduce) { paintStatic(); return; }
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.2 }).observe(canvas);
     } else { start(); }
