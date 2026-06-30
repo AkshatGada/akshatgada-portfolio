@@ -32,9 +32,11 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 - Custom blend-mode cursor + magnetic buttons/links
 - Selected work as a hover-reveal list with a synced, tilting preview panel
 - Word-by-word manifesto reveal, count-up, infinite stack marquee
-- Site-wide ambient background: cute **pixel-art** "agent" mascots drift across a fixed canvas
-  behind the content and toss pixel gold coins to each other (agents paying agents). Flat
-  pixel sprites (no glow), paused when the tab is hidden, static under reduced motion.
+- Site-wide ambient background: a handful (4) of same-size **pixel-art** "agent" bots that
+  **peek in from the edges**, patrol with stop-and-go, right-angle, robotic movement (scuttling
+  legs, eyes facing travel direction), toss pixel gold coins to each other, then leave — so the
+  background is never static or crowded. Flat pixel sprites (no glow), paused when the tab is
+  hidden, static under reduced motion.
 - Generative "agent economy" canvas (`#focus`): a clearing house where agent nodes send
   value-weighted payment sparks through the facilitator out to services, with bundled curved
   flow, breathing throughput, and settlement confirmations. Interactive (hover highlights,

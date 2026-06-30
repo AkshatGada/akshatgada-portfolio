@@ -319,27 +319,51 @@
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       ctx.imageSmoothingEnabled = false;
     }
+    var SIZE = 46, ALPHA = 0.72, SPD = 1.0, PAD = 72, QTR = Math.PI / 2;
     function makeAgents() {
-      var n = W < 700 ? 4 : (W < 1150 ? 5 : 7);
+      var n = W < 520 ? 3 : 4;                                  // 4 total (3 on tiny screens)
       agents = [];
       for (var i = 0; i < n; i++) {
-        var depth = rnd(0, 1);                       // 0 = far (small/slow/faint), 1 = near
-        agents.push({
-          x: rnd(0.1, 0.9) * W, y: rnd(0.14, 0.86) * H,
-          hd: rnd(0, 6.28), sp: 0.22 + depth * 0.5,
-          s: 26 + depth * 30, alpha: 0.46 + depth * 0.34,
-          tx: rnd(0.1, 0.9) * W, ty: rnd(0.14, 0.86) * H, tt: rnd(2.5, 6),
-          t: rnd(0, 10), tsp: rnd(1.2, 2), give: 0, got: 0, blink: 0, blinkT: rnd(1.5, 6)
-        });
+        agents.push({ state: "wait", timer: rnd(0.4, 4.5), x: -200, y: -200, dir: 0, alpha: 0,
+          s: SIZE, t: rnd(0, 10), liveT: 0, phase: "pause", phaseT: 0, moving: false,
+          blink: 0, blinkT: rnd(2, 6), give: 0, got: 0 });
       }
-      agents.sort(function (a, b) { return a.s - b.s; });   // bigger (nearer) drawn last/on top
+    }
+    function spawnEdge(a) {
+      var e = (Math.random() * 4) | 0;
+      if (e === 0) { a.x = rnd(PAD, W - PAD); a.y = -40; a.dir = QTR; }          // top, go down
+      else if (e === 1) { a.x = W + 40; a.y = rnd(PAD, H - PAD); a.dir = Math.PI; } // right, go left
+      else if (e === 2) { a.x = rnd(PAD, W - PAD); a.y = H + 40; a.dir = -QTR; }  // bottom, go up
+      else { a.x = -40; a.y = rnd(PAD, H - PAD); a.dir = 0; }                     // left, go right
+      a.state = "enter"; a.alpha = 0; a.liveT = rnd(5, 9); a.phase = "move"; a.phaseT = rnd(0.5, 0.9); a.moving = true;
+    }
+    function aimEdge(a) {
+      var dl = a.x, dr = W - a.x, du = a.y, db = H - a.y, m = Math.min(dl, dr, du, db);
+      a.dir = m === dl ? Math.PI : (m === dr ? 0 : (m === du ? -QTR : QTR));
+    }
+    function botMove(a, dt, k, bounded) {        // stop-and-go, right-angle turns (robotic)
+      a.phaseT -= dt;
+      if (a.phase === "move") {
+        a.moving = true;
+        var nx = a.x + Math.cos(a.dir) * SPD * k, ny = a.y + Math.sin(a.dir) * SPD * k;
+        if (bounded && (nx < PAD || nx > W - PAD || ny < PAD || ny > H - PAD)) {
+          a.dir += (Math.random() < 0.5 ? 1 : -1) * QTR; a.phase = "pause"; a.phaseT = rnd(0.25, 0.5); a.moving = false; return;
+        }
+        a.x = nx; a.y = ny;
+        if (a.phaseT <= 0) { a.phase = "pause"; a.phaseT = rnd(0.22, 0.55); a.moving = false; }
+      } else {
+        a.moving = false;
+        if (a.phaseT <= 0) { if (bounded && Math.random() < 0.55) a.dir += (Math.random() < 0.5 ? 1 : -1) * QTR; a.phase = "move"; a.phaseT = rnd(0.5, 1.0); a.moving = true; }
+      }
     }
     function emitCoin() {
-      if (agents.length < 2 || coins.length > 5) return;
-      var ai = (Math.random() * agents.length) | 0, A = agents[ai], B = null, bd = 1e9;
-      for (var i = 0; i < agents.length; i++) { if (i === ai) continue; var dx = agents[i].x - A.x, dy = agents[i].y - A.y, d = dx * dx + dy * dy; if (d < bd) { bd = d; B = agents[i]; } }
+      var live = [];
+      for (var i = 0; i < agents.length; i++) if (agents[i].state === "active") live.push(agents[i]);
+      if (live.length < 2 || coins.length > 3) return;
+      var A = live[(Math.random() * live.length) | 0], B = null, bd = 1e9;
+      for (var j = 0; j < live.length; j++) { if (live[j] === A) continue; var dx = live[j].x - A.x, dy = live[j].y - A.y, d = dx * dx + dy * dy; if (d < bd) { bd = d; B = live[j]; } }
       if (!B) return;
-      coins.push({ A: A, B: B, cx: (A.x + B.x) / 2, cy: (A.y + B.y) / 2 - rnd(50, 110), t: 0, dur: rnd(1.4, 2.2), r: rnd(7, 10), spin: rnd(0, 6.28), alpha: 0 });
+      coins.push({ A: A, B: B, cx: (A.x + B.x) / 2, cy: (A.y + B.y) / 2 - rnd(50, 100), t: 0, dur: rnd(1.4, 2.1), r: 9, spin: rnd(0, 6.28), alpha: 0 });
       A.give = 1;
     }
     function coinPos(c) { var p0 = cl(c.t / c.dur, 0, 1), p = p0 * p0 * (3 - 2 * p0), u = 1 - p; return { x: u * u * c.A.x + 2 * u * p * c.cx + p * p * c.B.x, y: u * u * c.A.y + 2 * u * p * c.cy + p * p * c.B.y }; }
@@ -348,14 +372,20 @@
       var k = dt * 60;
       for (var i = 0; i < agents.length; i++) {
         var a = agents[i]; a.t += dt;
-        // steer smoothly toward a slowly-changing target (organic meander, no hard bounce)
-        var dx = a.tx - a.x, dy = a.ty - a.y;
-        var desired = Math.atan2(dy, dx);
-        var diff = Math.atan2(Math.sin(desired - a.hd), Math.cos(desired - a.hd));
-        a.hd += diff * Math.min(1, dt * 1.1);
-        a.x += Math.cos(a.hd) * a.sp * k; a.y += Math.sin(a.hd) * a.sp * k;
-        a.tt -= dt;
-        if (dx * dx + dy * dy < 5184 || a.tt <= 0) { a.tx = rnd(0.08, 0.92) * W; a.ty = rnd(0.12, 0.88) * H; a.tt = rnd(3, 7); }
+        var tgt = (a.state === "enter" || a.state === "active") ? ALPHA : 0;
+        a.alpha += (tgt - a.alpha) * Math.min(1, dt * 4.5);     // fade in / out (peek)
+        if (a.state === "wait") {
+          a.timer -= dt; if (a.timer <= 0) spawnEdge(a);
+        } else if (a.state === "enter") {
+          botMove(a, dt, k, false);
+          if (a.x > PAD && a.x < W - PAD && a.y > PAD && a.y < H - PAD) a.state = "active";
+        } else if (a.state === "active") {
+          botMove(a, dt, k, true);
+          a.liveT -= dt; if (a.liveT <= 0) { a.state = "leaving"; aimEdge(a); a.phase = "move"; a.phaseT = 3; a.moving = true; }
+        } else { // leaving
+          botMove(a, dt, k, false);
+          if (a.x < -70 || a.x > W + 70 || a.y < -70 || a.y > H + 70 || a.alpha < 0.02) { a.state = "wait"; a.timer = rnd(2.5, 6); }
+        }
         a.blinkT -= dt; if (a.blinkT <= 0) { a.blink = 0.13; a.blinkT = rnd(3.5, 8); }
         if (a.blink > 0) a.blink -= dt;
         a.give = Math.max(0, a.give - dt * 1.6); a.got = Math.max(0, a.got - dt * 2.4);
@@ -376,28 +406,27 @@
     }
 
     function drawAgent(a) {
+      if (a.alpha < 0.02) return;
       var cols = 11, rows = 9;
       var px = Math.max(2, Math.round(a.s / 12));
-      var bob = Math.round(Math.sin(a.t * a.tsp) * px * 0.7);          // bob in whole-pixel steps
-      var hop = (a.got > 0.4 || a.give > 0.4) ? px : 0;                // hop on give/catch
-      var ox = a.x - (cols * px) / 2, oy = a.y - (rows * px) / 2 + bob - hop;
+      var hop = (a.got > 0.4 || a.give > 0.4) ? px : 0;               // small hop on give/catch
+      var ox = a.x - (cols * px) / 2, oy = a.y - (rows * px) / 2 - hop;   // no float bob
       var al = a.alpha;
       drawSprite(A_HEAD, A_PAL, ox, oy, px, al);
       ctx.globalAlpha = al;
       if (a.blink > 0) {
-        pxFill(ox, oy, px, 2, 5, 2, 2, A_PAL.P); pxFill(ox, oy, px, 7, 5, 2, 2, A_PAL.P);   // cover eyes
-        pxFill(ox, oy, px, 2, 6, 2, 1, A_PAL.K); pxFill(ox, oy, px, 7, 6, 2, 1, A_PAL.K);   // closed lids
+        pxFill(ox, oy, px, 2, 5, 2, 2, A_PAL.P); pxFill(ox, oy, px, 7, 5, 2, 2, A_PAL.P);
+        pxFill(ox, oy, px, 2, 6, 2, 1, A_PAL.K); pxFill(ox, oy, px, 7, 6, 2, 1, A_PAL.K);
       } else {
-        var lx = Math.cos(a.hd) >= 0 ? 1 : 0, ly = Math.sin(a.hd) >= 0 ? 1 : 0;             // pupils follow heading
+        var lx = Math.cos(a.dir) >= 0 ? 1 : 0, ly = Math.sin(a.dir) >= 0 ? 1 : 0;           // pupils face travel dir
         pxFill(ox, oy, px, 2 + lx, 5 + ly, 1, 1, A_PAL.K);
         pxFill(ox, oy, px, 7 + lx, 5 + ly, 1, 1, A_PAL.K);
       }
-      for (var i = 0; i < 4; i++) {                                                          // rippling tentacles
+      for (var i = 0; i < 4; i++) {                                                          // legs: scuttle (walk) while moving
         var lc = 2 + i * 2;
-        for (var seg = 0; seg < 2; seg++) {
-          var sway = Math.round(Math.sin(a.t * 2.6 + i * 0.8 + seg));
-          pxFill(ox, oy, px, lc + sway, 9 + seg, 1, 1, A_PAL.D);
-        }
+        var up = a.moving && ((Math.floor(a.t * 12) + i) % 2 === 1);
+        pxFill(ox, oy, px, lc, 9, 1, 1, A_PAL.D);
+        if (!up) pxFill(ox, oy, px, lc, 10, 1, 1, A_PAL.D);
       }
       ctx.globalAlpha = 1;
     }
@@ -429,7 +458,13 @@
 
     size(); makeAgents();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { size(); makeAgents(); coins = []; sparks = []; }, 200); });
-    if (reduce) { emitCoin(); if (coins[0]) coins[0].t = coins[0].dur * 0.5; step(0.001); draw(); return; }
+    if (reduce) {
+      for (var q = 0; q < agents.length; q++) {
+        var a = agents[q]; a.state = "active"; a.alpha = ALPHA; a.moving = false; a.liveT = 9e9;
+        a.x = (0.2 + 0.6 * (q / Math.max(1, agents.length - 1))) * W; a.y = (q % 2 ? 0.32 : 0.62) * H; a.dir = 0;
+      }
+      draw(); return;
+    }
     start();
     document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else start(); });
   })();
