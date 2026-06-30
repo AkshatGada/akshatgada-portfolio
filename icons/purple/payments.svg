@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<svg id="icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none" stroke="#6700E5" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    
+  </defs>
+  <g>
+    <circle class="cls-2" cx="83.68" cy="78.92" r="5.81"></circle>
+    <path class="cls-2" d="M79.73,74.67c-1.04-.96-2.42-1.55-3.94-1.55-3.21,0-5.81,2.6-5.81,5.81s2.6,5.81,5.81,5.81c1.52,0,2.91-.59,3.94-1.55"></path>
+    <rect class="cls-2" x="37.99" y="63.82" width="11.67" height="9.3" rx="1.73" ry="1.73"></rect>
+    <path class="cls-2" d="M74.64,46.94h-37.84c-2.81,0-5.09,2.28-5.09,5.09v32.88c0,2.81,2.28,5.09,5.09,5.09h52.85c2.81,0,5.09-2.28,5.09-5.09v-24.65l-.04.04h0"></path>
+    <path class="cls-2" d="M79.62,41.95l-1.63,1.63c-4.62,4.62-4.62,12.1,0,16.72s12.1,4.62,16.72,0l1.63-1.63"></path>
+    <path class="cls-2" d="M77.99,43.58l-1.63,1.63c-4.62,4.62-4.62,12.1,0,16.72s12.1,4.62,16.72,0l1.63-1.63"></path>
+    <path class="cls-2" d="M76.36,45.21l-1.63,1.63c-4.62,4.62-4.62,12.1,0,16.72s12.1,4.62,16.72,0l1.63-1.63"></path>
+    <circle class="cls-2" cx="87.98" cy="50.31" r="11.82"></circle>
+    <circle class="cls-2" cx="87.98" cy="50.31" r="9.65"></circle>
+  </g>
+  <circle class="cls-1" cx="65" cy="65" r="49.12"></circle>
+</svg>

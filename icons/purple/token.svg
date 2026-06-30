@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<svg id="icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none" stroke="#6700E5" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    
+  </defs>
+  <ellipse class="cls-1" cx="63.06" cy="65.21" rx="24.86" ry="6.96" transform="translate(-20.39 100.77) rotate(-69.04)"></ellipse>
+  <path class="cls-1" d="M71.95,41.99l6.81,2.61c3.59,1.38,2.52,12.88-2.39,25.7-4.91,12.82-11.8,22.1-15.39,20.72l-6.81-2.61"></path>
+  <ellipse class="cls-1" cx="63.06" cy="65.21" rx="20.76" ry="5.18" transform="translate(-20.39 100.77) rotate(-69.04)"></ellipse>
+  <path class="cls-1" d="M79.98,58.2c4.77-2.56,10.59-3.12,16.04-1.03,9.95,3.81,14.93,14.97,11.12,24.92-3.81,9.95-14.97,14.93-24.92,11.12-5.46-2.09-9.41-6.39-11.25-11.48"></path>
+  <ellipse class="cls-1" cx="39.06" cy="55.63" rx="19.3" ry="14.87" transform="translate(-26.86 72.2) rotate(-69.04)"></ellipse>
+  <path class="cls-1" d="M45.96,37.61l-3.6-1.38c-7.67-2.94-16.98,2.75-20.79,12.7-3.81,9.95-.68,20.4,6.99,23.34l3.6,1.38"></path>
+  <ellipse class="cls-1" cx="39.06" cy="55.63" rx="16.12" ry="12.42" transform="translate(-26.86 72.2) rotate(-69.04)"></ellipse>
+  <path class="cls-1" d="M78.87,62.76c4.33-3.57,10.4-4.78,16.02-2.63,8.31,3.18,12.47,12.5,9.29,20.82-3.18,8.31-12.5,12.47-20.82,9.29-5.62-2.15-9.32-7.1-10.16-12.65"></path>
+  <line class="cls-1" x1="97.62" y1="73.08" x2="84.34" y2="67.99"></line>
+  <line class="cls-1" x1="91.35" y1="70.68" x2="86.7" y2="82.81"></line>
+</svg>

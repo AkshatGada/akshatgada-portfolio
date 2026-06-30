@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<svg id="icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none" stroke="#F2F3F7" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    
+  </defs>
+  <g>
+    <path class="cls-2" d="M90.1,39.9h0c-.96-.96-2.52-.96-3.48,0l-17.97,17.97c-2.02,2.02-5.29,2.02-7.3,0l-17.97-17.97c-.96-.96-2.52-.96-3.48,0h0c-.96.96-.96,2.52,0,3.48l17.97,17.97c2.02,2.02,2.02,5.29,0,7.3l-17.97,17.97c-.96.96-.96,2.52,0,3.48h0c.96.96,2.52.96,3.48,0l17.97-17.97c2.02-2.02,5.29-2.02,7.3,0l17.97,17.97c.96.96,2.52.96,3.48,0h0c.96-.96.96-2.52,0-3.48l-17.97-17.97c-2.02-2.02-2.02-5.29,0-7.3l17.97-17.97c.96-.96.96-2.52,0-3.48Z"></path>
+    <rect class="cls-2" x="62.54" y="41.42" width="4.91" height="13" rx="2.46" ry="2.46"></rect>
+    <rect class="cls-2" x="62.54" y="75.58" width="4.91" height="13" rx="2.46" ry="2.46"></rect>
+    <rect class="cls-2" x="75.58" y="62.54" width="13" height="4.91" rx="2.46" ry="2.46"></rect>
+    <rect class="cls-2" x="41.42" y="62.54" width="13" height="4.91" rx="2.46" ry="2.46"></rect>
+  </g>
+  <circle class="cls-1" cx="65" cy="65" r="49.12"></circle>
+</svg>

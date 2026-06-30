@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<svg id="icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none" stroke="#6700E5" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    
+  </defs>
+  <path class="cls-1" d="M79.94,97.85v-17.24c0-2.1,1.7-3.8,3.8-3.8h8.62l-27.37-27.37-27.37,27.37h8.62c2.1,0,3.8,1.7,3.8,3.8v17.24"></path>
+  <polyline class="cls-1" points="89.63 63.02 65 38.39 40.37 63.02"></polyline>
+  <polyline class="cls-1" points="87.17 49.51 65 27.34 42.83 49.51"></polyline>
+  <path class="cls-1" d="M37.17,92.66c-15.37-15.37-15.37-40.29,0-55.66"></path>
+  <path class="cls-1" d="M92.83,37c15.37,15.37,15.37,40.29,0,55.66"></path>
+</svg>

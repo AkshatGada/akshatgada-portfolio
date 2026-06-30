@@ -1,0 +1,181 @@
+/* Polygon Design System — Colors & Type
+   Reference: Polygon Brand Guidelines 2026
+   Trimmed font-face set for the portfolio build (8 PolySans weights).
+*/
+
+/* ───── FONTS ───── */
+/* Body — PolySans Neutral / Median / Bulky */
+@font-face {
+  font-family: "PolySans";
+  src: url("fonts/PolySans-Neutral.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PolySans";
+  src: url("fonts/PolySans-Median.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PolySans";
+  src: url("fonts/PolySans-Bulky.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* Wide — display/headlines (Slim Wide is the default display face) */
+@font-face {
+  font-family: "PolySans Wide";
+  src: url("fonts/PolySans-SlimWide.woff2") format("woff2");
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PolySans Wide";
+  src: url("fonts/PolySans-NeutralWide.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PolySans Wide";
+  src: url("fonts/PolySans-MedianWide.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+
+/* Mono — labels/data/code */
+@font-face {
+  font-family: "PolySans Mono";
+  src: url("fonts/PolySans-NeutralMono.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PolySans Mono";
+  src: url("fonts/PolySans-MedianMono.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* ───── BRAND ───── */
+  --pol-purple:          #6700E5;   /* primary brand */
+  --pol-purple-hover:    #6C00F6;   /* slightly lighter hover */
+  --pol-purple-deep:     #390786;   /* gradient dark stop */
+
+  /* ───── ACCENTS ───── */
+  --accent-sky-blue:     #00BBFF;
+  --accent-blue:         #0037C6;
+  --accent-soft-blue:    #707BB7;
+  --accent-soft-purple:  #C590E5;
+  --accent-bubble-gum:   #E271D7;
+  --accent-orange:       #FF7421;
+  --accent-yellow:       #FEE211;
+  --accent-neon-green:   #00FF08;
+  --status-green:        #31D158;
+  --status-red:          #E63946;
+
+  /* ───── SEMANTIC (light theme = default) ───── */
+  --bg:                  #FFFFFF;
+  --bg-inset:            #F2F3F7;
+  --bg-subtle:           #E7E6E8;
+  --fg:                  #07060D;
+  --fg-muted:            #888A91;
+  --fg-faint:            #A2A3A5;
+  --stroke:              #E1E1E5;
+  --stroke-strong:       #BAB9BB;
+  --inverted-primary:    #F2F1F5;
+  --ink:                 #07060D;   /* footer / dark surfaces */
+
+  --link:                var(--pol-purple);
+
+  /* ───── TYPE — families ───── */
+  --font-display:        "PolySans Wide", "PolySans", ui-sans-serif, system-ui, sans-serif;
+  --font-body:           "PolySans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:           "PolySans Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* ───── TYPE — scale ───── */
+  --fs-display-xxl:      240px;
+  --fs-display-xl:       128px;
+  --fs-display-l:        96px;
+  --fs-h1:               64px;
+  --fs-h2:               48px;
+  --fs-h3:               36px;
+  --fs-h4:               28px;
+  --fs-lead:             24px;
+  --fs-body-lg:          21px;
+  --fs-body:             18px;
+  --fs-body-sm:          16px;
+  --fs-label:            13px;
+  --fs-caption:          12px;
+  --fs-micro:            10px;
+
+  --lh-tight:            0.9;
+  --lh-display:          1.0;
+  --lh-heading:          1.12;
+  --lh-body:             1.4;
+  --lh-loose:            1.55;
+
+  --tracking-display:   -0.022em;
+  --tracking-heading:   -0.01em;
+  --tracking-body:       0;
+  --tracking-label:      0.04em;
+  --tracking-label-wide: 0.06em;
+
+  /* ───── SPACING ───── */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   24px;
+  --space-6:   32px;
+  --space-7:   48px;
+  --space-8:   64px;
+  --space-9:   80px;
+  --space-10:  120px;
+
+  /* ───── RADII ───── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   15px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* ───── SHADOWS ───── */
+  --shadow-xs:  0 1px 2px rgba(7,6,13,0.04);
+  --shadow-sm:  0 2px 6px rgba(7,6,13,0.06);
+  --shadow-md:  0 8px 24px rgba(7,6,13,0.08);
+  --shadow-lg:  0 24px 56px rgba(7,6,13,0.12);
+  --shadow-focus: 0 0 0 3px rgba(103,13,229,0.35);
+
+  /* ───── MOTION ───── */
+  --ease-std:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --dur-fast:    120ms;
+  --dur-base:    220ms;
+  --dur-slow:    420ms;
+
+  /* ───── GRADIENTS ───── purple-anchored */
+  --grad-purple:        linear-gradient(135deg, #6700E5 0%, #390786 100%);
+  --grad-purple-blue:   linear-gradient(135deg, #6700E5 0%, #0037C6 100%);
+  --grad-purple-sky:    linear-gradient(135deg, #6700E5 0%, #00BBFF 100%);
+}
+
+/* ───── DARK SURFACES (footer / inset blocks) ───── */
+[data-theme="dark"], .theme-dark {
+  --bg:              #141415;
+  --bg-inset:        #1F1E20;
+  --bg-subtle:       #1D1D1F;
+  --fg:              #FFFFFF;
+  --fg-muted:        #A0A1A6;
+  --fg-faint:        #595A5F;
+  --stroke:          #2D2B36;
+  --stroke-strong:   #353535;
+  --inverted-primary:#07060D;
+}
+
+/* ───── BASE ───── */
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

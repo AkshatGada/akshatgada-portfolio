@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<svg id="icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" fill="none" stroke="#F2F3F7" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    
+  </defs>
+  <path class="cls-1" d="M55.38,32.08c-2.64.19-5.41.65-8.28,1.4-9.66,3.58-18.17,13.36-15.59,23.02.8,3,.57,6.09-.67,8.75l-3.38,7.18c-.57,1.21.1,2.74,1.43,3.28l1.88.76c.98.4,1.69,1.32,1.79,2.35l.86,8.29c.27,2.66,2.82,4.69,5.42,4.32l5.07-.72c1.53-.22,2.86,1.07,2.69,2.6l-.51,4.71"></path>
+  <line class="cls-1" x1="76.69" y1="77.9" x2="76.69" y2="77.9"></line>
+  <polyline class="cls-1" points="60.56 31.97 63.22 31.97 63.22 38.36"></polyline>
+  <line class="cls-1" x1="60.56" y1="38.36" x2="65.88" y2="38.36"></line>
+  <rect class="cls-1" x="69.07" y="31.97" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="73.71" y1="32.79" x2="69.75" y2="37.54"></line>
+  <polyline class="cls-1" points="77.58 41.92 80.24 41.92 80.24 48.31"></polyline>
+  <line class="cls-1" x1="77.58" y1="48.31" x2="82.9" y2="48.31"></line>
+  <polyline class="cls-1" points="52.72 41.92 55.38 41.92 55.38 48.31"></polyline>
+  <line class="cls-1" x1="52.72" y1="48.31" x2="58.03" y2="48.31"></line>
+  <polyline class="cls-1" points="94.61 41.92 97.26 41.92 97.26 48.31"></polyline>
+  <line class="cls-1" x1="94.61" y1="48.31" x2="99.92" y2="48.31"></line>
+  <rect class="cls-1" x="86.1" y="41.92" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="90.73" y1="42.74" x2="86.78" y2="47.49"></line>
+  <rect class="cls-1" x="77.58" y="31.97" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="82.22" y1="32.79" x2="78.27" y2="37.54"></line>
+  <polyline class="cls-1" points="69.07 51.86 71.73 51.86 71.73 58.25"></polyline>
+  <line class="cls-1" x1="69.07" y1="58.25" x2="74.39" y2="58.25"></line>
+  <rect class="cls-1" x="77.58" y="51.86" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="82.22" y1="52.68" x2="78.27" y2="57.43"></line>
+  <polyline class="cls-1" points="94.61 61.81 97.26 61.81 97.26 68.19"></polyline>
+  <line class="cls-1" x1="94.61" y1="68.19" x2="99.92" y2="68.19"></line>
+  <rect class="cls-1" x="77.58" y="61.81" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="82.22" y1="62.62" x2="78.27" y2="67.38"></line>
+  <rect class="cls-1" x="60.56" y="61.81" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="65.2" y1="62.62" x2="61.24" y2="67.38"></line>
+  <polyline class="cls-1" points="77.58 71.75 80.24 71.75 80.24 78.14"></polyline>
+  <line class="cls-1" x1="77.58" y1="78.14" x2="82.9" y2="78.14"></line>
+  <polyline class="cls-1" points="37.12 51.86 39.78 51.86 39.78 58.25"></polyline>
+  <line class="cls-1" x1="37.12" y1="58.25" x2="42.44" y2="58.25"></line>
+  <polyline class="cls-1" points="77.58 81.69 80.24 81.69 80.24 88.08"></polyline>
+  <line class="cls-1" x1="77.58" y1="88.08" x2="82.9" y2="88.08"></line>
+  <polyline class="cls-1" points="60.56 81.69 63.22 81.69 63.22 88.08"></polyline>
+  <line class="cls-1" x1="60.56" y1="88.08" x2="65.88" y2="88.08"></line>
+  <rect class="cls-1" x="86.1" y="81.69" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="90.73" y1="82.51" x2="86.78" y2="87.26"></line>
+  <rect class="cls-1" x="69.07" y="91.64" width="5.31" height="6.39" rx="2.66" ry="2.66"></rect>
+  <line class="cls-1" x1="73.71" y1="92.46" x2="69.75" y2="97.21"></line>
+  <polyline class="cls-1" points="86.1 51.86 88.75 51.86 88.75 58.25"></polyline>
+  <line class="cls-1" x1="86.1" y1="58.25" x2="91.41" y2="58.25"></line>
+</svg>

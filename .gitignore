@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Raw Polygon design-system kit (large source folder; the site only needs the
+# fonts/assets/icons already copied into the project root)
+Polygon Design System/
+
+# logs / misc
+*.log
