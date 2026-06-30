@@ -264,6 +264,182 @@
   /* ============================================================
      TERMINAL
      ============================================================ */
+  /* ============================================================
+     AGENT ECONOMY — generative canvas art (#focus)
+     Agent nodes pay services per request; every spark settles
+     through the facilitator over x402. Ambient + interactive.
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById("econ-canvas");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+
+    var SERVICES = ["inference", "search", "data feed", "compute", "storage", "oracle", "image gen"];
+    var W = 0, H = 0, DPR = 1, cx = 0, cy = 0, R = 0, yk = 1;
+    var facil = null, services = [], agents = [], packets = [], floats = [];
+    var settled = 0, running = false, raf = 0, t0 = 0, lastSpawn = 0;
+    var pointer = { x: -999, y: -999, near: null };
+    var _mono = null;
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function clampn(v, a, b) { return v < a ? a : (v > b ? b : v); }
+    function monoFont() { if (!_mono) { _mono = (getComputedStyle(canvas).getPropertyValue("--font-mono") || "").trim() || "ui-monospace, monospace"; } return _mono; }
+
+    function resize() {
+      var r = canvas.getBoundingClientRect(); if (!r.width) return;
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      layout();
+    }
+    function layout() {
+      cx = W / 2; cy = H / 2;
+      facil = { x: cx, y: cy, pulse: 0 };
+      var n = SERVICES.length;
+      services = SERVICES.map(function (label, i) {
+        var f = n > 1 ? i / (n - 1) : 0.5;
+        var sv = { x: W * 0.80 + Math.sin(f * Math.PI) * W * 0.06, y: H * (0.15 + f * 0.7), r: 5.5, label: label, pulse: 0, hi: 0 };
+        sv.cpx = cx; sv.cpy = (sv.y + cy) / 2; return sv;     // control point bundles toward the hub
+      });
+      var m = clampn(Math.round(H / 52), 7, 12);
+      agents = [];
+      for (var i = 0; i < m; i++) {
+        var f2 = m > 1 ? i / (m - 1) : 0.5;
+        var ag = { x: W * 0.20 - Math.sin(f2 * Math.PI) * W * 0.06, y: H * (0.15 + f2 * 0.7) + rand(-7, 7), r: rand(2.4, 3.8), hi: 0, glow: 0 };
+        ag.cpx = cx; ag.cpy = (ag.y + cy) / 2; agents.push(ag);
+      }
+    }
+
+    var easeIn = function (t) { return t * t; }, easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+    function bez(ax, ay, cxp, cyp, bx, by, t) { var u = 1 - t; return { x: u * u * ax + 2 * u * t * cxp + t * t * bx, y: u * u * ay + 2 * u * t * cyp + t * t * by }; }
+    function pos(p) {
+      if (p.leg === 1) { var t = easeIn(Math.min(p.t / p.dur1, 1)); return bez(p.ag.x, p.ag.y, p.ag.cpx, p.ag.cpy, facil.x, facil.y, t); }
+      var u = easeOut(Math.min(p.t / p.dur2, 1)); return bez(facil.x, facil.y, p.sv.cpx, p.sv.cpy, p.sv.x, p.sv.y, u);
+    }
+    function spawn(ag) {
+      if (packets.length > 22) return;
+      ag = ag || agents[(Math.random() * agents.length) | 0];
+      var sv = services[(Math.random() * services.length) | 0];
+      ag.glow = 1;
+      var amt = rand(0.002, 0.05), norm = (amt - 0.002) / 0.048;     // value-weighted spark
+      packets.push({ ag: ag, sv: sv, leg: 1, t: 0, dur1: rand(0.9, 1.4) * (1 + norm * 0.4), dur2: rand(0.5, 0.85) * (1 + norm * 0.3),
+        amt: amt.toFixed(3), headR: 1.7 + norm * 1.9, glowR: 6 + norm * 7, x: null, y: null, trail: [] });
+    }
+
+    function step(dt) {
+      for (var i = packets.length - 1; i >= 0; i--) {
+        var p = packets[i]; p.t += dt;
+        if (p.leg === 1 && p.t >= p.dur1) { p.leg = 2; p.t = 0; facil.pulse = 1; }
+        if (p.leg === 2 && p.t >= p.dur2) {
+          p.sv.pulse = 1; settled++;
+          floats.push({ x: p.sv.x, y: p.sv.y - 6, txt: "+" + p.amt + " USDC", life: 1, ok: Math.random() < 0.5 });
+          packets.splice(i, 1); continue;
+        }
+        var np = pos(p); if (p.x == null) { p.x = np.x; p.y = np.y; }
+        p.trail.push({ x: np.x, y: np.y }); if (p.trail.length > 7) p.trail.shift();
+        p.x = np.x; p.y = np.y;
+      }
+      for (var j = floats.length - 1; j >= 0; j--) { floats[j].life -= dt * 0.75; floats[j].y -= dt * 16; if (floats[j].life <= 0) floats.splice(j, 1); }
+      facil.pulse = Math.max(0, facil.pulse - dt * 2.2);
+      for (var s = 0; s < services.length; s++) { services[s].pulse = Math.max(0, services[s].pulse - dt * 2.2); services[s].hi += ((services[s] === pointer.near ? 1 : 0) - services[s].hi) * Math.min(1, dt * 9); }
+      for (var a = 0; a < agents.length; a++) { agents[a].glow = Math.max(0, agents[a].glow - dt * 1.6); agents[a].hi += ((agents[a] === pointer.near ? 1 : 0) - agents[a].hi) * Math.min(1, dt * 9); }
+    }
+
+    function makeGlow(r0, g0, b0) {
+      var c = document.createElement("canvas"); c.width = c.height = 64; var g = c.getContext("2d");
+      var rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      rg.addColorStop(0, "rgba(" + r0 + "," + g0 + "," + b0 + ",0.95)");
+      rg.addColorStop(0.45, "rgba(" + r0 + "," + g0 + "," + b0 + ",0.32)");
+      rg.addColorStop(1, "rgba(" + r0 + "," + g0 + "," + b0 + ",0)");
+      g.fillStyle = rg; g.fillRect(0, 0, 64, 64); return c;
+    }
+    var glowP = makeGlow(183, 148, 255), glowF = makeGlow(123, 31, 255);
+    function blit(sprite, x, y, r) { ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // bundled (curved) edges — converging into the hub, not straight spokes
+      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,0.05)";
+      for (var a = 0; a < agents.length; a++) { ctx.beginPath(); ctx.moveTo(agents[a].x, agents[a].y); ctx.quadraticCurveTo(agents[a].cpx, agents[a].cpy, facil.x, facil.y); ctx.stroke(); }
+      for (var s = 0; s < services.length; s++) { ctx.beginPath(); ctx.moveTo(facil.x, facil.y); ctx.quadraticCurveTo(services[s].cpx, services[s].cpy, services[s].x, services[s].y); ctx.stroke(); }
+
+      // additive glow pass (hub ambient, agent flares, packet trails + heads)
+      ctx.globalCompositeOperation = "lighter";
+      blit(glowF, facil.x, facil.y, 30 + facil.pulse * 12);
+      for (var ag2 = 0; ag2 < agents.length; ag2++) { if (agents[ag2].glow > 0.02) blit(glowP, agents[ag2].x, agents[ag2].y, 7 + agents[ag2].glow * 8); }
+      ctx.lineCap = "round";
+      for (var i = 0; i < packets.length; i++) {
+        var p = packets[i], tr = p.trail;
+        ctx.lineWidth = p.headR * 0.9;
+        for (var k = 1; k < tr.length; k++) { ctx.strokeStyle = "rgba(183,148,255," + (k / tr.length) * 0.5 + ")"; ctx.beginPath(); ctx.moveTo(tr[k - 1].x, tr[k - 1].y); ctx.lineTo(tr[k].x, tr[k].y); ctx.stroke(); }
+        blit(glowP, p.x, p.y, p.glowR);
+      }
+      ctx.globalCompositeOperation = "source-over";
+
+      // service nodes (rings + settlement pulse + label above)
+      ctx.font = "11px " + monoFont(); ctx.textAlign = "center";
+      for (var s2 = 0; s2 < services.length; s2++) {
+        var sv = services[s2];
+        if (sv.pulse > 0) { ctx.beginPath(); ctx.arc(sv.x, sv.y, sv.r + (1 - sv.pulse) * 16, 0, 7); ctx.strokeStyle = "rgba(61,220,132," + sv.pulse * 0.55 + ")"; ctx.lineWidth = 1.4; ctx.stroke(); }
+        ctx.beginPath(); ctx.arc(sv.x, sv.y, sv.r, 0, 7); ctx.strokeStyle = sv.hi > 0.3 ? "rgba(255,255,255,0.9)" : "rgba(230,228,240,0.5)"; ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.beginPath(); ctx.arc(sv.x, sv.y, 1.5, 0, 7); ctx.fillStyle = "rgba(230,228,240,0.5)"; ctx.fill();
+        ctx.fillStyle = sv.hi > 0.3 ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.34)"; ctx.fillText(sv.label, sv.x, sv.y - sv.r - 8);
+      }
+      // facilitator — chamfered square (the Polygon silhouette) + label
+      var s3 = 12, ch = 5;
+      ctx.beginPath();
+      ctx.moveTo(facil.x - s3, facil.y - s3); ctx.lineTo(facil.x + s3, facil.y - s3);
+      ctx.lineTo(facil.x + s3, facil.y + s3 - ch); ctx.lineTo(facil.x + s3 - ch, facil.y + s3); ctx.lineTo(facil.x - s3, facil.y + s3);
+      ctx.closePath(); ctx.fillStyle = "rgba(123,31,255,0.22)"; ctx.fill(); ctx.strokeStyle = "#7b1fff"; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.fillStyle = "rgba(205,180,255,0.95)"; ctx.font = "10px " + monoFont(); ctx.textAlign = "center";
+      ctx.fillText("facilitator · x402", facil.x, facil.y + s3 + 16);
+      // agent cores
+      for (var a3 = 0; a3 < agents.length; a3++) { var ag3 = agents[a3]; ctx.beginPath(); ctx.arc(ag3.x, ag3.y, ag3.r + ag3.hi * 1.4, 0, 7); ctx.fillStyle = ag3.hi > 0.3 ? "#cbb2ff" : "rgba(183,148,255,0.62)"; ctx.fill(); }
+      // packet cores
+      for (var i2 = 0; i2 < packets.length; i2++) { var pp = packets[i2]; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.headR, 0, 7); ctx.fillStyle = "#efe6ff"; ctx.fill(); }
+      // floating settlement amounts
+      ctx.textAlign = "left"; ctx.font = "11px " + monoFont();
+      for (var fl = 0; fl < floats.length; fl++) { ctx.globalAlpha = clampn(floats[fl].life, 0, 1); ctx.fillStyle = floats[fl].ok ? "#3ddc84" : "#c9a9ff"; ctx.fillText(floats[fl].txt, floats[fl].x + 9, floats[fl].y); }
+      ctx.globalAlpha = 1;
+    }
+
+    function frame(now) {
+      if (!running) return;
+      if (!t0) t0 = now;
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+      var breath = (Math.sin(now * 0.0006) + 1) / 2;           // economies pulse: busy, then quiet
+      if (now - lastSpawn > 300 + breath * 620) { spawn(); lastSpawn = now; }
+      step(dt); draw(); raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+
+    // interactions
+    function nearestAgent(x, y) { var b = null, bd = 1e9; for (var i = 0; i < agents.length; i++) { var dx = agents[i].x - x, dy = agents[i].y - y, d = dx * dx + dy * dy; if (d < bd) { bd = d; b = agents[i]; } } return b; }
+    canvas.addEventListener("pointermove", function (e) {
+      var r = canvas.getBoundingClientRect(); var x = e.clientX - r.left, y = e.clientY - r.top;
+      pointer.x = x; pointer.y = y; var n = null, bd = 30 * 30, all = agents.concat(services);
+      for (var i = 0; i < all.length; i++) { var dx = all[i].x - x, dy = all[i].y - y, d = dx * dx + dy * dy; if (d < bd) { bd = d; n = all[i]; } }
+      pointer.near = n; canvas.style.cursor = n ? "pointer" : "crosshair";
+    });
+    canvas.addEventListener("pointerleave", function () { pointer.x = pointer.y = -999; pointer.near = null; });
+    canvas.addEventListener("click", function (e) { var r = canvas.getBoundingClientRect(); var ag = nearestAgent(e.clientX - r.left, e.clientY - r.top); spawn(ag); spawn(ag); });
+
+    resize();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
+
+    // seed a composed first frame so the canvas is never blank before it animates
+    for (var q = 0; q < 6; q++) { var sa = agents[(q * 3) % agents.length]; spawn(sa); var pk = packets[packets.length - 1]; pk.leg = (q % 2) + 1; pk.t = (q % 2 ? pk.dur2 : pk.dur1) * rand(0.25, 0.75); }
+    step(0.001); draw();
+
+    if (reduce) return;   // static composition only
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.04 }).observe(canvas);
+    } else { start(); }
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else { var r = canvas.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) start(); } });
+  })();
+
   function bootTerminal() {
     var body = $("#term-body");
     if (!body) return;

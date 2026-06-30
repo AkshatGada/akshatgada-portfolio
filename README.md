@@ -32,6 +32,10 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 - Custom blend-mode cursor + magnetic buttons/links
 - Selected work as a hover-reveal list with a synced, tilting preview panel
 - Word-by-word manifesto reveal, count-up, infinite stack marquee
+- Generative "agent economy" canvas (`#focus`): a clearing house where agent nodes send
+  value-weighted payment sparks through the facilitator out to services, with bundled curved
+  flow, breathing throughput, and settlement confirmations. Interactive (hover highlights,
+  click fires a payment), pauses offscreen, static fallback for reduced motion.
 - Scroll progress, staggered scroll reveals, subtle hero parallax, film-grain overlay
 
 ## Structure

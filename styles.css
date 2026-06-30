@@ -201,12 +201,21 @@ body { font-size: 18px; line-height: 1.5; -webkit-font-smoothing: antialiased; t
 
 /* ============================================================ FOCUS / flow */
 .focus { padding: var(--section-y) var(--gutter); border-top: 1px solid var(--line); }
-.flow { max-width: var(--maxw); margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.flow-step { position: relative; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); padding: 26px 24px 30px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%); }
-.flow-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; color: var(--purple-text); display: block; margin-bottom: 18px; }
-.flow-step h3 { font-family: var(--font-display); font-weight: 400; font-size: 26px; letter-spacing: -0.01em; margin: 0 0 10px; color: var(--fg); }
-.flow-step p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-muted); }
+.econ { max-width: var(--maxw); margin: 0 auto; position: relative;
+  background: radial-gradient(135% 120% at 50% 0%, #15121f 0%, #0b0a11 62%);
+  box-shadow: inset 0 0 0 1px var(--line); border-radius: var(--cham);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+  overflow: hidden; }
+.econ-canvas { display: block; width: 100%; height: clamp(380px, 50vw, 580px); }
+.econ-cap { display: flex; align-items: baseline; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin: 20px 2px 0; }
+.econ-cap-line { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55; letter-spacing: 0.01em; color: var(--fg-muted); max-width: 66ch; }
+.econ-x402 { color: var(--purple-text); }
+.econ-legend { display: inline-flex; gap: 20px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-faint); white-space: nowrap; }
+.econ-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.econ-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dot-agent { background: var(--purple-text); }
+.dot-svc { box-shadow: inset 0 0 0 1.5px var(--fg-faint); }
+.dot-fac { background: var(--purple); border-radius: 2px !important; }
 
 /* ============================================================ MARQUEE */
 .marquee-wrap { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 30px 0; overflow: hidden; }
@@ -304,10 +313,10 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
   .work-tech i { font-family: var(--font-mono); font-style: normal; font-size: 11px; color: var(--fg-muted); padding: 4px 9px; box-shadow: inset 0 0 0 1px var(--line-2); border-radius: 6px; }
   .work-list:hover .work-item { opacity: 1; }
   .about-grid { grid-template-columns: 1fr; gap: 40px; }
-  .flow { grid-template-columns: repeat(2, 1fr); }
+  .econ-canvas { height: clamp(360px, 64vw, 460px); }
 }
 @media (max-width: 640px) {
-  .flow { grid-template-columns: 1fr; }
+  .econ-cap { gap: 14px; }
   .exp { grid-template-columns: 1fr; gap: 7px; }
   .hero-name { font-size: clamp(48px, 17vw, 96px); }
   .work-item { grid-template-columns: auto 1fr auto; gap: 14px; }

@@ -182,12 +182,17 @@
       <p class="section-note">Agents that pay for what they use, per request, no human at checkout.</p>
     </div>
 
-    <ol class="flow" aria-label="The x402 payment flow, in four steps">
-      <li class="flow-step reveal"><span class="flow-n">1</span><h3>Request</h3><p>An agent calls a service — an inference endpoint, a search API, a data feed.</p></li>
-      <li class="flow-step reveal" data-delay="1"><span class="flow-n">2</span><h3>402</h3><p>Instead of a paywall page, the service returns a price and the terms to pay it.</p></li>
-      <li class="flow-step reveal" data-delay="2"><span class="flow-n">3</span><h3>Pay</h3><p>The agent signs a stablecoin payment and retries the request with it attached.</p></li>
-      <li class="flow-step reveal" data-delay="3"><span class="flow-n">4</span><h3>Settle</h3><p>A facilitator verifies and settles onchain; the service responds, paid.</p></li>
-    </ol>
+    <figure class="econ reveal">
+      <canvas id="econ-canvas" class="econ-canvas" aria-hidden="true"></canvas>
+      <figcaption class="econ-cap">
+        <span class="econ-cap-line">A live map of the agent economy. Each spark is a payment — an agent buying a service, settling over <span class="econ-x402">x402</span> through the facilitator.</span>
+        <span class="econ-legend" aria-hidden="true">
+          <span><i class="dot-agent"></i> agent</span>
+          <span><i class="dot-svc"></i> service</span>
+          <span><i class="dot-fac"></i> facilitator</span>
+        </span>
+      </figcaption>
+    </figure>
   </section>
 
   <!-- ─────────── STACK MARQUEE ─────────── -->
