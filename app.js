@@ -618,6 +618,150 @@
   })();
 
   /* ============================================================
+     SWARM — emergence (#focus)
+     Hundreds of agents follow three local rules — separate, align,
+     cohere — with no central plan; global order self-organizes and
+     value cascades ripple through the proximity network they form.
+     The cursor gathers them. Reduced motion shows a settled frame.
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById("swarm-canvas");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+
+    var W = 0, H = 0, DPR = 1, running = false, raf = 0, t0 = 0, clock = 0;
+    var boids = [], linkBuf = [], mx = 0, my = 0, hasMouse = false;
+    var emerge = 0, pulses = [], pulseT = 2.5;
+
+    var PERC2 = 60 * 60, SEP = 24, SEP2 = SEP * SEP, LINK2 = 50 * 50,
+        CURR2 = 150 * 150, MAX = 1.9, MIN = 0.7;
+    var CORE = "#cbb3ff", CORE_T = "#8fe3ff", CORE_G = "#ffe6a3";
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function makeGlow(rgba, size) {
+      var c = document.createElement("canvas"); c.width = c.height = size;
+      var g = c.getContext("2d"), r = size / 2, grd = g.createRadialGradient(r, r, 0, r, r, r);
+      grd.addColorStop(0, rgba); grd.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = grd; g.fillRect(0, 0, size, size); return c;
+    }
+    var gP = makeGlow("rgba(124,77,255,0.50)", 30), gT = makeGlow("rgba(52,198,255,0.45)", 28), gG = makeGlow("rgba(245,197,66,0.85)", 36);
+
+    function resize() {
+      var r = canvas.getBoundingClientRect(); if (!r.width) return;
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      init();
+    }
+    function init() {
+      var n = Math.round(Math.max(170, Math.min(360, (W * H) / 2600)));
+      boids = [];
+      for (var i = 0; i < n; i++) {
+        var hub = Math.random() < 0.06;
+        boids.push({ x: rand(0, W), y: rand(0, H), vx: rand(-1, 1), vy: rand(-1, 1),
+          kind: Math.random() < 0.10 ? 1 : 0, hub: hub, size: hub ? rand(30, 38) : rand(15, 22),
+          lit: 0, sx: 0, sy: 0, ax: 0, ay: 0, cx: 0, cy: 0, n: 0 });
+      }
+      emerge = 0; pulses = []; pulseT = 2.5;
+    }
+
+    function step(dt) {
+      clock += dt;
+      emerge = Math.min(1, emerge + dt * 0.28);
+      var sf = Math.max(0.5, Math.min(2, dt * 60)), i, j, b, bj, n = boids.length;
+      for (i = 0; i < n; i++) { b = boids[i]; b.sx = b.sy = b.ax = b.ay = b.cx = b.cy = 0; b.n = 0; }
+      linkBuf.length = 0;
+      for (i = 0; i < n; i++) {
+        b = boids[i];
+        for (j = i + 1; j < n; j++) {
+          bj = boids[j];
+          var dx = bj.x - b.x, dy = bj.y - b.y, d2 = dx * dx + dy * dy;
+          if (d2 > PERC2 || d2 < 0.0001) continue;
+          b.ax += bj.vx; b.ay += bj.vy; b.cx += bj.x; b.cy += bj.y; b.n++;
+          bj.ax += b.vx; bj.ay += b.vy; bj.cx += b.x; bj.cy += b.y; bj.n++;
+          if (d2 < SEP2) { var d = Math.sqrt(d2), f = (SEP - d) / (SEP * d); b.sx -= dx * f; b.sy -= dy * f; bj.sx += dx * f; bj.sy += dy * f; }
+          if (d2 < LINK2) { linkBuf.push(i, j, 1 - d2 / LINK2); }
+        }
+      }
+      var cohW = 0.8 + 0.25 * Math.sin(clock * 0.25);          // the economy breathing
+      for (i = 0; i < n; i++) {
+        b = boids[i]; var fx = 0, fy = 0;
+        if (b.n > 0) {
+          fx += (b.cx / b.n - b.x) * 0.0003 * cohW * emerge;   // cohesion (light, local texture)
+          fy += (b.cy / b.n - b.y) * 0.0003 * cohW * emerge;
+          fx += (b.ax / b.n - b.vx) * 0.070 * emerge;          // alignment (flowing currents)
+          fy += (b.ay / b.n - b.vy) * 0.070 * emerge;
+        }
+        fx += b.sx * 0.05; fy += b.sy * 0.05;                  // separation (even spacing)
+        var m = 30;                                            // soft walls keep the field spread to the edges
+        if (b.x < m) fx += (m - b.x) * 0.0020; else if (b.x > W - m) fx -= (b.x - (W - m)) * 0.0020;
+        if (b.y < m) fy += (m - b.y) * 0.0020; else if (b.y > H - m) fy -= (b.y - (H - m)) * 0.0020;
+        if (hasMouse) {                                        // cursor: attract + swirl
+          var cx = mx - b.x, cy = my - b.y, c2 = cx * cx + cy * cy;
+          if (c2 < CURR2 && c2 > 1) { var cd = Math.sqrt(c2); fx += (cx / cd) * 0.09 + (-cy / cd) * 0.07; fy += (cy / cd) * 0.09 + (cx / cd) * 0.07; }
+        }
+        fx += (Math.random() - 0.5) * 0.05; fy += (Math.random() - 0.5) * 0.05;
+        b.vx += fx * sf; b.vy += fy * sf;
+        var sp = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        if (sp > MAX) { b.vx = b.vx / sp * MAX; b.vy = b.vy / sp * MAX; }
+        else if (sp < MIN && sp > 0.0001) { b.vx = b.vx / sp * MIN; b.vy = b.vy / sp * MIN; }
+        b.x += b.vx * sf; b.y += b.vy * sf; b.lit *= 0.90;
+      }
+      pulseT -= dt;                                            // value cascades
+      if (pulseT <= 0 && n) { pulseT = rand(4.5, 7.5); var s = boids[(Math.random() * n) | 0]; pulses.push({ x: s.x, y: s.y, r: 0 }); }
+      var maxR = Math.sqrt(W * W + H * H);
+      for (i = pulses.length - 1; i >= 0; i--) {
+        var p = pulses[i]; p.r += 150 * dt;
+        if (p.r > maxR + 30) { pulses.splice(i, 1); continue; }
+        for (j = 0; j < n; j++) { b = boids[j]; if (Math.abs(Math.sqrt((b.x - p.x) * (b.x - p.x) + (b.y - p.y) * (b.y - p.y)) - p.r) < 12) b.lit = 1; }
+      }
+    }
+
+    function render(fade) {
+      ctx.fillStyle = fade ? "rgba(11,10,17,0.26)" : "#0b0a11"; ctx.fillRect(0, 0, W, H);
+      var i, b, bj;
+      ctx.globalCompositeOperation = "lighter"; ctx.lineWidth = 1;
+      for (i = 0; i < linkBuf.length; i += 3) {
+        b = boids[linkBuf[i]]; bj = boids[linkBuf[i + 1]];
+        var li = Math.max(b.lit, bj.lit), a = linkBuf[i + 2] * (0.06 + 0.30 * emerge) + li * 0.5;
+        ctx.strokeStyle = li > 0.05 ? "rgba(245,197,66," + Math.min(0.7, a) + ")" : "rgba(124,77,255," + a + ")";
+        ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(bj.x, bj.y); ctx.stroke();
+      }
+      for (i = 0; i < boids.length; i++) {
+        b = boids[i]; var s = b.size * (1 + b.lit * 0.9);
+        ctx.drawImage(b.lit > 0.06 ? gG : (b.kind ? gT : gP), b.x - s / 2, b.y - s / 2, s, s);
+      }
+      ctx.globalCompositeOperation = "source-over";
+      for (i = 0; i < boids.length; i++) {
+        b = boids[i]; ctx.fillStyle = b.lit > 0.25 ? CORE_G : (b.kind ? CORE_T : CORE);
+        var cs = b.hub ? 3 : 2; ctx.fillRect(b.x - cs / 2, b.y - cs / 2, cs, cs);
+      }
+    }
+
+    function frame(now) {
+      if (!running) return;
+      if (!t0) t0 = now;
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+      step(dt); render(true); raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+
+    canvas.addEventListener("pointermove", function (e) { var r = canvas.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; hasMouse = true; });
+    canvas.addEventListener("pointerleave", function () { hasMouse = false; });
+
+    resize();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
+
+    if (reduce) { emerge = 1; for (var k = 0; k < 480; k++) step(1 / 60); render(false); return; }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.04 }).observe(canvas);
+    } else { start(); }
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else { var r = canvas.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) start(); } });
+  })();
+
+  /* ============================================================
      JOURNEY — a pixel-art short film (#about)
      A recurring pixel character walks through six life phases —
      chemistry lab, badminton, learning to code, graduation, first

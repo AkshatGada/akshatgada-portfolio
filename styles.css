@@ -205,12 +205,14 @@ body { font-size: 18px; line-height: 1.5; -webkit-font-smoothing: antialiased; t
 
 /* ============================================================ FOCUS / flow */
 .focus { padding: var(--section-y) var(--gutter); border-top: 1px solid var(--line); }
-.econ { max-width: var(--maxw); margin: 0 auto; position: relative;
+.econ-band { padding: clamp(8px, 2vw, 26px) var(--gutter) var(--section-y); }
+.econ, .swarm { max-width: var(--maxw); margin: 0 auto; position: relative;
   background: radial-gradient(135% 120% at 50% 0%, #15121f 0%, #0b0a11 62%);
   box-shadow: inset 0 0 0 1px var(--line); border-radius: var(--cham);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
   overflow: hidden; }
-.econ-canvas { display: block; width: 100%; height: clamp(380px, 50vw, 580px); }
+.econ-canvas, .swarm-canvas { display: block; width: 100%; height: clamp(380px, 50vw, 580px); }
+.swarm-canvas { height: clamp(420px, 56vw, 640px); cursor: crosshair; }
 .econ-cap { display: flex; align-items: baseline; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin: 20px 2px 0; }
 .econ-cap-line { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55; letter-spacing: 0.01em; color: var(--fg-muted); max-width: 66ch; }
 .econ-x402 { color: var(--purple-text); }
@@ -321,6 +323,7 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
   .work-list:hover .work-item { opacity: 1; }
   .about-grid { grid-template-columns: 1fr; gap: 40px; }
   .econ-canvas { height: clamp(360px, 64vw, 460px); }
+  .swarm-canvas { height: clamp(380px, 78vw, 520px); }
 }
 @media (max-width: 640px) {
   .econ-cap { gap: 14px; }
