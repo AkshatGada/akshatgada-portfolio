@@ -32,6 +32,9 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 - Custom blend-mode cursor + magnetic buttons/links
 - Selected work as a hover-reveal list with a synced, tilting preview panel
 - Word-by-word manifesto reveal, count-up, infinite stack marquee
+- Site-wide ambient background: cute "agent" octopus-bot mascots drift across a fixed
+  canvas behind the content and toss glowing `$` coins to each other (agents paying agents).
+  Subtle, paused when the tab is hidden, static under reduced motion.
 - Generative "agent economy" canvas (`#focus`): a clearing house where agent nodes send
   value-weighted payment sparks through the facilitator out to services, with bundled curved
   flow, breathing throughput, and settlement confirmations. Interactive (hover highlights,

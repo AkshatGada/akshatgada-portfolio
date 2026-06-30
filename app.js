@@ -265,6 +265,123 @@
      TERMINAL
      ============================================================ */
   /* ============================================================
+     AMBIENT BACKGROUND — agent mascots floating, passing coins
+     A site-wide fixed canvas behind all content: cute "agent"
+     octopus-bots drift around and toss glowing $ coins to each
+     other (agents paying agents). Subtle, motion-safe, paused
+     when the tab is hidden.
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById("bgfx");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var W = 0, H = 0, DPR = 1, agents = [], coins = [], running = false, raf = 0, t0 = 0, lastCoin = 0;
+    var MONO = (getComputedStyle(document.documentElement).getPropertyValue("--font-mono") || "monospace").trim() || "monospace";
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function cl(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+    function size() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    function makeAgents() {
+      var n = W < 700 ? 4 : (W < 1150 ? 5 : 7);
+      agents = [];
+      for (var i = 0; i < n; i++) {
+        agents.push({ x: rnd(0.08, 0.92) * W, y: rnd(0.12, 0.9) * H, vx: rnd(-0.13, 0.13), vy: rnd(-0.1, 0.1),
+          s: rnd(30, 50), t: rnd(0, 10), tsp: rnd(1.3, 2.1), give: 0, got: 0 });
+      }
+    }
+    function emitCoin() {
+      if (agents.length < 2 || coins.length > 5) return;
+      var ai = (Math.random() * agents.length) | 0, A = agents[ai], B = null, bd = 1e9;
+      for (var i = 0; i < agents.length; i++) { if (i === ai) continue; var dx = agents[i].x - A.x, dy = agents[i].y - A.y, d = dx * dx + dy * dy; if (d < bd) { bd = d; B = agents[i]; } }
+      if (!B) return;
+      coins.push({ A: A, B: B, cx: (A.x + B.x) / 2, cy: (A.y + B.y) / 2 - rnd(50, 110), t: 0, dur: rnd(1.4, 2.2), r: rnd(7, 10), spin: rnd(0, 6.28), alpha: 0 });
+      A.give = 1;
+    }
+    function coinPos(c) { var p = cl(c.t / c.dur, 0, 1), u = 1 - p; return { x: u * u * c.A.x + 2 * u * p * c.cx + p * p * c.B.x, y: u * u * c.A.y + 2 * u * p * c.cy + p * p * c.B.y }; }
+
+    function step(dt) {
+      var k = dt * 60;
+      for (var i = 0; i < agents.length; i++) {
+        var a = agents[i]; a.t += dt;
+        a.vx = cl(a.vx + rnd(-0.012, 0.012) * k, -0.2, 0.2); a.vy = cl(a.vy + rnd(-0.01, 0.01) * k, -0.16, 0.16);
+        a.x += a.vx * k; a.y += a.vy * k;
+        var m = 70;
+        if (a.x < m) { a.x = m; a.vx = Math.abs(a.vx); } if (a.x > W - m) { a.x = W - m; a.vx = -Math.abs(a.vx); }
+        if (a.y < m) { a.y = m; a.vy = Math.abs(a.vy); } if (a.y > H - m) { a.y = H - m; a.vy = -Math.abs(a.vy); }
+        a.give = Math.max(0, a.give - dt * 1.6); a.got = Math.max(0, a.got - dt * 2.4);
+      }
+      for (var j = coins.length - 1; j >= 0; j--) {
+        var c = coins[j]; c.t += dt; c.spin += dt * 7;
+        var p = c.t / c.dur; c.alpha = p < 0.12 ? p / 0.12 : (p > 0.88 ? Math.max(0, (1 - p) / 0.12) : 1);
+        if (p >= 1) { c.B.got = 1; coins.splice(j, 1); }
+      }
+    }
+
+    function drawAgent(a) {
+      var s = a.s, bob = Math.sin(a.t * a.tsp) * 3, pulse = 1 + a.give * 0.12 + a.got * 0.18;
+      ctx.save(); ctx.translate(a.x, a.y + bob); ctx.scale(pulse, pulse); ctx.globalAlpha = 0.46;
+      // tentacles
+      ctx.lineCap = "round"; ctx.strokeStyle = "rgba(123,31,255,0.85)"; ctx.lineWidth = s * 0.12;
+      for (var i = 0; i < 4; i++) {
+        var tx = (i - 1.5) * (s * 0.2), sway = Math.sin(a.t * 2.4 + i * 0.8) * (s * 0.1);
+        ctx.beginPath(); ctx.moveTo(tx, s * 0.27); ctx.quadraticCurveTo(tx + sway, s * 0.46, tx + sway * 1.3, s * 0.6); ctx.stroke();
+      }
+      // body
+      var g = ctx.createLinearGradient(0, -s * 0.5, 0, s * 0.45);
+      g.addColorStop(0, "#7b3fff"); g.addColorStop(1, "#3a1a74");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, s * 0.46, s * 0.42, 0, 0, 7); ctx.fill();
+      ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(183,148,255,0.55)"; ctx.stroke();
+      // eyes (pupils lean toward motion)
+      var lx = cl(a.vx * 9, -s * 0.05, s * 0.05), ly = cl(a.vy * 9, -s * 0.04, s * 0.05);
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.15, -s * 0.02, s * 0.11, 0, 7); ctx.arc(s * 0.15, -s * 0.02, s * 0.11, 0, 7); ctx.fill();
+      ctx.fillStyle = "#170a2e"; ctx.beginPath(); ctx.arc(-s * 0.15 + lx, -s * 0.02 + ly, s * 0.055, 0, 7); ctx.arc(s * 0.15 + lx, -s * 0.02 + ly, s * 0.055, 0, 7); ctx.fill();
+      // antenna
+      ctx.strokeStyle = "rgba(123,31,255,0.85)"; ctx.lineWidth = s * 0.045;
+      ctx.beginPath(); ctx.moveTo(0, -s * 0.42); ctx.lineTo(0, -s * 0.56); ctx.stroke();
+      ctx.fillStyle = "#b794ff"; ctx.beginPath(); ctx.arc(0, -s * 0.6, s * 0.06, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+    function drawCoin(c) {
+      var pp = coinPos(c), rx = Math.max(1.2, c.r * Math.abs(Math.cos(c.spin)));
+      ctx.save(); ctx.translate(pp.x, pp.y); ctx.globalAlpha = cl(c.alpha, 0, 1);
+      var gg = ctx.createRadialGradient(0, 0, 0, 0, 0, c.r * 2.6);
+      gg.addColorStop(0, "rgba(233,216,255,0.5)"); gg.addColorStop(1, "rgba(123,31,255,0)");
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(0, 0, c.r * 2.6, 0, 7); ctx.fill();
+      var g = ctx.createLinearGradient(0, -c.r, 0, c.r);
+      g.addColorStop(0, "#f3e9ff"); g.addColorStop(0.5, "#c9a9ff"); g.addColorStop(1, "#7b1fff");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, rx, c.r, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = "rgba(243,233,255,0.9)"; ctx.lineWidth = 1; ctx.stroke();
+      if (rx > c.r * 0.5) { ctx.fillStyle = "rgba(40,16,80,0.85)"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold " + (c.r * 1.1).toFixed(0) + "px " + MONO; ctx.fillText("$", 0, 0.5); }
+      ctx.restore();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < agents.length; i++) drawAgent(agents[i]);
+      for (var j = 0; j < coins.length; j++) drawCoin(coins[j]);
+    }
+    function frame(now) {
+      if (!running) return;
+      if (!t0) t0 = now;
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+      if (now - lastCoin > rnd(1500, 3400)) { emitCoin(); lastCoin = now; }
+      step(dt); draw(); raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+
+    size(); makeAgents();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { size(); makeAgents(); coins = []; }, 200); });
+    if (reduce) { emitCoin(); if (coins[0]) coins[0].t = coins[0].dur * 0.5; step(0.001); draw(); return; }
+    start();
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else start(); });
+  })();
+
+  /* ============================================================
      AGENT ECONOMY — generative canvas art (#focus)
      Agent nodes pay services per request; every spark settles
      through the facilitator over x402. Ambient + interactive.
