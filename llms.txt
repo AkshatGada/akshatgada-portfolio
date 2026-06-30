@@ -38,6 +38,10 @@ machine-payable web.
 - JP Morgan — zero-knowledge research; ML circuits in Circom, Noir, and Rust.
 - BOBDAO — co-founder.
 
+## Writing
+- [Writing index](https://akshatgada.com/blog/) — essays on agentic payments, x402, and the machine-payable web.
+- [Payment Required](https://akshatgada.com/blog/payment-required.html) — why HTTP 402, dormant since 1997, is the payment rail for AI agents; on x402, facilitators, and PIP-82.
+
 ## Talks
 - [Polygon Tracks 101](https://www.youtube.com/watch?v=3Ba9KkJOsoc) — building on Polygon for developers getting started.
 

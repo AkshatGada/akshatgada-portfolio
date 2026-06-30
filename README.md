@@ -62,6 +62,8 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 
 ```
 index.html            markup + copy
+blog/index.html       Writing index (post list)
+blog/*.html           individual essays (shared design system, Article JSON-LD)
 styles.css            dark theme, components, chamfer shape language, responsive + reduced-motion
 colors_and_type.css   Polygon design tokens + PolySans @font-face
 app.js                all interactions (one shared rAF loop), reduced-motion + no-JS safe

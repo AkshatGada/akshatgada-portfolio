@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment Required — Akshat Gada</title>
+  <meta name="description" content="The web reserved a status code for money in the nineties and never shipped it. AI agents are about to need it — badly. On x402, facilitators, and the machine-payable web." />
+  <meta name="author" content="Akshat Gada" />
+  <link rel="canonical" href="https://akshatgada.com/blog/payment-required.html" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#0A0910" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="alternate icon" href="../assets/polygon-icon-primary-purple.png" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Akshat Gada" />
+  <meta property="og:url" content="https://akshatgada.com/blog/payment-required.html" />
+  <meta property="og:title" content="Payment Required" />
+  <meta property="og:description" content="The web reserved a status code for money in the nineties and never shipped it. AI agents are about to need it — badly." />
+  <meta property="og:image" content="https://akshatgada.com/assets/og.png" />
+  <meta property="article:published_time" content="2026-06-18" />
+  <meta property="article:author" content="Akshat Gada" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@gada_akshat" />
+  <meta name="twitter:creator" content="@gada_akshat" />
+  <meta name="twitter:title" content="Payment Required" />
+  <meta name="twitter:description" content="The web reserved a status code for money in the nineties and never shipped it. AI agents are about to need it." />
+  <meta name="twitter:image" content="https://akshatgada.com/assets/og.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Payment Required",
+    "description": "The web reserved a status code for money in the nineties and never shipped it. AI agents are about to need it — badly.",
+    "image": "https://akshatgada.com/assets/og.png",
+    "datePublished": "2026-06-18",
+    "dateModified": "2026-06-18",
+    "inLanguage": "en",
+    "keywords": ["agentic payments", "x402", "HTTP 402", "stablecoins", "Polygon", "AI agents"],
+    "author": { "@type": "Person", "name": "Akshat Gada", "url": "https://akshatgada.com/" },
+    "publisher": { "@type": "Person", "name": "Akshat Gada", "url": "https://akshatgada.com/" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://akshatgada.com/blog/payment-required.html" }
+  }
+  </script>
+
+  <link rel="preload" href="../fonts/PolySans-SlimWide.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="../fonts/PolySans-Neutral.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="../fonts/PolySans-NeutralMono.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="../colors_and_type.css" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="nav" aria-label="Primary">
+    <a class="brand" href="../" data-magnetic aria-label="Akshat Gada — home">
+      <span class="brand-mark" aria-hidden="true">AG</span>
+      <span class="brand-name">Akshat Gada</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu"><span></span><span></span></button>
+    <div class="nav-menu" id="nav-menu">
+      <a href="../#work" data-magnetic>Work</a>
+      <a href="../#focus" data-magnetic>Focus</a>
+      <a href="./" data-magnetic aria-current="page">Writing</a>
+      <a class="nav-status" href="../#contact" data-magnetic><span class="pulse" aria-hidden="true"></span>Open to talk</a>
+    </div>
+  </nav>
+
+  <main id="main">
+    <article class="post">
+      <header class="post-head">
+        <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>18 Jun 2026</span><span>5 min read</span></p>
+        <h1 class="post-title">Payment Required</h1>
+        <p class="post-dek">The web reserved a status code for money in the nineties and never shipped it. AI agents are about to need it — badly.</p>
+        <p class="post-byline">By <b>Akshat Gada</b> — I build agentic payments at Polygon.</p>
+      </header>
+
+      <div class="post-body">
+        <p class="lead-line">Open the HTTP spec and scroll past the status codes everyone knows. 200 OK. 404, the famous one. Keep going. You'll find 402 — <strong>Payment Required</strong>. It has been sitting in the spec since 1997, marked "reserved for future use."</p>
+
+        <p>The future took a while.</p>
+
+        <p>Here's the strange thing about the internet: we made it astonishingly good at moving information and left it helpless at moving money. A server in Tokyo answers your request in 80 milliseconds. Paying that server a tenth of a cent for the work takes a card number, a billing address, a 3% fee, a chargeback window, and a human clicking "Confirm." We built a global nervous system and bolted a 1994 cash register onto the side of it.</p>
+
+        <p>For thirty years that was fine, because the thing making the request was a person. People are slow. People have wallets. People can wait for a checkout page to load and squint at a CAPTCHA.</p>
+
+        <p>Agents are not people.</p>
+
+        <h2>The unit of payment is about to get very small</h2>
+
+        <p>An AI agent doesn't buy one thing and go home. It makes a request, reads the answer, makes ten more, hires another agent to do the part it's bad at, pays for an API call, rents a slice of compute, checks a price, tries again. Thousands of tiny actions, most worth a fraction of a cent, none worth interrupting a human to approve.</p>
+
+        <p>You cannot run that on credit cards. The fee is bigger than the purchase. There's no one at the keyboard to type the CVV. The entire model assumes a person at checkout — and the person is gone.</p>
+
+        <p>So you get two choices. Invent some elaborate new payment protocol and spend a decade dragging the world onto it — or use the one the web already reserved a status code for.</p>
+
+        <p>We went with the second one. Obviously.</p>
+
+        <h2>x402, in one breath</h2>
+
+        <p>It's almost boring how simple it is, which is exactly the point.</p>
+
+        <div class="pre"><span class="dim">GET  /price</span>                      → <span class="warn">402  Payment Required</span>
+                                   <span class="dim">↳ pay 0.001 USDC · Polygon · 0x…</span>
+pay, then retry <span class="dim">GET /price</span>     → <span class="ok">200  OK</span>  <span class="dim">{ …the data }</span></div>
+
+        <p>The agent asks for something. The server says "that'll cost you," in a header, with machine-readable terms. The agent pays — stablecoins, onchain, no account, no login — and asks again. This time it gets a <code>200</code> and the thing it wanted. No checkout page. No human. No new app, no new browser. It's just HTTP doing what HTTP already does, plus the part we skipped in 1997.</p>
+
+        <blockquote><p>We didn't reinvent the web. We finished it.</p></blockquote>
+
+        <h2>The boring part is the important part</h2>
+
+        <p>Telling a server to "accept crypto" sounds easy until you try it. Now every API has to watch a chain, confirm a payment landed, handle the one that didn't, eat the gas, and not tip over when ten thousand agents hit it at once. Nobody is going to do all that to sell a tenth of a cent of data.</p>
+
+        <p>So I spent a good chunk of last year building the thing in the middle — the facilitator. It sits in front of the server, takes the payment, verifies it, settles it, and hands back a clean yes or no. The server stays a normal server. It never has to learn what a nonce is.</p>
+
+        <p>I wrote it in Rust, because it lives in the hot path of every single request, and "usually fast, occasionally on fire" is not a spec you ship. It's open source. It's running.</p>
+
+        <p>Then there's the part everyone forgets: incentives. You can have the cleanest protocol on earth and it dies on the shelf if adoption is annoying. So we wrote <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a> — a program that rebates up to a million dollars in gas to the facilitators carrying these payments. Make the rail cheaper than the friction it replaces and you don't have to convince anyone. They just switch.</p>
+
+        <p>Ideology doesn't ship. Incentives do.</p>
+
+        <h2>The day it stopped being a demo</h2>
+
+        <p>I remember the first time an agent paid for something with no human anywhere near it. It hit a <code>402</code>, read the terms, signed, paid, retried, got its data, and went on to the next thing. A couple hundred milliseconds, start to finish. No confetti. No notification. Nothing.</p>
+
+        <p>Completely anticlimactic — which is how I knew it was real. Good infrastructure is boring. Electricity is boring. TCP is boring. You only notice it when it's missing, and pretty soon you won't be able to imagine it missing.</p>
+
+        <h2>Where this goes</h2>
+
+        <p>Picture a few million agents, each with a wallet, each able to pay any other agent or service per request, settling in stablecoins at machine speed, around the clock, while we sleep. Agents hiring agents. Markets that clear in milliseconds for amounts no human would bother with. An economy running underneath the one we can see.</p>
+
+        <p>That's not a metaphor, and it's not five years out. The status code has been waiting since the nineties. We finally gave it something to do.</p>
+
+        <p>402, at last.</p>
+      </div>
+
+      <div class="post-end">
+        <span class="sig">Akshat Gada · Polygon</span>
+        <a class="back-link" href="./">← All writing</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-row">
+      <span class="footer-name">Akshat Gada</span>
+    </div>
+    <a class="footer-top" href="../" data-magnetic>Home <span class="tri up" aria-hidden="true"></span></a>
+  </footer>
+
+  <script src="../app.js"></script>
+</body>
+</html>
