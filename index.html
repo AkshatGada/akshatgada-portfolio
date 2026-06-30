@@ -29,8 +29,6 @@
   <div class="grain" aria-hidden="true"></div>
   <!-- scroll progress -->
   <div class="progress" aria-hidden="true"></div>
-  <!-- custom cursor (desktop, motion-on only) -->
-  <div class="cursor" aria-hidden="true"><div class="cursor-ring"></div><div class="cursor-dot"></div></div>
 
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -81,6 +79,7 @@
         <div class="term-bar">
           <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="term-title">akshat@polygon — ~</span>
+          <span class="term-ready" aria-hidden="true"><span class="term-ready-dot"></span>ready</span>
         </div>
         <div class="term-body" id="term-body" role="log" aria-live="polite">
           <!-- boot line is rendered/typed by JS; static fallback below for no-JS -->
@@ -90,12 +89,11 @@
         <div class="term-input-row">
           <span class="term-prompt">~ %</span>
           <input class="term-input" id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type a command, then Enter. Tab to autocomplete, up arrow for history." placeholder="type a command — try 'ls', tab to autocomplete" />
-          <span class="term-caret" aria-hidden="true"></span>
         </div>
         <div class="term-chips" id="term-chips" aria-label="Commands">
           <button type="button" data-cmd="whoami">whoami</button>
+          <button type="button" data-cmd="ls">ls</button>
           <button type="button" data-cmd="work">work</button>
-          <button type="button" data-cmd="focus">focus</button>
           <button type="button" data-cmd="pay --x402">pay --x402</button>
           <button type="button" data-cmd="contact">contact</button>
           <button type="button" data-cmd="help">help</button>
@@ -103,17 +101,8 @@
       </section>
     </div>
 
-    <a class="scroll-cue" href="#manifesto" aria-label="Scroll down"><span></span></a>
+    <a class="scroll-cue" href="#work" aria-label="Scroll down"><span></span></a>
   </header>
-
-  <!-- ─────────── MANIFESTO ─────────── -->
-  <section id="manifesto" class="manifesto">
-    <p class="manifesto-line reveal">
-      <code class="kw">402 Payment Required</code> sat unused in the HTTP spec for thirty years.
-      My job is to wake it up — and turn it into wallets, SDKs, and settlement that
-      autonomous agents can actually use.
-    </p>
-  </section>
 
   <!-- ─────────── WORK (interactive hover-reveal list) ─────────── -->
   <section id="work" class="work">
@@ -140,30 +129,18 @@
           <a class="work-item" href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener"
              data-icon="icons/grey/secured-coin.svg" data-kind="Rust · facilitator" data-year="2026">
             <span class="work-index">02</span>
-            <span class="work-name">x402-rs</span>
+            <span class="work-name">Polygon Facilitator</span>
             <span class="work-flag" aria-hidden="true"><span class="tri"></span></span>
             <span class="work-detail">
-              <span class="work-desc">The engine that verifies and settles every x402 payment. Server middleware gates a route behind a price; client middleware pays it transparently — production Rust.</span>
+              <span class="work-desc">Polygon's x402 facilitator (x402-rs) — the engine that verifies and settles every payment. Server middleware gates a route behind a price; client middleware pays it transparently. Production Rust.</span>
               <span class="work-tech"><i>x402 v1 + v2</i><i>Axum</i><i>EVM</i></span>
-            </span>
-          </a>
-        </li>
-        <li>
-          <a class="work-item" href="https://docs.polygon.technology/payment-services/agentic-payments/agent-integration/intro" target="_blank" rel="noopener"
-             data-icon="icons/grey/docs.svg" data-kind="Spec + integration" data-year="2026">
-            <span class="work-index">03</span>
-            <span class="work-name">Agent integration docs</span>
-            <span class="work-flag" aria-hidden="true"><span class="tri"></span></span>
-            <span class="work-detail">
-              <span class="work-desc">The developer guide for agents that pay onchain — how they negotiate price, sign intents, and settle per request with x402 and ERC-8004.</span>
-              <span class="work-tech"><i>x402</i><i>ERC-8004</i><i>MCP</i></span>
             </span>
           </a>
         </li>
         <li>
           <a class="work-item" href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener"
              data-icon="icons/grey/ecosystem.svg" data-kind="Discovery" data-year="2026">
-            <span class="work-index">04</span>
+            <span class="work-index">03</span>
             <span class="work-name">Agentic Services</span>
             <span class="work-flag" aria-hidden="true"><span class="tri"></span></span>
             <span class="work-detail">
@@ -175,12 +152,24 @@
         <li>
           <a class="work-item" href="https://agentconnect.polygon.technology/" target="_blank" rel="noopener"
              data-icon="icons/grey/wallet.svg" data-kind="Wallet connector" data-year="2026">
-            <span class="work-index">05</span>
+            <span class="work-index">04</span>
             <span class="work-name">AgentConnect</span>
             <span class="work-flag" aria-hidden="true"><span class="tri"></span></span>
             <span class="work-detail">
               <span class="work-desc">Links an agent to a real, user-approved Polygon wallet, and serves the machine-readable skill agents fetch to learn the full onchain lifecycle.</span>
               <span class="work-tech"><i>SKILL.md</i><i>Sequence</i><i>x402</i></span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a class="work-item" href="https://docs.polygon.technology/payment-services/agentic-payments/agent-integration/intro" target="_blank" rel="noopener"
+             data-icon="icons/grey/docs.svg" data-kind="Developer docs" data-year="2026">
+            <span class="work-index">05</span>
+            <span class="work-name">Agentic docs</span>
+            <span class="work-flag" aria-hidden="true"><span class="tri"></span></span>
+            <span class="work-detail">
+              <span class="work-desc">The developer guide for agents that pay onchain — how they negotiate price, sign intents, and settle per request with x402 and ERC-8004.</span>
+              <span class="work-tech"><i>x402</i><i>ERC-8004</i><i>MCP</i></span>
             </span>
           </a>
         </li>

@@ -96,21 +96,11 @@
   }
 
   /* ============================================================
-     SHARED rAF LOOP — custom cursor + magnetic
+     SHARED rAF LOOP — magnetic elements (native cursor kept)
      ============================================================ */
-  var loopItems = [];        // magnetic elements {el, cx, cy, tx, ty}
-  var cursor = { el: $(".cursor"), x: innerWidth / 2, y: innerHeight / 2, tx: innerWidth / 2, ty: innerHeight / 2, on: false };
-  var pointer = { x: innerWidth / 2, y: innerHeight / 2 };
+  var loopItems = [];
 
   if (finePointer && !reduce) {
-    document.body.classList.add("cursor-on");
-    cursor.on = true;
-    window.addEventListener("mousemove", function (e) { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
-    // grow cursor over interactive things
-    var growSel = "a, button, input, [data-magnetic], .work-item, .term-chips button";
-    document.addEventListener("mouseover", function (e) { if (e.target.closest(growSel)) cursor.el.classList.add("grow"); });
-    document.addEventListener("mouseout", function (e) { if (e.target.closest(growSel)) cursor.el.classList.remove("grow"); });
-
     // magnetic
     $$("[data-magnetic]").forEach(function (el) {
       var item = { el: el, tx: 0, ty: 0, cx: 0, cy: 0, hover: false };
@@ -158,11 +148,6 @@
   })();
 
   function frame() {
-    if (cursor.on) {
-      cursor.x = lerp(cursor.x, pointer.x, 0.2);
-      cursor.y = lerp(cursor.y, pointer.y, 0.2);
-      cursor.el.style.transform = "translate3d(" + cursor.x + "px," + cursor.y + "px,0)";
-    }
     for (var i = 0; i < loopItems.length; i++) {
       var it = loopItems[i];
       it.cx = lerp(it.cx, it.tx, 0.18);
@@ -171,7 +156,7 @@
     }
     requestAnimationFrame(frame);
   }
-  if (finePointer && !reduce) requestAnimationFrame(frame);
+  if (finePointer && !reduce && loopItems.length) requestAnimationFrame(frame);
 
   /* ---------------- tilt ---------------- */
   if (finePointer && !reduce) {
@@ -251,38 +236,6 @@
   })();
 
   /* ============================================================
-     MANIFESTO — word-by-word opacity reveal on scroll
-     ============================================================ */
-  (function () {
-    var line = $(".manifesto-line");
-    if (!line || reduce) return;
-    // wrap words, preserving the .kw element
-    var words = [];
-    var nodes = Array.prototype.slice.call(line.childNodes);
-    line.innerHTML = "";
-    nodes.forEach(function (node) {
-      if (node.nodeType === 3) {
-        node.textContent.split(/(\s+)/).forEach(function (tok) {
-          if (tok.trim() === "") { line.appendChild(document.createTextNode(tok)); return; }
-          var s = document.createElement("span"); s.className = "word"; s.textContent = tok;
-          line.appendChild(s); words.push(s);
-        });
-      } else { node.classList && node.classList.add("word"); line.appendChild(node); words.push(node); }
-    });
-    words.forEach(function (w) { w.style.color = "var(--fg-faint)"; });
-    var ticking = false;
-    function paint() {
-      var r = line.getBoundingClientRect();
-      var p = clamp((innerHeight * 0.9 - r.top) / (innerHeight * 0.65), 0, 1);
-      var n = words.length, lit = p * n;
-      for (var i = 0; i < n; i++) words[i].style.color = i < lit ? "var(--fg)" : "var(--fg-faint)";
-      ticking = false;
-    }
-    window.addEventListener("scroll", function () { if (!ticking) { requestAnimationFrame(paint); ticking = true; } }, { passive: true });
-    paint();
-  })();
-
-  /* ============================================================
      SCROLL PROGRESS + subtle hero parallax
      ============================================================ */
   (function () {
@@ -322,8 +275,8 @@
     var COMMANDS = {
       whoami: function () { printOut("Akshat Gada — DevRel engineer at Polygon. I lead agentic payments: giving AI agents a wallet, an identity, and the ability to pay over x402, settling onchain in stablecoins."); },
       help: function () { printOut("commands: <span class='key'>whoami</span> · <span class='key'>ls</span> · <span class='key'>work</span> · <span class='key'>focus</span> · <span class='key'>stack</span> · <span class='key'>pay --x402</span> · <span class='key'>cat about</span> · <span class='key'>socials</span> · <span class='key'>contact</span> · <span class='key'>clear</span><br><span class='hsmall'>↑/↓ history · tab autocompletes</span>"); },
-      ls: function () { printOut("<span class='key'>sections/</span> work · focus · about · contact<br><span class='key'>projects/</span> agent-cli · x402-rs · agent-docs · agentic-services · agentconnect"); },
-      work: function () { printOut("5 shipped tools: Polygon Agent CLI, x402-rs, agent docs, Agentic Services, AgentConnect. opening the list…"); scrollToId("#work"); },
+      ls: function () { printOut("<span class='key'>sections/</span> work · focus · about · contact<br><span class='key'>projects/</span> agent-cli · facilitator · agentic-services · agentconnect · agentic-docs"); },
+      work: function () { printOut("5 shipped tools: Polygon Agent CLI, Polygon Facilitator, Agentic Services, AgentConnect, Agentic docs. opening the list…"); scrollToId("#work"); },
       focus: function () { printOut("agentic payments — agents that pay per request over x402, no human at checkout. scrolling…"); scrollToId("#focus"); },
       stack: function () { printOut("x402 · ERC-8004 · Rust · TypeScript · Polygon Chain · Agglayer · MCP · USDC · EIP-3009"); },
       "cat about": function () { printOut("DevRel engineer at Polygon. Joined as an intern, full-time since 2025. I build in the open where agents, payments, and cross-chain meet — and write the proposals and tooling that make all three less painful. opening about…"); scrollToId("#about"); },
@@ -378,6 +331,14 @@
     if (chips) chips.addEventListener("click", function (e) {
       var b = e.target.closest("button[data-cmd]"); if (!b) return; run(b.getAttribute("data-cmd"));
       if (input) input.focus();
+    });
+
+    // click anywhere in the terminal to focus the prompt (unless selecting text / clicking a link)
+    var termEl = body.closest(".term");
+    if (termEl && input) termEl.addEventListener("click", function (e) {
+      if (e.target.closest("a, button")) return;
+      if (window.getSelection && String(window.getSelection()).length) return;
+      input.focus();
     });
 
     var COMPLETIONS = ["whoami", "ls", "work", "focus", "stack", "pay --x402", "cat about", "socials", "contact", "help", "clear"];
