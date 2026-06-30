@@ -38,9 +38,11 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
   background is never static or crowded. Flat pixel sprites (no glow), paused when the tab is
   hidden, static under reduced motion.
 - Generative "agent economy" canvas (`#focus`): a clearing house where agent nodes send
-  value-weighted payment sparks through the facilitator out to services, with bundled curved
-  flow, breathing throughput, and settlement confirmations. Interactive (hover highlights,
-  click fires a payment), pauses offscreen, static fallback for reduced motion.
+  value-weighted payment sparks through the facilitator out to services. Bundled curved flow,
+  continuous faint throughput motes, settlement heartbeat rings radiating from the hub, a
+  rotating processing halo, concentric depth rings, and per-service settlement amounts.
+  Interactive (hover highlights, click fires a payment), pauses offscreen, static fallback for
+  reduced motion.
 - Scroll progress, staggered scroll reveals, subtle hero parallax, film-grain overlay
 
 ## Structure
