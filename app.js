@@ -617,6 +617,186 @@
     document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else { var r = canvas.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) start(); } });
   })();
 
+  /* ============================================================
+     JOURNEY — animated pixel-art panel (#about)
+     Square pixels dissolve through a 6-scene story: chemistry lab,
+     badminton, coding, graduation, first company, agentic payments.
+     ============================================================ */
+  (function () {
+    var canvas = document.getElementById("journey-canvas");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var nameEl = document.getElementById("journey-name");
+    var dotsEl = document.getElementById("journey-dots");
+    var N = 18;
+
+    var C = {
+      o: "#160b29", k: "#0e1726", w: "#f3eeff", p: "#7c4dff", P: "#b794ff", d: "#43208a",
+      g: "#3ddc84", G: "#1d6f49", t: "#34c6ff", y: "#f5c542", Y: "#bd8a1c",
+      r: "#ff5a6a", s: "#9a98ad", S: "#363349", b: "#bd7b3e"
+    };
+
+    function blank() { var a = []; for (var y = 0; y < N; y++) a.push(new Array(N).fill(null)); return a; }
+    function P(a, x, y, c) { if (x >= 0 && x < N && y >= 0 && y < N) a[y][x] = c; }
+    function R(a, x, y, w, h, c) { for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) P(a, x + i, y + j, c); }
+    function rnd(n) { return Math.floor(Math.random() * n); }
+
+    // ── scene builders (18×18) ──
+    function chemistry() {
+      var a = blank();
+      R(a, 8, 2, 4, 1, C.w);                                  // lip
+      R(a, 8, 3, 1, 4, C.o); R(a, 11, 3, 1, 4, C.o);          // neck walls
+      for (var y = 7; y <= 14; y++) {
+        var half = y - 6, lx = Math.max(1, 9 - half), rx = Math.min(16, 10 + half);
+        P(a, lx, y, C.o); P(a, rx, y, C.o);
+        for (var x = lx + 1; x < rx; x++) if (y >= 11) a[y][x] = C.g;
+      }
+      for (var x = 1; x <= 16; x++) P(a, x, 15, C.o);          // base
+      P(a, 8, 9, C.t); P(a, 11, 8, C.t); P(a, 9, 7, C.t); P(a, 6, 10, C.t); P(a, 12, 12, C.G);
+      return a;
+    }
+    function badminton() {
+      var a = blank(), W = C.w;
+      // feather cone — discrete feathers with gaps so it doesn't read as a blob
+      P(a, 5, 2, W); P(a, 7, 2, W); P(a, 9, 2, W); P(a, 11, 2, W); P(a, 13, 2, W);
+      P(a, 5, 3, W); P(a, 7, 3, W); P(a, 9, 3, W); P(a, 11, 3, W); P(a, 13, 3, W);
+      P(a, 6, 4, W); P(a, 8, 4, W); P(a, 9, 4, W); P(a, 10, 4, W); P(a, 12, 4, W);
+      P(a, 6, 5, W); P(a, 8, 5, W); P(a, 9, 5, W); P(a, 10, 5, W); P(a, 12, 5, W);
+      P(a, 7, 6, W); P(a, 9, 6, W); P(a, 11, 6, W);
+      R(a, 7, 7, 5, 1, W);                                     // band
+      // cork — rounded gold ball
+      R(a, 8, 8, 3, 1, C.y);
+      R(a, 7, 9, 5, 2, C.y);
+      R(a, 8, 11, 3, 1, C.Y);
+      P(a, 3, 3, C.P); P(a, 2, 4, C.P); P(a, 4, 5, C.P);       // motion streak
+      return a;
+    }
+    function coding() {
+      var a = blank();
+      R(a, 3, 3, 12, 9, C.S);                                  // bezel
+      R(a, 4, 4, 10, 7, C.k);                                  // screen
+      R(a, 5, 5, 4, 1, C.P); R(a, 10, 5, 2, 1, C.g);           // code lines
+      R(a, 6, 6, 5, 1, C.t);
+      R(a, 5, 7, 2, 1, C.y); R(a, 8, 7, 4, 1, C.w);
+      R(a, 6, 8, 6, 1, C.P);
+      R(a, 5, 9, 3, 1, C.g); R(a, 9, 9, 2, 1, C.t);
+      R(a, 2, 12, 14, 2, C.s); R(a, 1, 14, 16, 1, C.S);        // base + lip
+      R(a, 8, 12, 3, 1, C.S);                                  // trackpad
+      return a;
+    }
+    function graduation() {
+      var a = blank();
+      // skull cap (head part) first, so the board sits on top
+      R(a, 6, 7, 6, 2, C.S); R(a, 7, 9, 4, 1, C.S);            // cap dome
+      R(a, 6, 8, 6, 1, "#2a2740");                             // band shadow
+      // mortarboard board — flat diamond seen in perspective
+      R(a, 8, 2, 2, 1, C.d); R(a, 6, 3, 6, 1, C.d); R(a, 3, 4, 12, 1, C.d);
+      R(a, 6, 5, 6, 1, C.d); R(a, 8, 6, 2, 1, C.d);
+      P(a, 8, 2, C.P); P(a, 6, 3, C.P); P(a, 7, 3, C.P);       // top-left edge highlight
+      P(a, 3, 4, C.P); P(a, 4, 4, C.P);
+      R(a, 8, 3, 2, 2, C.y);                                   // gold button
+      // tassel — cord off the right tip, draping to a tuft
+      P(a, 14, 5, C.y); P(a, 14, 6, C.y); P(a, 14, 7, C.y);
+      R(a, 13, 8, 2, 2, C.y); R(a, 13, 10, 2, 1, C.Y);
+      return a;
+    }
+    function company() {
+      var a = blank();
+      R(a, 6, 3, 8, 13, C.S);                                  // tower
+      R(a, 1, 8, 4, 8, "#2a2740");                             // smaller building
+      var lit = [C.y, C.t, C.k, C.y, C.k, C.y, C.t, C.k];
+      var li = 0;
+      for (var wy = 5; wy <= 13; wy += 2) for (var wx = 7; wx <= 12; wx += 2) { a[wy][wx] = lit[li % lit.length]; li++; }
+      for (var wy2 = 9; wy2 <= 14; wy2 += 2) { P(a, 2, wy2, C.y); P(a, 3, wy2, C.k); }
+      R(a, 9, 14, 2, 2, C.k);                                  // door
+      P(a, 9, 2, C.p); P(a, 9, 1, C.P);                        // antenna
+      R(a, 0, 16, 18, 1, C.S);                                 // ground
+      return a;
+    }
+    function agentic() {
+      var a = blank();
+      R(a, 4, 4, 7, 6, C.p);                                   // bot head
+      P(a, 4, 4, null); P(a, 10, 4, null);
+      R(a, 5, 6, 2, 2, C.w); R(a, 8, 6, 2, 2, C.w);            // eyes
+      P(a, 6, 7, C.k); P(a, 9, 7, C.k);
+      P(a, 7, 3, C.p); P(a, 7, 2, C.P);                        // antenna
+      P(a, 5, 10, C.d); P(a, 7, 10, C.d); P(a, 9, 10, C.d); P(a, 5, 11, C.d); P(a, 9, 11, C.d);  // tentacles
+      R(a, 12, 8, 3, 3, C.y); P(a, 13, 7, C.y); P(a, 13, 11, C.y); P(a, 13, 9, C.Y);  // coin
+      return a;
+    }
+
+    var SCENES = [
+      { name: "Chemistry lab", g: chemistry() },
+      { name: "On the court", g: badminton() },
+      { name: "Learning to code", g: coding() },
+      { name: "Graduation", g: graduation() },
+      { name: "First company", g: company() },
+      { name: "Agentic payments · Polygon", g: agentic() }
+    ];
+
+    var cur = SCENES[0].g, idx = 0, transitioning = false, tProg = 0, thr = null, oldG = null, holdT = 0;
+    var W = 0, H = 0, DPR = 1, cell = 0, ox = 0, oy = 0, running = false, raf = 0, t0 = 0;
+
+    function resize() {
+      var r = canvas.getBoundingClientRect(); if (!r.width) return;
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      cell = Math.floor(Math.min(W, H) * 0.86 / N);
+      ox = Math.round((W - cell * N) / 2); oy = Math.round((H - cell * N) / 2);
+      draw();
+    }
+    function makeThresholds() {
+      thr = []; for (var y = 0; y < N; y++) { thr.push([]); for (var x = 0; x < N; x++) thr[y].push(((x + y) / (2 * N)) * 0.6 + Math.random() * 0.5); }
+    }
+    function setDots() {
+      if (!dotsEl) return; dotsEl.innerHTML = "";
+      for (var i = 0; i < SCENES.length; i++) { var d = document.createElement("i"); if (i === idx) d.className = "on"; dotsEl.appendChild(d); }
+    }
+    function setScene(i) { idx = i; cur = SCENES[i].g; if (nameEl) nameEl.textContent = SCENES[i].name; setDots(); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var c;
+        if (transitioning) c = (tProg >= thr[y][x]) ? SCENES[idx].g[y][x] : oldG[y][x];
+        else c = cur[y][x];
+        if (!c) continue;
+        ctx.fillStyle = c;
+        ctx.fillRect(ox + x * cell, oy + y * cell, cell + 0.6, cell + 0.6);
+      }
+    }
+    function step(dt) {
+      if (transitioning) {
+        tProg += dt / 0.9;
+        if (tProg >= 1) { transitioning = false; cur = SCENES[idx].g; holdT = 0; }
+      } else {
+        holdT += dt;
+        if (holdT > 2.6) { var ni = (idx + 1) % SCENES.length; oldG = cur; makeThresholds(); tProg = 0; transitioning = true; setScene(ni); }
+      }
+    }
+    function frame(now) {
+      if (!running) return;
+      if (!t0) t0 = now;
+      var dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+      step(dt); draw(); raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+
+    setScene(0); resize();
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(resize, 160); });
+
+    if (reduce) { setScene(SCENES.length - 1); draw(); return; }   // static "now" scene
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting && !document.hidden) start(); else stop(); }); }, { threshold: 0.2 }).observe(canvas);
+    } else { start(); }
+    document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else { var r = canvas.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) start(); } });
+  })();
+
+
   function bootTerminal() {
     var body = $("#term-body");
     if (!body) return;

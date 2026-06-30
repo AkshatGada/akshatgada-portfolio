@@ -29,9 +29,13 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 
 - Self-running terminal hero (slow-typing loop that narrates Akshat)
 - Text-scramble decode on the name at load
-- Custom blend-mode cursor + magnetic buttons/links
+- Magnetic buttons/links + a cursor-following hero spotlight (native cursor kept)
 - Selected work as a hover-reveal list with a synced, tilting preview panel
-- Word-by-word manifesto reveal, count-up, infinite stack marquee
+- Animated **pixel-art journey panel** beside the About copy: square pixels dissolve
+  through a six-scene story — chemistry lab → badminton → coding → graduation → first
+  company → agentic payments at Polygon — with a synced caption and progress dots. Pauses
+  offscreen; reduced motion shows the final "now" scene as a static frame.
+- Infinite stack marquee of the tools Akshat works with
 - Site-wide ambient background: a handful (4) of same-size **pixel-art** "agent" bots that
   **peek in from the edges**, patrol with stop-and-go, right-angle, robotic movement (scuttling
   legs, eyes facing travel direction), toss pixel gold coins to each other, then leave — so the
