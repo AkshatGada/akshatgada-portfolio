@@ -123,7 +123,39 @@
       el.addEventListener("mouseleave", function () { item.tx = 0; item.ty = 0; item.hover = false; });
       loopItems.push(item);
     });
+
+    // hero cursor-following spotlight
+    var hero = $(".hero");
+    if (hero) {
+      hero.addEventListener("mousemove", function (e) {
+        var r = hero.getBoundingClientRect();
+        hero.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        hero.style.setProperty("--my", (e.clientY - r.top) + "px");
+        hero.classList.add("spot-on");
+      });
+      hero.addEventListener("mouseleave", function () { hero.classList.remove("spot-on"); });
+    }
   }
+
+  /* ---------------- click-to-copy email ---------------- */
+  (function () {
+    var btn = document.getElementById("email-copy");
+    if (!btn) return;
+    var state = btn.querySelector(".email-state");
+    var orig = state ? state.textContent : "Copy";
+    btn.addEventListener("click", function () {
+      var email = btn.getAttribute("data-email");
+      function done() { btn.classList.add("copied"); if (state) state.textContent = "Copied!"; setTimeout(function () { btn.classList.remove("copied"); if (state) state.textContent = orig; }, 1800); }
+      function fallback() {
+        var ta = document.createElement("textarea"); ta.value = email; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(email).then(done, fallback);
+      else fallback();
+    });
+  })();
 
   function frame() {
     if (cursor.on) {
@@ -289,10 +321,14 @@
 
     var COMMANDS = {
       whoami: function () { printOut("Akshat Gada — DevRel engineer at Polygon. I lead agentic payments: giving AI agents a wallet, an identity, and the ability to pay over x402, settling onchain in stablecoins."); },
-      help: function () { printOut("commands: <span class='key'>whoami</span> · <span class='key'>work</span> · <span class='key'>focus</span> · <span class='key'>stack</span> · <span class='key'>pay --x402</span> · <span class='key'>contact</span> · <span class='key'>clear</span>"); },
+      help: function () { printOut("commands: <span class='key'>whoami</span> · <span class='key'>ls</span> · <span class='key'>work</span> · <span class='key'>focus</span> · <span class='key'>stack</span> · <span class='key'>pay --x402</span> · <span class='key'>cat about</span> · <span class='key'>socials</span> · <span class='key'>contact</span> · <span class='key'>clear</span><br><span class='hsmall'>↑/↓ history · tab autocompletes</span>"); },
+      ls: function () { printOut("<span class='key'>sections/</span> work · focus · about · contact<br><span class='key'>projects/</span> agent-cli · x402-rs · agent-docs · agentic-services · agentconnect"); },
       work: function () { printOut("5 shipped tools: Polygon Agent CLI, x402-rs, agent docs, Agentic Services, AgentConnect. opening the list…"); scrollToId("#work"); },
       focus: function () { printOut("agentic payments — agents that pay per request over x402, no human at checkout. scrolling…"); scrollToId("#focus"); },
       stack: function () { printOut("x402 · ERC-8004 · Rust · TypeScript · Polygon Chain · Agglayer · MCP · USDC · EIP-3009"); },
+      "cat about": function () { printOut("DevRel engineer at Polygon. Joined as an intern, full-time since 2025. I build in the open where agents, payments, and cross-chain meet — and write the proposals and tooling that make all three less painful. opening about…"); scrollToId("#about"); },
+      cat: function () { printOut("usage: <span class='key'>cat about</span>"); },
+      socials: function () { printOut("<a href='https://x.com/gada_akshat' target='_blank' rel='noopener'>x.com/gada_akshat</a> · <a href='https://github.com/AkshatGada' target='_blank' rel='noopener'>github/AkshatGada</a> · <a href='https://www.linkedin.com/in/akshat-gada-719076228/' target='_blank' rel='noopener'>linkedin</a> · <a href='mailto:agada@polygon.technology'>agada@polygon.technology</a>"); },
       contact: function () { printOut("<a href='https://x.com/gada_akshat' target='_blank' rel='noopener'>x.com/gada_akshat</a> · <a href='https://github.com/AkshatGada' target='_blank' rel='noopener'>github/AkshatGada</a> · <a href='https://www.linkedin.com/in/akshat-gada-719076228/' target='_blank' rel='noopener'>linkedin</a>"); scrollToId("#contact"); },
       clear: function () { body.innerHTML = ""; },
       "pay --x402": function () { payFlow(); },
@@ -341,9 +377,31 @@
 
     if (chips) chips.addEventListener("click", function (e) {
       var b = e.target.closest("button[data-cmd]"); if (!b) return; run(b.getAttribute("data-cmd"));
+      if (input) input.focus();
     });
+
+    var COMPLETIONS = ["whoami", "ls", "work", "focus", "stack", "pay --x402", "cat about", "socials", "contact", "help", "clear"];
+    var history = [], hi = -1;
     if (input) input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") { run(input.value); input.value = ""; }
+      if (e.key === "Enter") {
+        var v = input.value.trim();
+        if (v) { if (history[history.length - 1] !== v) history.push(v); }
+        hi = history.length;
+        run(input.value); input.value = "";
+      } else if (e.key === "ArrowUp") {
+        if (!history.length) return;
+        e.preventDefault(); hi = Math.max(0, hi - 1); input.value = history[hi] || "";
+        setTimeout(function () { input.setSelectionRange(input.value.length, input.value.length); }, 0);
+      } else if (e.key === "ArrowDown") {
+        if (!history.length) return;
+        e.preventDefault(); hi = Math.min(history.length, hi + 1); input.value = history[hi] || "";
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        var pre = input.value.trim().toLowerCase();
+        if (!pre) return;
+        var match = COMPLETIONS.filter(function (c) { return c.indexOf(pre) === 0; })[0];
+        if (match) input.value = match;
+      }
     });
   }
 })();

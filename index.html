@@ -6,10 +6,16 @@
   <title>Akshat Gada — building the machine-payable web</title>
   <meta name="description" content="Akshat Gada is a developer relations engineer at Polygon building agentic payments — the tools that let AI agents hold money, pay over x402, and settle onchain." />
   <meta name="theme-color" content="#0A0910" />
-  <link rel="icon" type="image/png" href="assets/polygon-icon-primary-purple.png" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="alternate icon" href="assets/polygon-icon-primary-purple.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Akshat Gada — building the machine-payable web" />
-  <meta property="og:description" content="DevRel engineer at Polygon. I build the tools that let AI agents pay." />
+  <meta property="og:description" content="DevRel engineer at Polygon. I build the tools that let AI agents pay — wallets, identity, and onchain settlement over x402." />
+  <meta property="og:image" content="assets/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Akshat Gada — building the machine-payable web" />
+  <meta name="twitter:description" content="DevRel engineer at Polygon. I build the tools that let AI agents pay." />
+  <meta name="twitter:image" content="assets/og.png" />
 
   <link rel="preload" href="fonts/PolySans-SlimWide.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="fonts/PolySans-Neutral.woff2" as="font" type="font/woff2" crossorigin />
@@ -49,6 +55,7 @@
   <!-- ─────────── HERO ─────────── -->
   <header class="hero">
     <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-spot" aria-hidden="true"></div>
 
     <div class="hero-status reveal">
       <span>Developer Relations · Polygon</span>
@@ -82,7 +89,7 @@
         </div>
         <div class="term-input-row">
           <span class="term-prompt">~ %</span>
-          <input class="term-input" id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type a command, then Enter" placeholder="type a command…" />
+          <input class="term-input" id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type a command, then Enter. Tab to autocomplete, up arrow for history." placeholder="type a command — try 'ls', tab to autocomplete" />
           <span class="term-caret" aria-hidden="true"></span>
         </div>
         <div class="term-chips" id="term-chips" aria-label="Commands">
@@ -269,7 +276,13 @@
     <div class="contact-glow" aria-hidden="true"></div>
     <h2 class="contact-title reveal">Let's build the<br />machine-payable web</h2>
     <p class="contact-sub reveal" data-delay="1">Agentic payments, x402, or building on Polygon — I'm always up for a good thread.</p>
-    <div class="contact-actions reveal" data-delay="2">
+    <div class="contact-email reveal" data-delay="2">
+      <button class="email-copy" id="email-copy" type="button" data-email="agada@polygon.technology" data-magnetic aria-label="Copy email address agada@polygon.technology">
+        <span class="email-text">agada@polygon.technology</span>
+        <span class="email-state">Copy</span>
+      </button>
+    </div>
+    <div class="contact-actions reveal" data-delay="3">
       <a class="btn btn-primary" href="https://x.com/gada_akshat" target="_blank" rel="noopener" data-magnetic>X / @gada_akshat <span class="tri" aria-hidden="true"></span></a>
       <a class="btn btn-ghost" href="https://github.com/AkshatGada" target="_blank" rel="noopener" data-magnetic>GitHub <span class="tri" aria-hidden="true"></span></a>
       <a class="btn btn-ghost" href="https://www.linkedin.com/in/akshat-gada-719076228/" target="_blank" rel="noopener" data-magnetic>LinkedIn <span class="tri" aria-hidden="true"></span></a>
