@@ -280,11 +280,50 @@
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function cl(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
+    // ── pixel-art sprites (no glow, flat colors) ──
+    var A_PAL = { P: "#7c4dff", D: "#4a2596", W: "#f2ecff", K: "#1a0f33", L: "#c9b3ff" };
+    var A_SPR = [
+      ".....L.....",
+      ".....P.....",
+      "...PPPPP...",
+      "..PPPPPPP..",
+      ".PPPPPPPPP.",
+      ".PWWPPPWWP.",
+      ".PWKPPPKWP.",
+      ".PPPPPPPPP.",
+      "..DPPPPPD..",
+      "..D.D.D.D..",
+      "..D.D.D.D.."
+    ];
+    var C_PAL = { Y: "#f5c542", y: "#c2901a", w: "#ffe9a8" };
+    var C_SPR = [
+      "..yyy..",
+      ".yYYYy.",
+      "yYwwYYy",
+      "yYYYYYy",
+      "yYYYYYy",
+      ".yYYYy.",
+      "..yyy.."
+    ];
+    function drawSprite(spr, pal, ox, oy, px, alpha) {
+      ctx.globalAlpha = alpha;
+      for (var r = 0; r < spr.length; r++) {
+        var row = spr[r];
+        for (var c = 0; c < row.length; c++) {
+          var ch = row.charAt(c); if (ch === ".") continue;
+          ctx.fillStyle = pal[ch];
+          ctx.fillRect(Math.floor(ox + c * px), Math.floor(oy + r * px), px + 1, px + 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
     function size() {
       DPR = Math.min(window.devicePixelRatio || 1, 2);
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.imageSmoothingEnabled = false;
     }
     function makeAgents() {
       var n = W < 700 ? 4 : (W < 1150 ? 5 : 7);
@@ -323,41 +362,18 @@
     }
 
     function drawAgent(a) {
-      var s = a.s, bob = Math.sin(a.t * a.tsp) * 3, pulse = 1 + a.give * 0.12 + a.got * 0.18;
-      ctx.save(); ctx.translate(a.x, a.y + bob); ctx.scale(pulse, pulse); ctx.globalAlpha = 0.46;
-      // tentacles
-      ctx.lineCap = "round"; ctx.strokeStyle = "rgba(123,31,255,0.85)"; ctx.lineWidth = s * 0.12;
-      for (var i = 0; i < 4; i++) {
-        var tx = (i - 1.5) * (s * 0.2), sway = Math.sin(a.t * 2.4 + i * 0.8) * (s * 0.1);
-        ctx.beginPath(); ctx.moveTo(tx, s * 0.27); ctx.quadraticCurveTo(tx + sway, s * 0.46, tx + sway * 1.3, s * 0.6); ctx.stroke();
-      }
-      // body
-      var g = ctx.createLinearGradient(0, -s * 0.5, 0, s * 0.45);
-      g.addColorStop(0, "#7b3fff"); g.addColorStop(1, "#3a1a74");
-      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, s * 0.46, s * 0.42, 0, 0, 7); ctx.fill();
-      ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(183,148,255,0.55)"; ctx.stroke();
-      // eyes (pupils lean toward motion)
-      var lx = cl(a.vx * 9, -s * 0.05, s * 0.05), ly = cl(a.vy * 9, -s * 0.04, s * 0.05);
-      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.15, -s * 0.02, s * 0.11, 0, 7); ctx.arc(s * 0.15, -s * 0.02, s * 0.11, 0, 7); ctx.fill();
-      ctx.fillStyle = "#170a2e"; ctx.beginPath(); ctx.arc(-s * 0.15 + lx, -s * 0.02 + ly, s * 0.055, 0, 7); ctx.arc(s * 0.15 + lx, -s * 0.02 + ly, s * 0.055, 0, 7); ctx.fill();
-      // antenna
-      ctx.strokeStyle = "rgba(123,31,255,0.85)"; ctx.lineWidth = s * 0.045;
-      ctx.beginPath(); ctx.moveTo(0, -s * 0.42); ctx.lineTo(0, -s * 0.56); ctx.stroke();
-      ctx.fillStyle = "#b794ff"; ctx.beginPath(); ctx.arc(0, -s * 0.6, s * 0.06, 0, 7); ctx.fill();
-      ctx.restore();
+      var rows = A_SPR.length, cols = A_SPR[0].length;
+      var px = Math.max(2, Math.round(a.s / rows));
+      var bob = Math.round(Math.sin(a.t * a.tsp) * px * 0.7);   // bob in whole-pixel steps
+      var hop = a.got > 0.4 ? px : 0;                            // little hop when it catches a coin
+      var ox = a.x - (cols * px) / 2, oy = a.y - (rows * px) / 2 + bob - hop;
+      drawSprite(A_SPR, A_PAL, ox, oy, px, 0.72);
     }
     function drawCoin(c) {
-      var pp = coinPos(c), rx = Math.max(1.2, c.r * Math.abs(Math.cos(c.spin)));
-      ctx.save(); ctx.translate(pp.x, pp.y); ctx.globalAlpha = cl(c.alpha, 0, 1);
-      var gg = ctx.createRadialGradient(0, 0, 0, 0, 0, c.r * 2.6);
-      gg.addColorStop(0, "rgba(233,216,255,0.5)"); gg.addColorStop(1, "rgba(123,31,255,0)");
-      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(0, 0, c.r * 2.6, 0, 7); ctx.fill();
-      var g = ctx.createLinearGradient(0, -c.r, 0, c.r);
-      g.addColorStop(0, "#f3e9ff"); g.addColorStop(0.5, "#c9a9ff"); g.addColorStop(1, "#7b1fff");
-      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, rx, c.r, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = "rgba(243,233,255,0.9)"; ctx.lineWidth = 1; ctx.stroke();
-      if (rx > c.r * 0.5) { ctx.fillStyle = "rgba(40,16,80,0.85)"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold " + (c.r * 1.1).toFixed(0) + "px " + MONO; ctx.fillText("$", 0, 0.5); }
-      ctx.restore();
+      var pp = coinPos(c), rows = C_SPR.length, cols = C_SPR[0].length;
+      var px = Math.max(2, Math.round(c.r / 3));
+      var ox = pp.x - (cols * px) / 2, oy = pp.y - (rows * px) / 2;
+      drawSprite(C_SPR, C_PAL, ox, oy, px, cl(c.alpha, 0, 1));
     }
     function draw() {
       ctx.clearRect(0, 0, W, H);
