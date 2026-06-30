@@ -34,9 +34,11 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 - A **pixel-art short film** beside the About copy: a recurring pixel character walks
   through five life phases — badminton → chemistry lab → coding → graduation → agentic
   payments at Polygon — performing each (held props, ambient particles, a walk cycle),
-  then walking on as the world cross-dissolves to the next. Unlabelled by design — just
-  progress dots. Fully procedural; pauses offscreen; reduced motion shows the final "now"
-  phase as a static frame.
+  then walking on as the world cross-dissolves to the next. He **ages across the scenes**:
+  a small boy who grows taller and slowly grows a beard, ending in his early 20s — every
+  prop anchors to his current build so it tracks him as he grows. Unlabelled by design —
+  just progress dots. Fully procedural; pauses offscreen; reduced motion shows the final
+  "now" phase as a static frame.
 - Infinite stack marquee of the tools Akshat works with
 - Site-wide ambient background: a handful (4) of same-size **pixel-art** "agent" bots that
   **peek in from the edges**, patrol with stop-and-go, right-angle, robotic movement (scuttling

@@ -656,61 +656,79 @@
     function ease(u) { return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
     function clone(o) { var r = {}; for (var k in o) r[k] = o[k]; return r; }
 
+    /* ---- aging: the character grows scene to scene -------------
+       One stage per phase (boy → early 20s): taller body + a beard
+       that fills in. Every limb/prop anchors off these metrics so
+       the props track his real shoulder/hand/head as he grows. */
+    var STAGE = [
+      { legH: 2, torsoH: 4, beard: 0 },   // 0 small boy
+      { legH: 3, torsoH: 4, beard: 0 },   // 1 taller, no beard
+      { legH: 4, torsoH: 5, beard: 1 },   // 2 stubble
+      { legH: 5, torsoH: 5, beard: 2 },   // 3 short beard
+      { legH: 5, torsoH: 6, beard: 3 }    // 4 full beard, early 20s
+    ];
+    function metrics(s) {
+      var st = STAGE[s] || STAGE[STAGE.length - 1];
+      var legH = st.legH, torsoH = st.torsoH, shoulder = legH + torsoH, chin = shoulder + 2;
+      return {
+        legH: legH, torsoH: torsoH, hip: legH, shoulder: shoulder, neck: shoulder + 1,
+        chin: chin, eyes: chin + 1, brow: chin + 2, hair1: chin + 3, hair2: chin + 4,
+        top: chin + 4, hand: shoulder - 3, beard: st.beard
+      };
+    }
+
     /* ---- the character ----------------------------------------
-       7 wide × 16 tall, anchored by top-left col `hx`, feet at `by`.
-       p: { skin, hair, shirt, pants, shoe, robe, hat, arms, step, face } */
+       7 wide, variable height, anchored top-left col `hx`, feet at
+       `by`. p.m holds the stage metrics; p: { skin, hair, shirt,
+       pants, shoe, robe, hat, arms, step, face, m } */
     function human(a, hx, by, p) {
       hx = Math.round(hx);
+      var m = p.m || metrics(0);
       var K = p.skin || C.skin, H = p.hair || C.hair, T = p.shirt || C.coat,
           Pn = p.pants || C.navy, B = p.shoe || C.shoe, E = C.eye,
-          robe = p.robe, SLV = robe || T, step = p.step;
+          robe = p.robe, SLV = robe || T, step = p.step, dy;
       function q(dx, dy, c) { P(a, hx + dx, by - dy, c); }
 
       if (robe) {                                   // gown: hem + body, no legs
         R(a, hx, by - 1, 7, 2, robe);
-        for (var dy = 2; dy <= 9; dy++) R(a, hx + 1, by - dy, 5, 1, robe);
+        for (dy = 2; dy <= m.shoulder; dy++) R(a, hx + 1, by - dy, 5, 1, robe);
       } else {
-        for (var dx = 1; dx <= 5; dx++) q(dx, 4, Pn);     // hips
-        if (step === 0) {                                 // left planted, right lifted
-          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,Pn);q(2,1,Pn);q(1,0,B);q(2,0,B);
-          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,B);q(5,1,B);
-        } else if (step === 1) {                          // right planted, left lifted
-          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,Pn);q(5,1,Pn);q(4,0,B);q(5,0,B);
-          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,B);q(2,1,B);
-        } else {                                          // both feet down (idle)
-          q(1,3,Pn);q(2,3,Pn);q(1,2,Pn);q(2,2,Pn);q(1,1,Pn);q(2,1,Pn);q(1,0,B);q(2,0,B);
-          q(4,3,Pn);q(5,3,Pn);q(4,2,Pn);q(5,2,Pn);q(4,1,Pn);q(5,1,Pn);q(4,0,B);q(5,0,B);
-        }
-        for (var dy2 = 5; dy2 <= 9; dy2++) R(a, hx + 1, by - dy2, 5, 1, T);   // torso
+        for (dy = 1; dy <= m.hip; dy++) { q(1,dy,Pn); q(2,dy,Pn); q(4,dy,Pn); q(5,dy,Pn); }  // legs (gap at col 3)
+        var liftL = step === 1, liftR = step === 0;                                          // walk: lift one foot
+        if (liftL) { q(1,1,B); q(2,1,B); } else { q(1,0,B); q(2,0,B); }
+        if (liftR) { q(4,1,B); q(5,1,B); } else { q(4,0,B); q(5,0,B); }
+        for (dy = m.hip + 1; dy <= m.shoulder; dy++) R(a, hx + 1, by - dy, 5, 1, T);          // torso
       }
-      q(3, 10, K);                                        // neck
-      for (var dx3 = 1; dx3 <= 5; dx3++) { q(dx3, 15, H); q(dx3, 14, H); }    // hair
-      q(1,13,H); q(2,13,K); q(3,13,K); q(4,13,K); q(5,13,H);                  // brow line
-      q(1,12,K); q(2,12,K); q(3,12,K); q(4,12,K); q(5,12,K);                  // eye row
+      q(3, m.neck, K);                                                          // neck
+      for (var dx = 1; dx <= 5; dx++) { q(dx, m.hair2, H); q(dx, m.hair1, H); } // hair
+      q(1,m.brow,H); q(2,m.brow,K); q(3,m.brow,K); q(4,m.brow,K); q(5,m.brow,H);// brow line
+      q(1,m.eyes,K); q(2,m.eyes,K); q(3,m.eyes,K); q(4,m.eyes,K); q(5,m.eyes,K);// eye row
       var ex = p.face === "right" ? [3, 5] : [2, 4];
-      P(a, hx + ex[0], by - 12, E); P(a, hx + ex[1], by - 12, E);
-      q(2,11,K); q(3,11,K); q(4,11,K);                                        // chin
+      P(a, hx + ex[0], by - m.eyes, E); P(a, hx + ex[1], by - m.eyes, E);
+      q(2,m.chin,K); q(3,m.chin,K); q(4,m.chin,K);                              // chin
+      if (m.beard >= 1) { q(2,m.chin,H); q(4,m.chin,H); }                       // stubble
+      if (m.beard >= 2) { q(3,m.chin,H); q(1,m.eyes,H); q(5,m.eyes,H); }        // short beard
+      if (m.beard >= 3) { q(1,m.chin,H); q(5,m.chin,H); q(2,m.eyes,H); q(4,m.eyes,H); }  // full beard
 
-      if (p.hat === "grad") {                             // mortarboard
-        R(a, hx - 1, by - 16, 9, 1, C.S2);
-        R(a, hx + 1, by - 15, 5, 1, C.S2);
-        P(a, hx + 3, by - 15, C.y);                       // button
-        P(a, hx + 6, by - 15, C.y); P(a, hx + 6, by - 14, C.y);
-        P(a, hx + 6, by - 13, C.y); P(a, hx + 5, by - 12, C.Y);              // tassel
+      if (p.hat === "grad") {                             // mortarboard above the hair
+        var b = m.hair2 + 1;
+        R(a, hx - 1, by - b, 9, 1, C.S2); R(a, hx + 1, by - (b - 1), 5, 1, C.S2);
+        P(a, hx + 3, by - (b - 1), C.y);                  // button
+        P(a, hx + 6, by - (b - 1), C.y); P(a, hx + 6, by - (b - 2), C.y);
+        P(a, hx + 6, by - (b - 3), C.y); P(a, hx + 5, by - (b - 4), C.Y);      // tassel
       }
       var am = p.arms || "down";                          // "none" → scene draws arms
       if (am === "down" || am === "walk") {
-        var lh = 6, rh = 6;
-        if (am === "walk") { if (step === 0) { lh = 5; rh = 7; } else if (step === 1) { lh = 7; rh = 5; } }
-        q(0,9,SLV); q(0,8,SLV); q(0,7,K); q(0,lh,K);
-        q(6,9,SLV); q(6,8,SLV); q(6,7,K); q(6,rh,K);
+        var sh = m.shoulder;
+        q(0,sh,SLV); q(0,sh-1,SLV); q(0,sh-2,K); q(0,sh-3,K);
+        q(6,sh,SLV); q(6,sh-1,SLV); q(6,sh-2,K); q(6,sh-3,K);
       }
     }
 
-    function armDown(a, hx, by, side, slv) {              // a single hanging arm
-      var dx = side < 0 ? 0 : 6;
-      P(a, hx + dx, by - 9, slv); P(a, hx + dx, by - 8, slv);
-      P(a, hx + dx, by - 7, C.skin); P(a, hx + dx, by - 6, C.skin);
+    function armDown(a, hx, by, side, slv, m) {           // a single hanging arm
+      var dx = side < 0 ? 0 : 6, sh = m.shoulder;
+      P(a, hx + dx, by - sh, slv); P(a, hx + dx, by - (sh - 1), slv);
+      P(a, hx + dx, by - (sh - 2), C.skin); P(a, hx + dx, by - (sh - 3), C.skin);
     }
 
     /* ---- per-phase appearance --------------------------------- */
@@ -754,18 +772,19 @@
     }
 
     /* ---- per-phase activity (arms + props + particles) -------- */
-    function act0(a, hx, by, at) {                        // hold a bubbling flask
-      armDown(a, hx, by, -1, C.coat);
-      P(a,hx+6,by-9,C.coat); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-10,C.skin);  // raised hand
-      var fx = hx + 7;                                    // Erlenmeyer flask, tapered
-      R(a, fx, by - 15, 2, 1, C.w);                       // lip
-      R(a, fx, by - 14, 2, 1, C.s);                       // neck
-      R(a, fx - 1, by - 13, 4, 1, C.s);                   // glass shoulder
-      R(a, fx - 1, by - 12, 4, 1, C.g);                   // liquid
-      R(a, fx - 1, by - 11, 4, 1, C.g);                   // liquid base
+    function act0(a, hx, by, at, gt, m) {                 // hold a bubbling flask
+      var sh = m.shoulder;
+      armDown(a, hx, by, -1, C.coat, m);
+      P(a,hx+6,by-sh,C.coat); P(a,hx+7,by-(sh+1),C.skin); P(a,hx+8,by-(sh+1),C.skin);  // raised hand
+      var fx = hx + 7, fb = sh + 2;                       // Erlenmeyer flask, tapered, above the hand
+      R(a, fx - 1, by - fb, 4, 1, C.g);                   // liquid base
+      R(a, fx - 1, by - (fb + 1), 4, 1, C.g);             // liquid
+      R(a, fx - 1, by - (fb + 2), 4, 1, C.s);             // glass shoulder
+      R(a, fx, by - (fb + 3), 2, 1, C.s);                 // neck
+      R(a, fx, by - (fb + 4), 2, 1, C.w);                 // lip
       for (var b = 0; b < 3; b++) {                       // bubbles rising
         var ph = (at * 1.5 + b * 0.45) % 1;
-        P(a, fx + b, by - 12 - Math.floor(ph * 4), C.t);
+        P(a, fx + b, by - (fb + 1) - Math.floor(ph * 3), C.t);
       }
     }
     function racket(a, x, y) {                            // oval head + handle, white frame
@@ -775,42 +794,44 @@
       R(a, x, y + 3, 3, 1, C.w);
       P(a, x + 1, y + 1, C.s); P(a, x + 1, y + 2, C.s);  // strings
     }
-    function act1(a, hx, by, at) {                        // swing a racket, shuttle arcs
-      armDown(a, hx, by, -1, C.sport);
-      var up = Math.sin(at * 3.0) > 0, hxr, hyr, rx, ry;
+    function act1(a, hx, by, at, gt, m) {                 // swing a racket, shuttle arcs
+      var sh = m.shoulder;
+      armDown(a, hx, by, -1, C.sport, m);
+      var up = Math.sin(at * 3.0) > 0, rx, ry;
       if (up) {                                          // overhead swing
-        P(a,hx+6,by-9,C.sport); P(a,hx+7,by-10,C.skin); P(a,hx+8,by-11,C.skin);
-        rx = hx + 7; ry = by - 16; P(a, hx + 8, by - 12, C.brown2);  // handle to hand
+        P(a,hx+6,by-sh,C.sport); P(a,hx+7,by-(sh+1),C.skin); P(a,hx+8,by-(sh+2),C.skin);
+        rx = hx + 7; ry = by - (sh + 5); P(a, hx + 8, by - (sh + 3), C.brown2);  // handle to hand
       } else {                                           // ready, racket out
-        P(a,hx+6,by-9,C.sport); P(a,hx+8,by-9,C.skin);
-        rx = hx + 9; ry = by - 12; P(a, hx + 10, by - 8, C.brown2);
+        P(a,hx+6,by-sh,C.sport); P(a,hx+8,by-sh,C.skin);
+        rx = hx + 9; ry = by - (sh + 1); P(a, hx + 10, by - (sh - 1), C.brown2);
       }
       racket(a, rx, ry);
       var u = (at * 0.42) % 1;                            // shuttlecock arcing over the net
-      var sx = Math.round(lerp(hx + 9, N - 3, u)), sy = Math.round(by - 16 - Math.sin(u * Math.PI) * 4);
+      var sx = Math.round(lerp(hx + 9, N - 3, u)), sy = Math.round(by - (m.top + 1) - Math.sin(u * Math.PI) * 4);
       P(a, sx, sy, C.y); P(a, sx, sy + 1, C.Y);          // cork
       P(a, sx - 1, sy - 1, C.w); P(a, sx, sy - 1, C.w); P(a, sx + 1, sy - 1, C.w);
       P(a, sx - 1, sy - 2, C.w); P(a, sx + 1, sy - 2, C.w);  // feathers
     }
-    function act2(a, hx, by, at) {                        // type at a standing desk
-      P(a,hx+0,by-9,C.grey); P(a,hx+0,by-8,C.grey); P(a,hx+0,by-7,C.grey);    // arms reaching down
-      P(a,hx+6,by-9,C.grey); P(a,hx+6,by-8,C.grey); P(a,hx+6,by-7,C.grey);
-      R(a, hx - 5, by - 5, 17, 1, C.S);                   // desk surface (waist height)
-      R(a, hx - 5, by - 4, 17, 5, C.S2);                  // desk front (hides legs)
+    function act2(a, hx, by, at, gt, m) {                 // type at a standing desk
+      var sh = m.shoulder, d = m.hip + 1;                 // desk surface dy (waist)
+      P(a,hx+0,by-sh,C.grey); P(a,hx+0,by-(sh-1),C.grey); P(a,hx+0,by-(sh-2),C.grey);  // arms down
+      P(a,hx+6,by-sh,C.grey); P(a,hx+6,by-(sh-1),C.grey); P(a,hx+6,by-(sh-2),C.grey);
+      R(a, hx - 5, by - d, 17, 1, C.S);                   // desk surface
+      R(a, hx - 5, by - (d - 1), 17, d, C.S2);            // desk front (hides legs)
       var lx = hx + 1;                                    // laptop sits on the desk
-      R(a, lx, by - 10, 7, 5, C.S);                       // screen bezel (below the face)
-      R(a, lx + 1, by - 9, 5, 3, C.k);                    // screen
+      R(a, lx, by - (d + 5), 7, 5, C.S);                  // screen bezel (below the face)
+      R(a, lx + 1, by - (d + 4), 5, 3, C.k);              // screen
       var off = Math.floor(at * 4) % 3, cols = [C.P, C.t, C.g, C.y, C.w];
-      for (var rr = 0; rr < 3; rr++) R(a, lx + 1, by - 9 + rr, 2 + ((rr + off) % 3), 1, cols[(rr + off) % cols.length]);
-      R(a, lx, by - 5, 7, 1, C.k);                        // keyboard deck on the desk
+      for (var rr = 0; rr < 3; rr++) R(a, lx + 1, by - (d + 4) + rr, 2 + ((rr + off) % 3), 1, cols[(rr + off) % cols.length]);
+      R(a, lx, by - d, 7, 1, C.k);                        // keyboard deck on the desk
       var tap = Math.floor(at * 9) % 2;                   // tapping hands
-      P(a, hx + 1, by - 6 - tap, C.skin); P(a, hx + 5, by - 6 - (1 - tap), C.skin);
+      P(a, hx + 1, by - (d + 1) - tap, C.skin); P(a, hx + 5, by - (d + 1) - (1 - tap), C.skin);
     }
-    function act3(a, hx, by, at) {                        // diploma + confetti
-      var rb = C.S2;
-      armDown(a, hx, by, -1, rb);
-      P(a,hx+6,by-9,rb); P(a,hx+6,by-8,rb); P(a,hx+6,by-7,C.skin);
-      R(a, hx + 7, by - 8, 2, 1, C.w); R(a, hx + 7, by - 7, 2, 1, C.s); R(a, hx + 7, by - 6, 2, 1, C.w);  // diploma
+    function act3(a, hx, by, at, gt, m) {                 // diploma + confetti
+      var rb = C.S2, sh = m.shoulder;
+      armDown(a, hx, by, -1, rb, m);
+      P(a,hx+6,by-sh,rb); P(a,hx+6,by-(sh-1),rb); P(a,hx+6,by-(sh-2),C.skin);          // right arm
+      R(a, hx + 7, by - (sh-1), 2, 1, C.w); R(a, hx + 7, by - (sh-2), 2, 1, C.s); R(a, hx + 7, by - (sh-3), 2, 1, C.w);  // diploma
       var cc = [C.p, C.y, C.g, C.t, C.r, C.P];
       for (var i = 0; i < 11; i++) {                      // confetti rain
         var cx = (i * 5 + 2) % N;
@@ -818,18 +839,19 @@
         P(a, cx, cy, cc[i % cc.length]);
       }
     }
-    function act5(a, hx, by, at, gt) {                    // hand a coin to an agent
-      armDown(a, hx, by, -1, C.p);
-      P(a,hx+6,by-9,C.p); P(a,hx+7,by-9,C.skin); P(a,hx+7,by-10,C.skin);     // raised hand
+    function act5(a, hx, by, at, gt, m) {                 // hand a coin to an agent
+      var sh = m.shoulder;
+      armDown(a, hx, by, -1, C.p, m);
+      P(a,hx+6,by-sh,C.p); P(a,hx+7,by-sh,C.skin); P(a,hx+7,by-(sh+1),C.skin);  // raised hand
       var bob = Math.round(Math.sin(gt * 3) * 1.4);
-      var bx = hx + 10, byy = by - 13 + bob;             // the agent bot
+      var bx = hx + 10, byy = by - m.eyes + bob;         // the agent bot, at head height
       R(a, bx, byy, 5, 4, C.p);
       R(a, bx + 1, byy + 1, 1, 2, C.w); R(a, bx + 3, byy + 1, 1, 2, C.w);
       P(a, bx + 1, byy + 2, C.k); P(a, bx + 3, byy + 2, C.k);
       P(a, bx + 2, byy - 1, C.P);
       P(a, bx + 1, byy + 4, C.d); P(a, bx + 3, byy + 4, C.d);
       var u = (at * 0.7) % 1;                             // coin in flight (x402)
-      var coinx = lerp(hx + 8, bx + 1, u), coiny = lerp(by - 10, byy + 2, u) - Math.sin(u * Math.PI) * 3;
+      var coinx = lerp(hx + 8, bx + 1, u), coiny = lerp(by - (sh + 1), byy + 2, u) - Math.sin(u * Math.PI) * 3;
       P(a, coinx, coiny, C.y); P(a, coinx, coiny - 1, C.Y);
     }
 
@@ -883,13 +905,14 @@
       R(a, 0, GY + 1, N, 1, C.floorTop);
       R(a, Math.round(hx) + 1, GY + 1, 5, 1, C.shadow);   // foot shadow
 
-      var p = clone(SCENES[idx].look);
+      var p = clone(SCENES[idx].look), m = metrics(idx);
+      p.m = m;
       if (phase === "act") {
         p.arms = "none";
         p.step = SCENES[idx].march ? stride : null;
         p.face = "front";
         human(a, hx, GY, p);
-        SCENES[idx].act(a, Math.round(hx), GY, pt, gt);
+        SCENES[idx].act(a, Math.round(hx), GY, pt, gt, m);
       } else {
         p.arms = "down"; p.face = "right"; p.step = stride;
         human(a, hx, GY, p);
