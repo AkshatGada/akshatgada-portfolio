@@ -401,6 +401,21 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
 .post-end .sig { font-family: var(--font-mono); font-size: 13px; color: var(--fg-faint); }
 .back-link { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.03em; color: var(--fg-muted); text-decoration: none; transition: color .2s var(--ease-std); }
 .back-link:hover { color: var(--purple-text); }
+.subscribe { margin-top: clamp(48px, 7vw, 88px); padding-top: clamp(32px, 4vw, 48px); border-top: 1px solid var(--line); max-width: 640px; }
+.subscribe-title { font-family: var(--font-display); font-weight: 500; font-size: clamp(26px, 3vw, 36px); letter-spacing: -0.01em; margin: 0 0 14px; }
+.subscribe-note { font-size: 16px; line-height: 1.55; color: var(--fg-muted); max-width: 52ch; margin: 0 0 24px; }
+.sub-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.sub-input { flex: 1 1 240px; min-width: 0; font-family: var(--font-mono); font-size: 14px; color: var(--fg);
+  background: var(--bg-2); border: 1px solid var(--line-2); border-radius: var(--cham-btn); padding: 13px 16px; transition: border-color .2s var(--ease-std); }
+.sub-input::placeholder { color: var(--fg-faint); }
+.sub-input:focus { outline: none; border-color: var(--purple-text); }
+.sub-btn { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; color: #fff; background: var(--purple);
+  border: 0; border-radius: var(--cham-btn); padding: 13px 22px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  transition: background .2s var(--ease-std), transform .2s var(--ease-out); }
+.sub-btn:hover { background: var(--purple-hover); transform: translateY(-1px); }
+.sub-alt { font-family: var(--font-mono); font-size: 13px; color: var(--fg-faint); margin: 16px 0 0; }
+.sub-alt a { color: var(--purple-text); text-decoration: none; }
+.sub-alt a:hover { text-decoration: underline; }
 @media (max-width: 640px) {
   .post-row a { grid-template-columns: 1fr; }
   .post-row-meta { grid-row: 1; }

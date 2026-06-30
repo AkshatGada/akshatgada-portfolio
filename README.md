@@ -62,25 +62,41 @@ All hand-rolled in vanilla JS, GPU-friendly (transform/opacity), and fully
 
 ```
 index.html            markup + copy
-blog/index.html       Writing index (post list)
+blog/index.html       Writing index (post list + subscribe block)
 blog/*.html           individual essays (shared design system, Article JSON-LD)
+blog/feed.xml         RSS 2.0 feed (one <item> per post)
+tools/og-card.html    per-post social-card generator (title-driven)
 styles.css            dark theme, components, chamfer shape language, responsive + reduced-motion
 colors_and_type.css   Polygon design tokens + PolySans @font-face
 app.js                all interactions (one shared rAF loop), reduced-motion + no-JS safe
 fonts/                PolySans woff2 (display / body / mono)
-assets/               Polygon logos + marks (PNG), og.png social card
+assets/               Polygon logos + marks (PNG), og.png; og/ per-post social cards
 icons/{purple,grey}/  Polygon outline icons
 llms.txt              machine-readable profile for AI agents / answer engines
 robots.txt            crawl rules (search + AI bots) + sitemap pointer
-sitemap.xml           single-page sitemap
+sitemap.xml           homepage + writing URLs
 ```
 
 ## SEO / discovery
 
 `index.html` ships a keyword-tuned `<title>`, meta description, canonical, Open Graph +
 Twitter cards (absolute image URLs), and JSON-LD (`Person` + `WebSite` + `ProfilePage`,
-linked by `@id`). `llms.txt`, `robots.txt`, and `sitemap.xml` cover AI answer-engines and
-crawlers. After deploy, submit the domain in Google Search Console and request indexing.
+linked by `@id`). Posts carry `BlogPosting` JSON-LD. `llms.txt`, `robots.txt`, and
+`sitemap.xml` cover AI answer-engines and crawlers. After deploy, submit the domain in
+Google Search Console and request indexing.
+
+## Blog: feed, social cards, subscribe
+
+- **RSS** lives at `/blog/feed.xml` and is auto-discovered from every page
+  (`<link rel="alternate" type="application/rss+xml">`). Add one `<item>` per new post.
+- **Per-post OG images** (1200×630): open `tools/og-card.html?title=...&tag=...` and
+  screenshot it, e.g.
+  `chrome --headless=new --force-device-scale-factor=1 --window-size=1200,630 \
+   --screenshot=assets/og/<slug>.png "http://localhost:8000/tools/og-card.html?title=<URL-encoded>&tag=<tag>"`,
+  then point the post's `og:image` / `twitter:image` at `assets/og/<slug>.png`.
+- **Subscribe** uses a Buttondown embed on the writing index — replace `BUTTONDOWN_USER`
+  (two places in `blog/index.html`) with your Buttondown username to make email capture
+  live; RSS and the X link already work.
 
 ## Content notes (confirm / customize)
 

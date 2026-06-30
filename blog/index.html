@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#0A0910" />
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <link rel="alternate icon" href="../assets/polygon-icon-primary-purple.png" />
+  <link rel="alternate" type="application/rss+xml" title="Akshat Gada — Writing" href="/blog/feed.xml" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Akshat Gada" />
@@ -64,6 +65,17 @@
           </a>
         </li>
       </ul>
+
+      <section class="subscribe" aria-labelledby="sub-title">
+        <h2 class="subscribe-title" id="sub-title">Follow along</h2>
+        <p class="subscribe-note">New essays on agentic payments, agent swarms, and the machine-payable web — what I'm building, and what I think about it. Occasional. Never spam.</p>
+        <!-- Email capture via Buttondown. Replace BUTTONDOWN_USER (both places) with your Buttondown username to go live; RSS + X work as-is. -->
+        <form class="sub-form" action="https://buttondown.com/api/emails/embed-subscribe/BUTTONDOWN_USER" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.com/BUTTONDOWN_USER','popupwindow')">
+          <input class="sub-input" type="email" name="email" placeholder="you@email.com" aria-label="Email address" required />
+          <button class="sub-btn" type="submit">Subscribe <span class="tri" aria-hidden="true"></span></button>
+        </form>
+        <p class="sub-alt">Prefer a reader? <a href="/blog/feed.xml">RSS</a> · or <a href="https://x.com/gada_akshat" target="_blank" rel="noopener">follow on X</a>.</p>
+      </section>
     </div>
   </main>
 

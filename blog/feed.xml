@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Akshat Gada — Writing</title>
+    <link>https://akshatgada.com/blog/</link>
+    <atom:link href="https://akshatgada.com/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Notes on agentic payments, agent swarms, and the machine-payable web — what I'm building, and what I think about it.</description>
+    <language>en</language>
+    <managingEditor>agada@polygon.technology (Akshat Gada)</managingEditor>
+    <webMaster>agada@polygon.technology (Akshat Gada)</webMaster>
+    <lastBuildDate>Wed, 01 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://akshatgada.com/assets/og.png</url>
+      <title>Akshat Gada — Writing</title>
+      <link>https://akshatgada.com/blog/</link>
+    </image>
+
+    <item>
+      <title>One big brain is the wrong bet</title>
+      <link>https://akshatgada.com/blog/agent-swarms.html</link>
+      <guid isPermaLink="true">https://akshatgada.com/blog/agent-swarms.html</guid>
+      <pubDate>Thu, 12 Mar 2026 09:00:00 +0000</pubDate>
+      <category>Agent swarms</category>
+      <description>Everyone's racing to build a single, enormous mind. The most interesting AI of the last two years came from the opposite move — throw a lot of small agents in a room and let them sort it out. On swarms, emergence (Vicsek, Boids, OpenAI hide-and-seek, Generative Agents, Project Sid), and why the swarm needs real payments.</description>
+    </item>
+  </channel>
+</rss>
