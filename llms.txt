@@ -40,8 +40,7 @@ machine-payable web.
 
 ## Writing
 - [Writing index](https://akshatgada.com/blog/) — essays on agentic payments, x402, and the machine-payable web.
-- [Awake in the simulation](https://akshatgada.com/blog/lucid-dreaming.html) — the science of lucid dreaming (LaBerge's eye-signal proof, real-time dialogue with dreamers, the 40 Hz signature) and how to learn it.
-- [One big brain is the wrong bet](https://akshatgada.com/blog/agent-swarms.html) — on AI agent swarms and emergence (Vicsek, Boids, OpenAI hide-and-seek, Generative Agents, Project Sid), and why the swarm needs real payments.
+- [Cloudflare just turned on the meter](https://akshatgada.com/blog/cloudflare-402.html) — on Cloudflare's x402 Monetization Gateway and the start of the agent economy; how Polygon's facilitator, Agent CLI, and Agentic Services fit.
 
 ## Talks
 - [Polygon Tracks 101](https://www.youtube.com/watch?v=3Ba9KkJOsoc) — building on Polygon for developers getting started.
