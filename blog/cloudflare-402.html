@@ -82,19 +82,19 @@
         <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>2 Jul 2026</span><span>7 min read</span></p>
         <h1 class="post-title">Cloudflare just turned on the meter</h1>
         <p class="post-dek">Yesterday Cloudflare put an x402 paywall in front of a fifth of the web. This is the starting gun for the agent economy — and it's exactly the race we've been training for at Polygon.</p>
-        <p class="post-byline">By <b>Akshat Gada</b> — I build the agentic-payments stack at Polygon: the facilitator, the Agent CLI, the Agentic Services dashboard. So yes, I have a horse in this race. It <em>is</em> the race.</p>
+        <p class="post-byline">By <b>Akshat Gada</b>, developer at Polygon. <a href="../">Visit my site →</a></p>
       </header>
 
       <div class="post-body">
-        <p class="lead-line">I've spent the last year building the unglamorous half of the agent economy — the part that lets an AI agent actually pay for something. So when Cloudflare shipped the <a href="https://blog.cloudflare.com/monetization-gateway/" target="_blank" rel="noopener noreferrer">Monetization Gateway</a> yesterday, I didn't read it like a news story. I read it like someone finding out a second team had been climbing the same mountain from the other side.</p>
+        <p class="lead-line">At Polygon, we've spent the last year building the payment layer for the agent economy — the tools that let an AI agent hold a wallet, pay for what it uses, and settle onchain, per request. So when Cloudflare shipped the <a href="https://blog.cloudflare.com/monetization-gateway/" target="_blank" rel="noopener noreferrer">Monetization Gateway</a> yesterday, it didn't land like a surprise. It landed like the moment we've been building toward, finally arriving.</p>
 
-        <p>I'll be honest about what building this feels like most days. You write a facilitator. You get an agent to pay a tenth of a cent for an API call. It works, and it genuinely feels like magic — and then a little voice asks whether the rest of the world is actually going to show up for this, or whether you're early in the way that's just a polite word for wrong. I've had that voice for about a year.</p>
+        <p>We placed this bet early. A year ago, "AI agents will be real buyers — paying for data, calling APIs, hiring each other" sounded like a slide from someone's 2030 deck. We built for it anyway: the facilitator, the CLI that gives an agent a wallet, the dashboard where services list themselves so agents can find them. And now the largest infrastructure company on the internet has shipped the other half of that exact vision. That's not competition. That's the market showing up.</p>
 
-        <p>Yesterday it went quiet. When the company sitting in front of a fifth of the web decides the internet needs a native way to charge machines, "is this real" stops being a question. It's real. I've got the commit history — now Cloudflare's got the press release.</p>
+        <p>When the company sitting in front of a fifth of the web decides the internet needs a native way to charge machines, the question stops being "is this coming?" and becomes "how fast?" We've been preparing for fast.</p>
 
         <h2>What Cloudflare actually shipped</h2>
 
-        <p>Here's what they built, and I'll flag the bits that made me sit up straight as someone who stares at this stuff all day:</p>
+        <p>Here's what they built, and the bits that got me most excited as someone who works on this every day:</p>
 
         <p><strong>— A price on any resource.</strong> Web pages, datasets, APIs, MCP tools — anything behind Cloudflare can now answer a request with <code>402 Payment Required</code> and a machine-readable price.</p>
 
@@ -120,25 +120,25 @@
 
         <p>That's what changes today. Every website becomes a potential API with a price tag agents can read. Every API, every MCP server, every dataset that used to sit behind a login or a lawyer becomes a machine-payable service. Content stops being either "free to scrape" or "walled off" and becomes a market.</p>
 
-        <h2>The half I've been building</h2>
+        <h2>What we've built at Polygon</h2>
 
-        <p>Here's the thing about a toll booth: it's only half a system. Cloudflare just gave sellers a clean way to charge. But a charge is useless if the buyer can't pay, if nothing settles, and if no agent can find you in the first place. That's the half I work on — the buyer's side and the connective tissue — and I've been building it in the open at Polygon for the past year. Concretely, that's four things I touch most weeks:</p>
+        <p>A toll booth is only half a system. Cloudflare just gave sellers a clean way to charge. But a charge needs a buyer who can pay, something to settle it, and a way for agents to discover what's for sale in the first place. That's the half we've spent the past year building at Polygon, in the open — and I've been part of the team shipping it. Four pieces we live in most weeks:</p>
 
-        <p><strong>— <a href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener noreferrer">The facilitator</a> (x402-rs).</strong> It's the middleware that sits in the middle and facilitates the payment between the buyer and the seller. I've been writing it in Rust for the better part of a year.</p>
+        <p><strong>— <a href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener noreferrer">The facilitator</a> (x402-rs).</strong> It's the middleware that sits in the middle and facilitates the payment between the buyer and the seller. We built it in Rust.</p>
 
         <p><strong>— <a href="https://polygon.technology/agent-cli" target="_blank" rel="noopener noreferrer">The Agent CLI</a>.</strong> One install and an agent has a wallet, an onchain identity, and the ability to pay in stablecoins — swaps, bridging, pay-per-call access, no keys exposed. If Cloudflare's gateway is the toll booth, this is the wallet in the agent's pocket as it pulls up.</p>
 
-        <p><strong>— <a href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener noreferrer">Agentic Services</a>.</strong> The dashboard where services list themselves so a paying agent can actually discover them. I've spent a lot of late nights on this one, because everyone forgets it: a million paywalled APIs are worthless if no agent knows they exist. Payments are the transaction; discovery is the market.</p>
+        <p><strong>— <a href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener noreferrer">Agentic Services</a>.</strong> The dashboard where services list themselves so a paying agent can actually discover them. Payments are the transaction; discovery is the market — and a market needs a place to meet.</p>
 
-        <p><strong>— <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a>.</strong> A proposal I co-wrote to recycle up to $1M in base-fee rebates to public facilitators. Because a rail nobody can afford to run doesn't get run. Ideology doesn't ship. Incentives do.</p>
+        <p><strong>— <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a>.</strong> A proposal to recycle up to $1M in base-fee rebates to public facilitators, so the rail is cheap enough for anyone to run. Incentives are how a new standard actually spreads.</p>
 
-        <p>Put the two side by side and you don't see competitors, you see one machine getting built from both ends. Cloudflare took the seller's side; I've been down in the buyer's side and the plumbing. Same protocol, opposite ends of the same tunnel. So no — I didn't feel scooped watching a company that size ship this. I felt like the roadmap I've been grinding on just got a very large, very credible co-signer. Every new toll booth they light up needs a wallet, a facilitator, and a place to be found — which is precisely the stuff I build.</p>
+        <p>Put it side by side with Cloudflare's launch and you don't see rivals — you see one machine being built from both ends, on the same open protocol. They took the seller's side; we've been building the buyer's side and the connective tissue that ties it together. Every toll booth they light up needs a wallet, a facilitator, and a place to be found. We've spent a year making sure those exist — and Cloudflare going all-in on x402 makes every one of them more valuable.</p>
 
-        <h2>What I actually think happens now</h2>
+        <h2>What happens next</h2>
 
-        <p>Cheerfully falsifiable prediction: in a couple of years "do you accept 402?" is a question people ask about every serious API, the way "do you have HTTPS?" got asked a decade ago. The long tail moves first — datasets, niche tools, single-purpose MCP servers that could never justify a Stripe account for $3 a month but will happily take a tenth of a cent per call. Then the aggregators. Then everyone.</p>
+        <p>My bet: within a couple of years, "do you accept 402?" is a question people ask about every serious API, the way "do you have HTTPS?" got asked a decade ago. The long tail moves first — datasets, niche tools, single-purpose MCP servers that could never justify a Stripe account for $3 a month but will happily take a tenth of a cent per call. Then the aggregators. Then everyone.</p>
 
-        <p>And honestly? The thing I want most is for all of this — my facilitator, my CLI, my dashboard — to become boring. Plumbing you never think about. The internet spent thirty years moving information brilliantly and hand-waving about money. The machines finally forced the issue, and for the first time in a year of building this, it stopped feeling early.</p>
+        <p>The internet spent thirty years moving information brilliantly and hand-waving about money. That era is ending, and we've been building for the one that comes next. Cloudflare turning on the meter is one of the clearest signals yet that it's here — and honestly, we couldn't be more excited to build the rest of it.</p>
       </div>
 
       <div class="post-cta">
