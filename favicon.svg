@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <path d="M0 0 H64 V50 L50 64 H0 Z" fill="#6700E5"/>
-  <text x="32" y="43" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" letter-spacing="-1" fill="#ffffff" text-anchor="middle">AG</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="20" fill="#0A0910"/>
+  <polygon points="50,16 86,80 14,80" stroke="#5a2ea6" stroke-width="6" stroke-linejoin="round"/>
+  <polygon points="50,33 73,74 27,74" stroke="#8b5cff" stroke-width="6" stroke-linejoin="round"/>
+  <polygon points="50,48 63,70 37,70" stroke="#b794ff" stroke-width="5.5" stroke-linejoin="round"/>
+  <polygon points="50,59 56,68 44,68" fill="#efe6ff"/>
 </svg>
