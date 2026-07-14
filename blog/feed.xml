@@ -8,12 +8,21 @@
     <language>en</language>
     <managingEditor>agada@polygon.technology (Akshat Gada)</managingEditor>
     <webMaster>agada@polygon.technology (Akshat Gada)</webMaster>
-    <lastBuildDate>Thu, 02 Jul 2026 09:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2026 09:00:00 +0000</lastBuildDate>
     <image>
       <url>https://akshatgada.com/assets/og.png</url>
       <title>Akshat Gada — Writing</title>
       <link>https://akshatgada.com/blog/</link>
     </image>
+
+    <item>
+      <title>x402 just grew up</title>
+      <link>https://akshatgada.com/blog/x402-foundation.html</link>
+      <guid isPermaLink="true">https://akshatgada.com/blog/x402-foundation.html</guid>
+      <pubDate>Tue, 14 Jul 2026 09:00:00 +0000</pubDate>
+      <category>Agentic payments</category>
+      <description>The Linux Foundation launched the x402 Foundation — with Visa, Mastercard, Stripe, Google, AWS, Coinbase and 30+ others as founding members, Polygon Labs among them. We've been building on x402 at Polygon since last year; why an open, community-governed standard for payments over HTTP changes everything for agentic payments.</description>
+    </item>
 
     <item>
       <title>Cloudflare just turned on the meter</title>
