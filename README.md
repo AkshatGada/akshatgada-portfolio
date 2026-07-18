@@ -1,8 +1,8 @@
 # Akshat Gada — portfolio
 
-A personal, interactive portfolio for Akshat Gada — developer relations engineer at Polygon,
-building agentic payments. Dark and cinematic, with Polygon's visual DNA (PolySans type,
-`#6700E5` purple, the chamfered "cut-corner") used as Akshat's aesthetic — the site is about
+A personal, interactive portfolio for Akshat Gada — an agentic payments builder and developer
+relations engineer, previously at Polygon. Dark and cinematic, with Polygon's visual DNA (PolySans type,
+signature purple, the chamfered "cut-corner") used as Akshat's aesthetic — the site is about
 him, not about Polygon.
 
 **Concept — "Operator":** the site behaves like the console of someone building the

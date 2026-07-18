@@ -1,11 +1,12 @@
 # Akshat Gada
 
-> Developer relations engineer at Polygon building agentic payments — the tools that let
-> AI agents hold money, pay over x402, and settle onchain. Site: https://akshatgada.com
+> Agentic payments builder and developer relations engineer — focused on the tools that let
+> AI agents hold money, pay over x402, and settle onchain. Open to new roles. Site: https://akshatgada.com
 
-Akshat Gada is a developer relations engineer at Polygon Labs, where he leads agentic
-payments: wallets, identity, SDKs, and onchain settlement designed for AI agents. He joined
-as an intern and moved to full-time in 2025. His work centers on x402 (the HTTP 402
+Akshat Gada works on agentic payments: wallets, identity, SDKs, and onchain settlement
+designed for AI agents. Most recently, he worked in Developer Relations at Polygon Labs,
+where he led agentic payments work after joining as an intern and moving to full-time in
+2025. His work centers on x402 (the HTTP 402
 "Payment Required" standard for machine payments), stablecoin settlement, and cross-chain
 infrastructure. He builds in the open and authors proposals and tooling for the
 machine-payable web.
@@ -14,13 +15,13 @@ machine-payable web.
 - X / Twitter: https://x.com/gada_akshat
 - GitHub: https://github.com/AkshatGada
 - LinkedIn: https://www.linkedin.com/in/akshat-gada-719076228/
-- Email: agada@polygon.technology
+- Email: akshatgada@gmail.com
 
 ## Focus areas
 - Agentic payments and the machine-payable web
 - x402 — internet-native, per-request payments over HTTP for AI agents
 - Stablecoin payments and onchain settlement
-- Developer relations, docs, and SDKs on Polygon
+- Developer relations, docs, SDKs, and product-focused engineering
 - Cross-chain infrastructure; zero-knowledge proofs
 
 ## Selected work
@@ -32,7 +33,7 @@ machine-payable web.
 - [PIP-82: Agentic Commerce Gas Program](https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721) — co-authored Polygon proposal offering up to $1M in base-fee rebates to x402 facilitators.
 
 ## Experience
-- Polygon Labs — Developer Relations Engineer, agentic payments (intern → full-time, 2025).
+- Polygon Labs — Developer Relations Engineer, agentic payments (intern → full-time, 2025–2026).
 - Ethereum Protocol Fellowship — EIP-4881 work in Lodestar (ChainSafe).
 - Witness Chain — RSA accumulator research; EigenLayer AVS.
 - JP Morgan — zero-knowledge research; ML circuits in Circom, Noir, and Rust.
@@ -47,5 +48,5 @@ machine-payable web.
 - [Polygon Tracks 101](https://www.youtube.com/watch?v=3Ba9KkJOsoc) — building on Polygon for developers getting started.
 
 ## Contact
-Open to conversations on agentic payments, x402, and building on Polygon.
-Email: agada@polygon.technology · X: https://x.com/gada_akshat
+Open to roles and conversations across agentic payments, developer relations, product engineering, and x402.
+Email: akshatgada@gmail.com · X: https://x.com/gada_akshat

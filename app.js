@@ -170,6 +170,8 @@
   (function () {
     var items = $$(".work-item");
     var panel = $("#work-preview");
+    var chooser = $("#agent-cli-dialog");
+    var chooserClose = chooser ? $(".project-dialog-close", chooser) : null;
     if (!items.length) return;
     var elIcon = $("#wp-icon"), elKind = $("#wp-kind"), elYear = $("#wp-year"),
         elName = $("#wp-name"), elDesc = $("#wp-desc"), elTech = $("#wp-tech"), inner = $(".wp-inner"), active = null;
@@ -195,12 +197,29 @@
         setTimeout(function () { fill(item); inner.classList.remove("swap"); }, 130);
       } else { fill(item); }
     }
+    function openItem(item, event) {
+      if (item.dataset.projectChooser === "agent-cli" && chooser && typeof chooser.showModal === "function") {
+        if (event) event.preventDefault();
+        chooser.showModal();
+        document.body.classList.add("dialog-open");
+        if (chooserClose) chooserClose.focus();
+        return;
+      }
+      window.open(item.href, "_blank", "noopener");
+    }
     items.forEach(function (item) {
       item.addEventListener("mouseenter", function () { select(item); });
       item.addEventListener("focusin", function () { select(item); });
+      if (item.dataset.projectChooser) item.addEventListener("click", function (event) { openItem(item, event); });
     });
+    if (chooser) {
+      function closeChooser() { chooser.close(); }
+      chooser.addEventListener("close", function () { document.body.classList.remove("dialog-open"); });
+      chooser.addEventListener("click", function (event) { if (event.target === chooser) closeChooser(); });
+      if (chooserClose) chooserClose.addEventListener("click", closeChooser);
+    }
     // panel click opens active project
-    if (panel) panel.addEventListener("click", function () { if (active) window.open(active.href, "_blank", "noopener"); });
+    if (panel) panel.addEventListener("click", function (event) { if (active) openItem(active, event); });
     // init
     fill(items[0]); active = items[0];
   })();
@@ -759,7 +778,7 @@
      JOURNEY — a pixel-art short film (#about)
      A recurring pixel character walks through six life phases —
      chemistry lab, badminton, learning to code, graduation, first
-     company, agentic payments at Polygon — performing each, then
+     company, agentic payments — performing each, then
      walking on to the next. Fully procedural: walk cycle, held
      props, ambient particles. The world cross-dissolves between
      phases as he walks out of one and into the next.
@@ -900,7 +919,7 @@
       R(a, 3, 3, 22, 2, C.d); R(a, 3, 3, 22, 1, C.p);     // banner
       for (var x = 5; x <= 23; x += 4) P(a, x, 5, C.y);   // banner studs
     }
-    function bg5(a, gt) {                                 // agentic payments · Polygon
+    function bg5(a, gt) {                                 // agentic payments
       tint(a, "#150c24");
       R(a, 0, GY, N, 1, C.d);                             // purple horizon
       for (var i = 0; i < 5; i++) {                       // drifting data motes
@@ -998,7 +1017,7 @@
       { name: "Chemistry lab",              bg: bg0, act: act0, look: { shirt: C.coat,  pants: C.navy } },
       { name: "Learning to code",           bg: bg2, act: act2, look: { shirt: C.grey,  pants: "#26232f" } },
       { name: "Graduation day",             bg: bg3, act: act3, look: { robe: C.S2, hat: "grad" } },
-      { name: "Agentic payments · Polygon", bg: bg5, act: act5, look: { shirt: C.p,     pants: "#26232f" } }
+      { name: "Agentic payments", bg: bg5, act: act5, look: { shirt: C.p,     pants: "#26232f" } }
     ];
 
     /* ---- engine ----------------------------------------------- */
@@ -1108,7 +1127,7 @@
 
     // A self-running console that narrates Akshat. No input, no navigation.
     var SEQ = [
-      { cmd: "whoami", out: "Akshat Gada — developer relations engineer at Polygon, leading agentic payments." },
+      { cmd: "whoami", out: "Akshat Gada — building agentic payments infrastructure and developer tools." },
       { cmd: "cat focus.txt", out: "I build the tools that let AI agents pay: wallets, identity, and onchain settlement over x402." },
       { cmd: "ls projects/", out: "agent-cli   facilitator   agentic-services   agentconnect   agentic-docs" },
       { cmd: "cat agent-cli", out: "One install gives an agent a session wallet, an onchain identity, x402 payments, swaps and bridging. No keys exposed." },
@@ -1120,14 +1139,14 @@
         "<span class='dir'>service&rarr;</span> <span class='ok'>200 OK</span> &middot; paid in 0.8s"
       ] },
       { cmd: "cat pip-82", out: "Co-authored PIP-82 — up to $1M in gas rebates to scale agentic, x402 transactions on Polygon." },
-      { cmd: "uptime", out: "intern → full-time at Polygon since 2025. building in the open." },
+      { cmd: "cat experience.txt", out: "Previously DevRel at Polygon, where I led agentic payments work. Open to what comes next." },
       { cmd: "echo $MISSION", out: "Make the machine-payable web real for developers." }
     ];
 
     function scrollBody() { body.scrollTop = body.scrollHeight; }
     function promptLine() {
       var d = document.createElement("div"); d.className = "term-line";
-      d.innerHTML = "<span class='term-prompt'>akshat@polygon ~ %</span> <span class='term-cmd'></span>";
+      d.innerHTML = "<span class='term-prompt'>akshat@agentic-payments ~ %</span> <span class='term-cmd'></span>";
       body.appendChild(d); return d.querySelector(".term-cmd");
     }
     function outLine() { var d = document.createElement("div"); d.className = "term-out"; body.appendChild(d); return d; }
