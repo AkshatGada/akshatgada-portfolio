@@ -257,15 +257,6 @@ body.dialog-open { overflow: hidden; }
 .dot-svc { box-shadow: inset 0 0 0 1.5px var(--fg-faint); }
 .dot-fac { background: var(--purple); border-radius: 2px !important; }
 
-/* ============================================================ MARQUEE */
-.marquee-wrap { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 30px 0; overflow: hidden; }
-.marquee { display: flex; gap: 0; width: max-content; animation: marq 32s linear infinite; }
-.marquee-row { display: flex; align-items: center; gap: 0; }
-.marquee-row li { font-family: var(--font-display); font-weight: 300; font-size: clamp(28px, 4vw, 60px); letter-spacing: -0.02em;
-  color: var(--fg-faint); padding: 0 clamp(34px, 4vw, 64px); display: inline-flex; align-items: center; }
-@keyframes marq { to { transform: translateX(-50%); } }
-.marquee-wrap:hover .marquee { animation-play-state: paused; }
-
 /* ============================================================ EXPERIMENTS */
 .experiments { padding: var(--section-y) var(--gutter); border-top: 1px solid var(--line); }
 .exp-list { max-width: var(--maxw); margin: 0 auto; border-top: 1px solid var(--line); }
@@ -380,7 +371,6 @@ a.exp-name .tri { width: 0; height: 0; border-left: 7px solid var(--purple-text)
   html { scroll-behavior: auto; }
   .reveal { opacity: 1 !important; transform: none !important; }
   .hero-name .scramble { opacity: 1 !important; transform: none !important; }
-  .marquee { animation: none; flex-wrap: wrap; }
   .scroll-cue span, .pulse { animation: none; }
   .manifesto-line .word { color: var(--fg) !important; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
