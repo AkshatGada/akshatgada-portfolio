@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cloudflare just turned on the meter — Akshat Gada</title>
-  <meta name="description" content="Cloudflare's Monetization Gateway puts an x402 paywall in front of a fifth of the web. My take: this is the starting gun for the agent economy — and it's exactly what we've been building at Polygon." />
+  <meta name="description" content="Why Cloudflare's x402 Monetization Gateway matters, from my experience building agentic-payment tools and developer adoption at Polygon." />
   <meta name="author" content="Akshat Gada" />
   <link rel="canonical" href="https://akshatgada.com/blog/cloudflare-402.html" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="Akshat Gada" />
   <meta property="og:url" content="https://akshatgada.com/blog/cloudflare-402.html" />
   <meta property="og:title" content="Cloudflare just turned on the meter" />
-  <meta property="og:description" content="An x402 paywall in front of a fifth of the web. The starting gun for the agent economy — and exactly what we've been building at Polygon." />
+  <meta property="og:description" content="Why Cloudflare's x402 Monetization Gateway matters, from my experience building agentic-payment tools at Polygon." />
   <meta property="og:image" content="https://akshatgada.com/assets/og/cloudflare-402.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -27,7 +27,7 @@
   <meta name="twitter:site" content="@gada_akshat" />
   <meta name="twitter:creator" content="@gada_akshat" />
   <meta name="twitter:title" content="Cloudflare just turned on the meter" />
-  <meta name="twitter:description" content="An x402 paywall in front of a fifth of the web. The starting gun for the agent economy." />
+  <meta name="twitter:description" content="A short note on Cloudflare, x402, and the agentic-payment stack I helped build at Polygon." />
   <meta name="twitter:image" content="https://akshatgada.com/assets/og/cloudflare-402.png" />
   <meta name="twitter:image:alt" content="Cloudflare just turned on the meter — essay by Akshat Gada" />
 
@@ -36,13 +36,13 @@
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "Cloudflare just turned on the meter",
-    "description": "Cloudflare's Monetization Gateway puts an x402 paywall in front of a fifth of the web. The starting gun for the agent economy — and exactly what we've been building at Polygon.",
+    "description": "Why Cloudflare's x402 Monetization Gateway matters, from my experience building agentic-payment tools and developer adoption at Polygon.",
     "image": { "@type": "ImageObject", "url": "https://akshatgada.com/assets/og/cloudflare-402.png", "width": 1200, "height": 630 },
     "datePublished": "2026-07-02",
     "dateModified": "2026-07-02",
     "inLanguage": "en",
     "articleSection": "Agentic payments",
-    "wordCount": 1124,
+    "wordCount": 577,
     "keywords": ["Cloudflare", "Monetization Gateway", "x402", "agentic payments", "agent economy", "stablecoins", "Polygon"],
     "url": "https://akshatgada.com/blog/cloudflare-402.html",
     "author": { "@type": "Person", "name": "Akshat Gada", "url": "https://akshatgada.com/", "jobTitle": "Agentic Payments Builder and Developer Relations Engineer", "sameAs": ["https://x.com/gada_akshat", "https://www.linkedin.com/in/akshat-gada-719076228/", "https://github.com/AkshatGada"] },
@@ -94,73 +94,41 @@
   <main id="main">
     <article class="post">
       <header class="post-head">
-        <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>2 Jul 2026</span><span>7 min read</span></p>
+        <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>2 Jul 2026</span><span>3 min read</span></p>
         <h1 class="post-title">Cloudflare just turned on the meter</h1>
-        <p class="post-dek">Yesterday Cloudflare put an x402 paywall in front of a fifth of the web. This is the starting gun for the agent economy — and it's exactly the race we've been training for at Polygon.</p>
+        <p class="post-dek">Cloudflare is making it possible to charge agents for a page, API, dataset, or MCP tool using x402. This is why that matters to me after working on the same problem at Polygon.</p>
         <p class="post-byline">By <b>Akshat Gada</b>, formerly DevRel at Polygon. <a href="../">Visit my site →</a></p>
       </header>
 
       <div class="post-body">
-        <p class="lead-line">At Polygon, we've spent the last year building the payment layer for the agent economy — the tools that let an AI agent hold a wallet, pay for what it uses, and settle onchain, per request. So when Cloudflare shipped the <a href="https://blog.cloudflare.com/monetization-gateway/" target="_blank" rel="noopener noreferrer">Monetization Gateway</a> yesterday, it didn't land like a surprise. It landed like the moment we've been building toward, finally arriving.</p>
+        <p class="lead-line">I spent a lot of my time at Polygon working on a simple idea: an agent should be able to find a useful service, pay a small amount, and get a result without creating an account or managing an API key. Cloudflare's <a href="https://blog.cloudflare.com/monetization-gateway/" target="_blank" rel="noopener noreferrer">Monetization Gateway</a> takes that same idea to a very large part of the internet.</p>
 
-        <p>We placed this bet early. A year ago, "AI agents will be real buyers — paying for data, calling APIs, hiring each other" sounded like a slide from someone's 2030 deck. We built for it anyway: the facilitator, the CLI that gives an agent a wallet, the dashboard where services list themselves so agents can find them. And now the largest infrastructure company on the internet has shipped the other half of that exact vision. That's not competition. That's the market showing up.</p>
+        <h2>What changed</h2>
 
-        <p>When the company sitting in front of a fifth of the web decides the internet needs a native way to charge machines, the question stops being "is this coming?" and becomes "how fast?" We've been preparing for fast.</p>
+        <p>A developer can put a price in front of a web page, dataset, API, or MCP tool. When an agent requests it, the server responds with <code>402 Payment Required</code>, the agent pays in stablecoins, and the request continues. Cloudflare handles the payment check at the edge.</p>
 
-        <h2>What Cloudflare actually shipped</h2>
+        <p>That flow sounds obvious once you see it working. Until now, most paid services still expected a human to create an account, choose a subscription, and enter card details. None of that fits an autonomous agent making one small request.</p>
 
-        <p>Here's what they built, and the bits that got me most excited as someone who works on this every day:</p>
+        <h2>The part I worked on at Polygon</h2>
 
-        <p><strong>— A price on any resource.</strong> Web pages, datasets, APIs, MCP tools — anything behind Cloudflare can now answer a request with <code>402 Payment Required</code> and a machine-readable price.</p>
+        <p>My role was to help make the other side of this flow usable for developers. I worked across the <a href="https://polygon.technology/agent-cli" target="_blank" rel="noopener noreferrer">Polygon Agent CLI</a>, <a href="https://docs.polygon.technology/payment-services/agentic-payments/agentic-services" target="_blank" rel="noopener noreferrer">Agentic Services</a>, AgentConnect, documentation, demos, and service integrations.</p>
 
-        <p><strong>— x402 as the protocol.</strong> The open HTTP standard: request → 402 with terms → pay → retry with proof → resource. No accounts, no API keys, no checkout page. This is the exact bet my team made a year ago, so seeing Cloudflare pick the same protocol felt less like competition and more like someone confirming your math.</p>
+        <p>The Agent CLI gives an agent a wallet, identity, swaps, bridging, and x402 payments. Agentic Services gives developers a place to expose pay-per-use services that agents can discover. The <a href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener noreferrer">facilitator</a> verifies and settles the payment. I also co-authored <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a>, proposing up to $1M in base-fee rebates for eligible agentic-commerce transactions.</p>
 
-        <p><strong>— Stablecoin settlement, peer-to-peer.</strong> Fractional-cent payments straight to the seller's wallet, sub-second. Everyone who's tried to do micropayments on card rails knows why this matters — the fee eats the payment. Stablecoins are the only thing that makes a $0.001 price sane.</p>
+        <p>A large part of DevRel here was not just explaining x402. It was working directly with service providers, helping them integrate, making the documentation clearer, recording demos, and getting useful services into developers' hands. Polygon has now processed more than <a href="https://dune.com/hashed_official/x402-analytics" target="_blank" rel="noopener noreferrer">24 million x402 transactions</a> across the network.</p>
 
-        <p><strong>— Enforcement at the edge.</strong> Payment checks run across their 330+ cities before a request touches your origin. This is the one I'm a little jealous of — that's a lot of points of presence to put a paywall in.</p>
+        <h2>What comes next</h2>
 
-        <p><strong>— Real pricing controls.</strong> Route-based pricing ($0.01 per <code>GET</code> on <code>/api/premium/*</code>), variable pricing by task complexity, even converting a <code>401 Unauthorized</code> into a <code>402</code> with payment instructions — "you can't come in" becomes "you can come in, for a price."</p>
+        <p>Cloudflare makes the seller side dramatically easier. The next step is connecting those sellers with agents that already have wallets and can discover, evaluate, and pay for services safely.</p>
 
-        <p><strong>— Optional agent identity.</strong> Web Bot Auth so sellers can know <em>which</em> agent is paying, not just that someone paid.</p>
-
-        <p>And the line in the announcement that matters most, the one I'd frame: <em>"the agent becomes the primary buyer on the Internet, and the request becomes the transaction."</em> That's the whole thesis, in one sentence, published by Cloudflare.</p>
-
-        <h2>Why this is the starting gun</h2>
-
-        <p>For thirty years the web has had exactly two business models: ads, or subscriptions. Both assume a human — eyeballs to show ads to, a person to fill in a card form once a month. Agents break both. An agent doesn't look at ads. An agent doesn't want your $9.99/month bundle; it wants one answer from your API, right now, worth a fraction of a cent.</p>
-
-        <p>So every site owner has been stuck with a terrible choice: block the agents, or feed them for free. That's the fight behind every scraping lawsuit and every robots.txt drama of the last three years. It was never really a permissions problem. It was a <strong>pricing</strong> problem — there was simply no way to say "yes, and it costs this much."</p>
-
-        <blockquote><p>The web never had a "no." It had a "no, unless you pay" with no way to pay. 402 is the way to pay.</p></blockquote>
-
-        <p>That's what changes today. Every website becomes a potential API with a price tag agents can read. Every API, every MCP server, every dataset that used to sit behind a login or a lawyer becomes a machine-payable service. Content stops being either "free to scrape" or "walled off" and becomes a market.</p>
-
-        <h2>What we've built at Polygon</h2>
-
-        <p>A toll booth is only half a system. Cloudflare just gave sellers a clean way to charge. But a charge needs a buyer who can pay, something to settle it, and a way for agents to discover what's for sale in the first place. That's the half we've spent the past year building at Polygon, in the open — and I've been part of the team shipping it. Four pieces we live in most weeks:</p>
-
-        <p><strong>— <a href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener noreferrer">The facilitator</a> (x402-rs).</strong> It's the middleware that sits in the middle and facilitates the payment between the buyer and the seller. We built it in Rust.</p>
-
-        <p><strong>— <a href="https://polygon.technology/agent-cli" target="_blank" rel="noopener noreferrer">The Agent CLI</a>.</strong> One install and an agent has a wallet, an onchain identity, and the ability to pay in stablecoins — swaps, bridging, pay-per-call access, no keys exposed. If Cloudflare's gateway is the toll booth, this is the wallet in the agent's pocket as it pulls up.</p>
-
-        <p><strong>— <a href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener noreferrer">Agentic Services</a>.</strong> The dashboard where services list themselves so a paying agent can actually discover them. Payments are the transaction; discovery is the market — and a market needs a place to meet.</p>
-
-        <p><strong>— <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a>.</strong> A proposal to recycle up to $1M in base-fee rebates to public facilitators, so the rail is cheap enough for anyone to run. Incentives are how a new standard actually spreads.</p>
-
-        <p>Put it side by side with Cloudflare's launch and you don't see rivals — you see one machine being built from both ends, on the same open protocol. They took the seller's side; we've been building the buyer's side and the connective tissue that ties it together. Every toll booth they light up needs a wallet, a facilitator, and a place to be found. We've spent a year making sure those exist — and Cloudflare going all-in on x402 makes every one of them more valuable.</p>
-
-        <h2>What happens next</h2>
-
-        <p>My bet: within a couple of years, "do you accept 402?" is a question people ask about every serious API, the way "do you have HTTPS?" got asked a decade ago. The long tail moves first — datasets, niche tools, single-purpose MCP servers that could never justify a Stripe account for $3 a month but will happily take a tenth of a cent per call. Then the aggregators. Then everyone.</p>
-
-        <p>The internet spent thirty years moving information brilliantly and hand-waving about money. That era is ending, and we've been building for the one that comes next. Cloudflare turning on the meter is one of the clearest signals yet that it's here — and honestly, we couldn't be more excited to build the rest of it.</p>
+        <p>That is the part of agentic payments I find most interesting: not another demo where an agent recommends something, but infrastructure that lets it complete the transaction. Cloudflare's launch makes that future feel much closer.</p>
       </div>
 
       <div class="post-cta">
         <p class="post-cta-title">Building an API, dataset, or MCP tool agents should pay for?</p>
-        <p class="post-cta-note">I helped build <a href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener noreferrer">Polygon's Agentic Services</a> — the directory where paying agents find services. If you're thinking about x402 and want to compare notes, my inbox is open.</p>
-        <button class="email-copy" id="email-copy" type="button" data-email="akshatgada@gmail.com" data-magnetic aria-label="Copy email address akshatgada@gmail.com">
-          <span class="email-text">akshatgada@gmail.com</span>
+        <p class="post-cta-note">I helped build <a href="https://docs.polygon.technology/payment-services/agentic-payments/agentic-services" target="_blank" rel="noopener noreferrer">Polygon's Agentic Services</a> and the surrounding developer experience. If you're working on x402 or agentic payments, my inbox is open.</p>
+        <button class="email-copy" id="email-copy" type="button" data-email="me@akshatgada.com" data-magnetic aria-label="Copy email address me@akshatgada.com">
+          <span class="email-text">me@akshatgada.com</span>
           <span class="email-state">Copy</span>
         </button>
       </div>

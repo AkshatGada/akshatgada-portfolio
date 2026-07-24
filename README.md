@@ -102,10 +102,9 @@ Google Search Console and request indexing.
 
 Everything is from verified public sources or your brief — no fabricated facts.
 
-- **Email** isn't shown (the exact address wasn't verifiable). Add a `mailto:` in the contact
-  section of `index.html` if you want one.
+- **Email:** `me@akshatgada.com`, shown in the contact section and exposed through the copy-email action.
 - Links wired up: X (`@gada_akshat`), GitHub (`AkshatGada`), LinkedIn, the YouTube talk, and the
-  five projects (Agent CLI, x402-rs, agent docs, Agentic Services, AgentConnect).
+  five projects (Agent CLI, Agentic Services, AgentConnect, agent docs, x402-rs).
 - Selected work includes PIP-82 (links to the Polygon forum). Experience section covers
   Polygon, Ethereum Protocol Fellowship, Witness Chain, JP Morgan, and BOBDAO. Talks: Polygon
   Tracks 101.

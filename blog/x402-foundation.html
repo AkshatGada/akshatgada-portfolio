@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>x402 just grew up — Akshat Gada</title>
-  <meta name="description" content="The Linux Foundation launched the x402 Foundation with Visa, Mastercard, Stripe, Google, AWS, Coinbase and 30+ others. We've been building on x402 at Polygon since last year — why this is a huge deal for agentic payments." />
+  <meta name="description" content="What the x402 Foundation changes, from my experience building agentic-payment tools and developer adoption at Polygon." />
   <meta name="author" content="Akshat Gada" />
   <link rel="canonical" href="https://akshatgada.com/blog/x402-foundation.html" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="Akshat Gada" />
   <meta property="og:url" content="https://akshatgada.com/blog/x402-foundation.html" />
   <meta property="og:title" content="x402 just grew up" />
-  <meta property="og:description" content="The Linux Foundation launched the x402 Foundation with the whole payments industry behind it. We've been building on x402 at Polygon since last year." />
+  <meta property="og:description" content="What the x402 Foundation changes, from my experience building agentic-payment tools at Polygon." />
   <meta property="og:image" content="https://akshatgada.com/assets/og/x402-foundation.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -27,7 +27,7 @@
   <meta name="twitter:site" content="@gada_akshat" />
   <meta name="twitter:creator" content="@gada_akshat" />
   <meta name="twitter:title" content="x402 just grew up" />
-  <meta name="twitter:description" content="x402 is now a Linux Foundation standard — and Polygon was early. Why this is a huge deal for agentic payments." />
+  <meta name="twitter:description" content="A short note on the x402 Foundation and the developer stack I helped build at Polygon." />
   <meta name="twitter:image" content="https://akshatgada.com/assets/og/x402-foundation.png" />
   <meta name="twitter:image:alt" content="x402 just grew up — essay by Akshat Gada" />
 
@@ -36,12 +36,13 @@
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "x402 just grew up",
-    "description": "The Linux Foundation launched the x402 Foundation with Visa, Mastercard, Stripe, Google, AWS, Coinbase and 30+ others. We've been building on x402 at Polygon since last year.",
+    "description": "What the x402 Foundation changes, from my experience building agentic-payment tools and developer adoption at Polygon.",
     "image": { "@type": "ImageObject", "url": "https://akshatgada.com/assets/og/x402-foundation.png", "width": 1200, "height": 630 },
     "datePublished": "2026-07-14",
     "dateModified": "2026-07-14",
     "inLanguage": "en",
     "articleSection": "Agentic payments",
+    "wordCount": 526,
     "keywords": ["x402", "x402 Foundation", "Linux Foundation", "agentic payments", "agent economy", "stablecoins", "Polygon"],
     "url": "https://akshatgada.com/blog/x402-foundation.html",
     "author": { "@type": "Person", "name": "Akshat Gada", "url": "https://akshatgada.com/", "jobTitle": "Agentic Payments Builder and Developer Relations Engineer", "sameAs": ["https://x.com/gada_akshat", "https://www.linkedin.com/in/akshat-gada-719076228/", "https://github.com/AkshatGada"] },
@@ -92,59 +93,41 @@
   <main id="main">
     <article class="post">
       <header class="post-head">
-        <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>14 Jul 2026</span><span>5 min read</span></p>
+        <p class="post-eyebrow"><span class="tag">Agentic payments</span><span>14 Jul 2026</span><span>3 min read</span></p>
         <h1 class="post-title">x402 just grew up</h1>
-        <p class="post-dek">Today the Linux Foundation launched the x402 Foundation — with Visa, Mastercard, Stripe, Google, AWS, Coinbase and 30+ others behind it. We've been building on x402 at Polygon since last year, and this is the milestone we've been waiting for.</p>
+        <p class="post-dek">The x402 Foundation gives internet-native payments a neutral home. After helping build around x402 at Polygon, this feels like an important step from promising protocol to shared infrastructure.</p>
         <p class="post-byline">By <b>Akshat Gada</b>, formerly DevRel at Polygon. <a href="../">Visit my site →</a></p>
       </header>
 
       <div class="post-body">
-        <p class="lead-line">A year ago, when we started going deep on x402 at Polygon, the most common reaction was "the what?" It was a clever, half-forgotten HTTP status code — 402, "Payment Required" — that a small group of us were convinced could become the way machines pay each other.</p>
+        <p class="lead-line">When I first started working on x402 at Polygon, I still had to explain why an unused HTTP status code mattered. The idea was simple: a service should be able to return <code>402 Payment Required</code>, an agent should be able to pay, and the request should continue without a checkout page.</p>
 
-        <p>Today the Linux Foundation <a href="https://x402.org/linux-foundation-announces-operational-launch-of-x402-foundation-to-standardize-internet-native-payments-for-ai-agents-and-applications/" target="_blank" rel="noopener noreferrer">launched the x402 Foundation</a> — with Visa, Mastercard, Stripe, American Express, Google, AWS, Cloudflare, Coinbase, Circle, Shopify, and around thirty more organizations as founding members. Polygon Labs is one of them.</p>
+        <h2>What changed</h2>
 
-        <p>Watching something you bet on early go from "the what?" to a Linux Foundation standard, backed by basically the entire payments industry, in about a year — that's a genuinely great feeling.</p>
+        <p>The Linux Foundation <a href="https://x402.org/linux-foundation-announces-operational-launch-of-x402-foundation-to-standardize-internet-native-payments-for-ai-agents-and-applications/" target="_blank" rel="noopener noreferrer">launched the x402 Foundation</a> with organizations across payments, cloud infrastructure, and digital assets. Polygon is a founding member.</p>
 
-        <h2>What actually happened today</h2>
+        <p>The important part is not just the list of companies. x402 now has a neutral place where the protocol can be developed in the open. If agents are going to pay across different services and payment rails, developers need one interoperable standard rather than a separate integration for every provider.</p>
 
-        <p>Coinbase, which created x402, contributed the protocol to a new, vendor-neutral foundation under the Linux Foundation. Forty organizations signed on as founding members, spanning card networks, banks, cloud providers, and chains. The mission is simple to say and hard to build: make it as easy for AI agents, APIs, and apps to send and receive money as it is for them to exchange data — across everything from cards to stablecoins, with no single company owning the rails.</p>
+        <h2>The part I worked on at Polygon</h2>
 
-        <p>The names are the story. When Visa, Mastercard, Stripe, AWS, and Google all put their weight behind the same open payment standard, that standard stops being a bet and becomes infrastructure. As Linux Foundation CEO Jim Zemlin put it, it's "a vital milestone in establishing an open, community-governed standard for payments over HTTP." Hard to say it better.</p>
+        <p>I worked on making x402 useful from a developer's point of view. That included the <a href="https://polygon.technology/agent-cli" target="_blank" rel="noopener noreferrer">Polygon Agent CLI</a>, <a href="https://docs.polygon.technology/payment-services/agentic-payments/agentic-services" target="_blank" rel="noopener noreferrer">Agentic Services</a>, AgentConnect, the <a href="https://github.com/0xPolygon/x402-rs" target="_blank" rel="noopener noreferrer">x402-rs facilitator</a>, integration documentation, demos, and direct support for teams adding pay-per-use services.</p>
 
-        <h2>We didn't show up today — we've been here a year</h2>
+        <p>These pieces solve different parts of the same journey. The CLI gives an agent a wallet and payment capability. Agentic Services helps it find something worth paying for. The facilitator verifies and settles the payment. My DevRel work connected those products to developers through clearer onboarding, technical content, integrations, and feedback from teams actually building with them.</p>
 
-        <p>This is the part I'm proud of. Polygon didn't join x402 when it got easy; we were early. One of the first things we did last year was add Polygon chain support to x402, so agents could actually settle these payments on a chain that's fast and cheap enough to matter. Around that, we've been building the whole stack in the open:</p>
+        <p>I also co-authored <a href="https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721" target="_blank" rel="noopener noreferrer">PIP-82</a>, which proposed up to $1M in base-fee rebates for eligible agentic-commerce transactions. Polygon has since processed more than <a href="https://dune.com/hashed_official/x402-analytics" target="_blank" rel="noopener noreferrer">24 million x402 transactions</a> across the network.</p>
 
-        <p><strong>— The facilitator (x402-rs)</strong> — the middleware that sits in the middle and facilitates the payment between the buyer and the seller. We built it in Rust.</p>
+        <h2>What comes next</h2>
 
-        <p><strong>— The Agent CLI</strong> — one install and an agent has a wallet, an identity, and the ability to pay in stablecoins.</p>
+        <p>A foundation does not create adoption by itself. Developers still need good libraries, predictable payment flows, useful services, and documentation that gets them from an idea to a working integration quickly.</p>
 
-        <p><strong>— Agentic Services</strong> — the dashboard where services list themselves so paying agents can find them.</p>
-
-        <p><strong>— PIP-82</strong> — a proposal to fund the rail so it's cheap enough for anyone to run.</p>
-
-        <p>Being one of the early contributors, and now a founding member of the Foundation, is exactly where we wanted to be when we placed that bet.</p>
-
-        <h2>Why a standard changes everything</h2>
-
-        <p>Open standard plus neutral governance means no single company owns the pipes. An agent can pay any service — on any chain, or a card network — without wiring up a dozen proprietary SDKs. That interoperability is the thing that actually makes an agent economy work; without it you get a hundred walled gardens and agents that can't transact across them.</p>
-
-        <blockquote><p>HTTPS did this for security. A shared foundation is doing it for payments — and once it's a standard, it's not going anywhere.</p></blockquote>
-
-        <h2>Where Polygon fits, and what's next</h2>
-
-        <p>Here's why I'm bullish, and specifically why I think Polygon matters in this. Agents don't make one payment — they make thousands of tiny ones, constantly. That only works on a chain built for high throughput and near-zero fees, one that can settle every request the moment it happens. That's exactly what Polygon is, and it's why we want it to be the settlement layer of choice for agentic payments.</p>
-
-        <p>The standard is now in place. What comes next is making it effortless: any developer, anywhere, able to accept and make x402 payments on Polygon in a few lines — with the wallet, the facilitator, and the discovery layer all just working. We'll keep building that in the open, and keep contributing inside the Foundation now that there's a proper home for it.</p>
-
-        <p>The last year took x402 from a curiosity to a standard. I think the next one takes it from a standard to something a real chunk of the internet's transactions quietly run on. We've been early to a lot of this — and we're more all-in than ever.</p>
+        <p>That is where I think the next phase will be won. The protocol now has a shared home. The work ahead is making it boringly easy for any developer—or agent—to use.</p>
       </div>
 
       <div class="post-cta">
         <p class="post-cta-title">Building an API, dataset, or MCP tool agents should pay for?</p>
-        <p class="post-cta-note">I helped build <a href="https://agentic-services.polygon.technology/discover" target="_blank" rel="noopener noreferrer">Polygon's Agentic Services</a> — the directory where paying agents find services. If you want to talk x402, my inbox is open.</p>
-        <button class="email-copy" id="email-copy" type="button" data-email="akshatgada@gmail.com" data-magnetic aria-label="Copy email address akshatgada@gmail.com">
-          <span class="email-text">akshatgada@gmail.com</span>
+        <p class="post-cta-note">I helped build <a href="https://docs.polygon.technology/payment-services/agentic-payments/agentic-services" target="_blank" rel="noopener noreferrer">Polygon's Agentic Services</a> and the surrounding developer experience. If you want to talk x402, my inbox is open.</p>
+        <button class="email-copy" id="email-copy" type="button" data-email="me@akshatgada.com" data-magnetic aria-label="Copy email address me@akshatgada.com">
+          <span class="email-text">me@akshatgada.com</span>
           <span class="email-state">Copy</span>
         </button>
       </div>

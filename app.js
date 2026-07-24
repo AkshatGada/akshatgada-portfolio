@@ -1127,9 +1127,9 @@
 
     // A self-running console that narrates Akshat. No input, no navigation.
     var SEQ = [
-      { cmd: "whoami", out: "Akshat Gada — building agentic payments infrastructure and developer tools." },
+      { cmd: "whoami", out: "Akshat Gada — Developer Relations Engineer building tools, docs, demos, and communities." },
       { cmd: "cat focus.txt", out: "I build the tools that let AI agents pay: wallets, identity, and onchain settlement over x402." },
-      { cmd: "ls projects/", out: "agent-cli   facilitator   agentic-services   agentconnect   agentic-docs" },
+      { cmd: "ls projects/", out: "agent-cli   agentic-services   agentconnect   agentic-docs   facilitator" },
       { cmd: "cat agent-cli", out: "One install gives an agent a session wallet, an onchain identity, x402 payments, swaps and bridging. No keys exposed." },
       { cmd: "pay --x402", lines: [
         "<span class='dir'>agent  &rarr;</span> GET /v1/inference",
@@ -1146,7 +1146,7 @@
     function scrollBody() { body.scrollTop = body.scrollHeight; }
     function promptLine() {
       var d = document.createElement("div"); d.className = "term-line";
-      d.innerHTML = "<span class='term-prompt'>akshat@agentic-payments ~ %</span> <span class='term-cmd'></span>";
+      d.innerHTML = "<span class='term-prompt'>akshat@devrel ~ %</span> <span class='term-cmd'></span>";
       body.appendChild(d); return d.querySelector(".term-cmd");
     }
     function outLine() { var d = document.createElement("div"); d.className = "term-out"; body.appendChild(d); return d; }

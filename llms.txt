@@ -1,12 +1,13 @@
 # Akshat Gada
 
-> Agentic payments builder and developer relations engineer — focused on the tools that let
-> AI agents hold money, pay over x402, and settle onchain. Open to new roles. Site: https://akshatgada.com
+> Developer Relations Engineer who turns complex infrastructure into developer tools,
+> documentation, demos, and communities. Most recently focused on agentic payments.
+> Open to new roles. Site: https://akshatgada.com
 
-Akshat Gada works on agentic payments: wallets, identity, SDKs, and onchain settlement
-designed for AI agents. Most recently, he worked in Developer Relations at Polygon Labs,
-where he led agentic payments work after joining as an intern and moving to full-time in
-2025. His work centers on x402 (the HTTP 402
+Akshat Gada is a Developer Relations Engineer working across developer tools, documentation,
+technical content, demos, and community feedback. Most recently, he worked at Polygon Labs,
+where he led agentic payments initiatives after joining as an intern and moving to full-time
+in 2025. His technical work centers on x402 (the HTTP 402
 "Payment Required" standard for machine payments), stablecoin settlement, and cross-chain
 infrastructure. He builds in the open and authors proposals and tooling for the
 machine-payable web.
@@ -15,7 +16,7 @@ machine-payable web.
 - X / Twitter: https://x.com/gada_akshat
 - GitHub: https://github.com/AkshatGada
 - LinkedIn: https://www.linkedin.com/in/akshat-gada-719076228/
-- Email: akshatgada@gmail.com
+- Email: me@akshatgada.com
 
 ## Focus areas
 - Agentic payments and the machine-payable web
@@ -26,11 +27,19 @@ machine-payable web.
 
 ## Selected work
 - [Agent CLI](https://polygon.technology/agent-cli) — command-line tooling for agent payments on Polygon.
-- [Polygon x402 facilitator](https://github.com/0xPolygon/x402-rs) — Rust implementation of an x402 payment facilitator.
-- [Agentic Services](https://agentic-services.polygon.technology/discover) — a directory of services agents can discover and pay for.
+- [Agentic Services](https://docs.polygon.technology/payment-services/agentic-payments/agentic-services) — a directory of services agents can discover and pay for.
 - [AgentConnect](https://agentconnect.polygon.technology/) — connecting agents to onchain services.
 - [Agentic payments docs](https://docs.polygon.technology/payment-services/agentic-payments/agent-integration/intro) — agent integration guide.
 - [PIP-82: Agentic Commerce Gas Program](https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721) — co-authored Polygon proposal offering up to $1M in base-fee rebates to x402 facilitators.
+- [Polygon x402 facilitator](https://github.com/0xPolygon/x402-rs) — Rust implementation of an x402 payment facilitator.
+
+## Polygon agentic payments impact
+Led developer-facing work across Polygon Agent CLI, Agentic Services, AgentConnect, integrations,
+documentation, demos, and ecosystem launches. Helped create the pathways for service providers and
+developers to bring pay-per-use x402 services onto Polygon. Polygon has processed more than 24 million
+x402 transactions network-wide, according to the [x402 Analytics dashboard](https://dune.com/hashed_official/x402-analytics).
+Co-authored PIP-82, proposing a program of up to $1M in base-fee rebates for eligible agentic-commerce
+transactions.
 
 ## Experience
 - Polygon Labs — Developer Relations Engineer, agentic payments (intern → full-time, 2025–2026).
@@ -44,9 +53,25 @@ machine-payable web.
 - [x402 just grew up](https://akshatgada.com/blog/x402-foundation.html) — on the Linux Foundation launching the x402 Foundation; Polygon as an early x402 contributor and founding member, and why an open payments standard matters for agentic payments.
 - [Cloudflare just turned on the meter](https://akshatgada.com/blog/cloudflare-402.html) — on Cloudflare's x402 Monetization Gateway and the start of the agent economy; how Polygon's facilitator, Agent CLI, and Agentic Services fit.
 
-## Talks
+## Talks and demos
+- [Giving your LLMs their own crypto wallets](https://www.youtube.com/watch?v=62-WGHt-Qdw&list=PLXzKMXK2aHh76O7FfAHPJkZcqTIfYpoyf&index=33) — ETHGlobal Buenos Aires workshop with Bruno Škvorc.
 - [Polygon Tracks 101](https://www.youtube.com/watch?v=3Ba9KkJOsoc) — building on Polygon for developers getting started.
+- [Polygon Agent CLI — product demo](https://x.com/gada_akshat/status/2049589017310896550?s=20) — a one-minute feature walkthrough.
+- [Launching the Polygon Agent CLI](https://x.com/gada_akshat/status/2029574873190945083?s=20) — launch walkthrough for the agent toolkit.
+- [LLM Wallet MCP](https://x.com/gada_akshat/status/1981342070888681699?s=20) — stablecoin payments for Claude and Cursor agents.
+- [x402 payments for MCP servers](https://x.com/0xPolygonEco/status/1981060080058716289?s=20) — MCPay and Polygon integration demo.
+- [Polygon = Payments](https://x.com/gada_akshat/status/1974919277829648606?s=20) — short payments infrastructure talk.
+- [ETHGlobal New Delhi](https://x.com/gada_akshat/status/1971800206745522661?s=20) — developer community work at the Polygon booth.
+- [Polygon Agent CLI — launch story](https://www.linkedin.com/feed/update/urn:li:activity:7435722632295124993/) — developer-facing product launch content.
+- [Polygon at ETHGlobal New Delhi](https://www.linkedin.com/feed/update/urn:li:activity:7377563448672518144/) — developer community engagement.
+- [PIP-82 — $1M Agentic Commerce Gas Program](https://www.linkedin.com/feed/update/urn:li:activity:7427757311714197504/) — a plain-English technical breakdown of the proposal.
+
+## Selected partnerships
+- [AgentMail](https://x.com/gada_akshat/status/2072803287729135874?s=20) — added Polygon as an x402-supported chain for machine-payable email.
+- [Mastercard](https://x.com/0xPolygon/status/2064707251886334302) — Polygon joined Agent Pay for Machines for trusted agent-to-agent payments.
+- [Cloudflare](https://x.com/0xPolygon/status/2072766570892235079?s=20) — x402 payments for pages, datasets, APIs, and MCP tools through the Monetization Gateway.
+- Additional service-provider, infrastructure, and ecosystem integrations.
 
 ## Contact
 Open to roles and conversations across agentic payments, developer relations, product engineering, and x402.
-Email: akshatgada@gmail.com · X: https://x.com/gada_akshat
+Email: me@akshatgada.com · X: https://x.com/gada_akshat
