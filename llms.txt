@@ -27,7 +27,7 @@ machine-payable web.
 
 ## Selected work
 - [Agent CLI](https://polygon.technology/agent-cli) — command-line tooling for agent payments on Polygon.
-- [Agentic Services](https://docs.polygon.technology/payment-services/agentic-payments/agentic-services) — a directory of services agents can discover and pay for.
+- [Agentic Services](https://agent-discovery.polygon.org/discover) — a directory of services agents can discover and pay for.
 - [AgentConnect](https://agentconnect.polygon.technology/) — connecting agents to onchain services.
 - [Agentic payments docs](https://docs.polygon.technology/payment-services/agentic-payments/agent-integration/intro) — agent integration guide.
 - [PIP-82: Agentic Commerce Gas Program](https://forum.polygon.technology/t/pip-82-agentic-commerce-gas-program/21721) — co-authored Polygon proposal offering up to $1M in base-fee rebates to x402 facilitators.
