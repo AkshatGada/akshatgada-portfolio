@@ -1,11 +1,11 @@
 # Akshat Gada
 
-> Developer Relations Engineer who turns complex infrastructure into developer tools,
-> documentation, demos, and communities. Most recently focused on agentic payments.
+> Building agentic payments infrastructure: wallets, identity, service discovery,
+> and x402 payments for AI agents. Previously at Polygon Labs.
 > Open to new roles. Site: https://akshatgada.com
 
-Akshat Gada is a Developer Relations Engineer working across developer tools, documentation,
-technical content, demos, and community feedback. Most recently, he worked at Polygon Labs,
+Akshat Gada builds payment infrastructure and developer tools for AI agents.
+Previously, he worked as a Developer Relations Engineer at Polygon Labs,
 where he led agentic payments initiatives after joining as an intern and moving to full-time
 in 2025. His technical work centers on x402 (the HTTP 402
 "Payment Required" standard for machine payments), stablecoin settlement, and cross-chain

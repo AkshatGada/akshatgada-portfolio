@@ -1127,7 +1127,7 @@
 
     // A self-running console that narrates Akshat. No input, no navigation.
     var SEQ = [
-      { cmd: "whoami", out: "Akshat Gada — Developer Relations Engineer building tools, docs, demos, and communities." },
+      { cmd: "whoami", out: "Akshat Gada — building wallets, identity, and payments for AI agents." },
       { cmd: "cat focus.txt", out: "I build the tools that let AI agents pay: wallets, identity, and onchain settlement over x402." },
       { cmd: "ls projects/", out: "agent-cli   agentic-services   agentconnect   agentic-docs   facilitator" },
       { cmd: "cat agent-cli", out: "One install gives an agent a session wallet, an onchain identity, x402 payments, swaps and bridging. No keys exposed." },
